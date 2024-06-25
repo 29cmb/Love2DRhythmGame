@@ -4,6 +4,8 @@ local spacing = (300 - (4 * circleRadius * 2)) / 5
 local circleY = 500 - circleRadius - 40
 local speed = 3
 
+local UI = require("Packages.UI")
+
 self.Score = 0
 self.Colors = {
     [1] = {255/255, 0, 0},
@@ -84,7 +86,14 @@ function love.draw()
     end
     
 
-    if self.GameStarted == false then return end
+    if self.GameStarted == false then
+        UI.draw({
+            x = 115, 
+            y = 30,
+            UI.button({"On and On", on_click = function() startGame("On and On") end})
+        })
+        return
+    end
     if self.GamePaused then
         love.graphics.print(self.TimeSinceGameBegan .. " time has passed")
     end
@@ -218,18 +227,22 @@ function love.update(dt)
     else
         for song, key in pairs(self.SongKeyCodes) do 
             if love.keyboard.isDown(key) then
-                self.ActiveSong = "Songs." .. song .. ".Beats"
-                self.GameStarted = true
-
-                local audio = love.audio.newSource("Songs/" .. song .. "/Music.mp3", "stream")
-                audio:setVolume(0.6)
-                audio:play()
-
-                self.Background = love.graphics.newImage(require("Songs." .. song .. ".data").BackgroundImage)
-                self.ActiveAudio = audio
+                startGame(song)
             end
         end
     end
+end
+
+function startGame(song)
+    self.ActiveSong = "Songs." .. song .. ".Beats"
+    self.GameStarted = true
+
+    local audio = love.audio.newSource("Songs/" .. song .. "/Music.mp3", "stream")
+    audio:setVolume(0.6)
+    audio:play()
+
+    self.Background = love.graphics.newImage(require("Songs." .. song .. ".data").BackgroundImage)
+    self.ActiveAudio = audio
 end
 
 function table.find(table, value)
@@ -250,3 +263,32 @@ function math.clamp(val, lower, upper)
     if lower > upper then lower, upper = upper, lower end -- swap if boundaries supplied the wrong way
     return math.max(lower, math.min(upper, val))
 end
+
+
+-- UI shennanigans
+function love.mousepressed(x, y, button)
+    local input = { x = x, y = y }
+    if button == 1 then
+       input = UI.mousepressed(input)
+    end
+ end
+ 
+ function love.mousereleased(x, y, button)
+    local input = { x = x, y = y }
+    if button == 1 then
+       input = UI.mousereleased(input)
+    end
+ end
+ 
+ function love.mousemoved(x, y)
+    local input = { x = x, y = y }
+    UI.mousemoved(input)
+ end
+ 
+ function love.textinput(t)
+    UI.textinput(t)
+ end
+ 
+ function love.keypressed(key)
+    UI.keypressed(key)
+ end
