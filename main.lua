@@ -49,7 +49,7 @@ self.ScoreMultiplier = 1
 
 self.Powerups = {
     ["2xScore"] = {
-        Duration = 10,
+        Duration = 5,
         Sprite = "Images/GoldenBeat.png",
         SpriteOffset = {x = 22, y = 30},
         Callback = function()
@@ -60,15 +60,15 @@ self.Powerups = {
         end
     },
     ["Slow"] = {
-        Duration = 10,
-        Sprite = "Images/bomb.png",
+        Duration = 5,
+        Sprite = "Images/Slowness.png",
         SpriteOffset = {x = 22, y = 30},
         Callback = function()
-            self.Speed = self.Speed / 2
-            self.ActiveAudio:setPitch(.5)
+            self.Speed = self.Speed * 0.75
+            self.ActiveAudio:setPitch(.75)
         end,
         Undo = function()
-            self.Speed = self.Speed * 2
+            self.Speed = self.Speed * 1.25
             self.ActiveAudio:setPitch(1)
         end
     }

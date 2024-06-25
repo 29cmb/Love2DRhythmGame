@@ -133,5 +133,80 @@ return {
         },
         ["SpeedMod"] = 2,
         ["Powerup"] = "2xScore"
+    },
+    {
+        ["Time"] = 31,
+        ["Beats"] = {
+            1, 4
+        },
+        ["SpeedMod"] = 1
+    },
+    {
+        ["Time"] = 33.2,
+        ["Beats"] = {
+            2,3
+        }
+    },
+    {
+        ["Time"] = 33.8,
+        ["Beats"] = {
+            1,4
+        }
+    },
+    {
+        ["Time"] = 36.2,
+        ["Beats"] = {
+            1
+        }
+    },
+    {
+        ["Time"] = 36.5,
+        ["Beats"] = {
+            3
+        }
+    },
+    {
+        ["Time"] = 36.8,
+        ["Beats"] = {
+            2
+        }
+    },
+    {
+        ["Time"] = 37.1,
+        ["Beats"] = {
+            4
+        }
+    },
+    {
+        ["Time"] = 39.1,
+        ["Beats"] = {
+            4
+        }
+    },
+    {
+        ["Time"] = 39.4,
+        ["Beats"] = {
+            2
+        }
+    },
+    {
+        ["Time"] = 39.7,
+        ["Beats"] = {
+            3
+        }
+    },
+    {
+        ["Time"] = 40,
+        ["Beats"] = {
+            1
+        }
+    },
+    {
+        ["Time"] = 42.4,
+        ["Beats"] = {
+            3
+        },
+        ["SpeedMod"] = 2,
+        ["Powerup"] = "Slow"
     }
 } -- 2.3 subtraction from each beat from start to finish at a constant speed.
