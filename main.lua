@@ -154,13 +154,10 @@ function love.draw()
             love.graphics.circle("line", circleX, circleY, circleRadius)
             love.graphics.setColor(1, 1, 1)
 
-            print("Time: " .. self.TimeSinceGameBegan - 2.5 .. " on " .. i)
-
             -- calculate score based on how centered it was
             for _,beat in pairs(self.Beats[i]) do
                 local distance = math.abs(beat.PosY - circleY)
                 if distance <= circleRadius and beat.Hit == false then
-                    print("StartTime is " .. beat.StartTime .. " this means the difference is exactly " .. self.TimeSinceGameBegan - beat.StartTime)
                     beat.Hit = true
 
                     if beat.Powerup ~= "None" then 
@@ -173,16 +170,12 @@ function love.draw()
                         self.Score = math.clamp(self.Score - 2000)
                     elseif distance <= 2 then
                         self.Score = self.Score + (500 * self.ScoreMultiplier)
-                        print("500")
                     elseif distance <= 5 then
                         self.Score = self.Score + (350 * self.ScoreMultiplier)
-                        print("350")
                     elseif distance <= 10 then
                         self.Score = self.Score + (200 * self.ScoreMultiplier)
-                        print("200")
                     elseif distance <= 15 then
                         self.Score = self.Score + (100 * self.ScoreMultiplier)
-                        print("100")
                     else
                         self.Score = self.Score + (50 * self.ScoreMultiplier)
                     end
