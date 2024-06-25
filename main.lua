@@ -26,6 +26,7 @@ self.SongKeyCodes = {
 self.ActiveSong = nil
 self.ActiveAudio = nil
 self.GameStarted = false
+self.GamePaused = false
 
 self.Beats = {[1] = {}, [2] = {}, [3] = {}, [4] = {}}
 self.TimeSinceGameBegan = 0
@@ -48,7 +49,10 @@ function love.draw()
     end
     
 
-    if self.GameStarted == false then love.graphics.print(tostring(self.TimeSinceGameBegan) .. "time") return end
+    if self.GameStarted == false then return end
+    if self.GamePaused then
+        love.graphics.print(self.TimeSinceGameBegan .. " time has passed")
+    end
 
     local BeatMap = require(self.ActiveSong)
     for i = 1, 4 do
@@ -62,7 +66,9 @@ function love.draw()
                 love.graphics.circle("line", circleX, beat.PosY, circleRadius)
                 love.graphics.setColor(1,1,1)
 
-                beat.PosY = beat.PosY + (speed * (beat.SpeedMod or 1))
+                if self.GamePaused == false then
+                    beat.PosY = beat.PosY + (speed * (beat.SpeedMod or 1))
+                end
             else
                 self.Beats[i][beat] = nil
             end
@@ -125,20 +131,24 @@ end
 function love.update(dt)
     if love.keyboard.isDown("j") then
         -- pause switch
-        if self.GameStarted == true then
-            self.GameStarted = false
+        if self.GamePaused == false then
+            self.GamePaused = true
             self.ActiveAudio:pause()
         end
         
     end
 
     if love.keyboard.isDown("k") then
-        self.GameStarted = true
-        self.ActiveAudio:play()
+        if self.GamePaused == true then
+            self.GamePaused = false
+            self.ActiveAudio:play()
+        end
     end
 
     if self.GameStarted then
-        self.TimeSinceGameBegan = self.TimeSinceGameBegan + dt
+        if self.GamePaused == false then 
+            self.TimeSinceGameBegan = self.TimeSinceGameBegan + dt
+        end
     else
         for song, key in pairs(self.SongKeyCodes) do 
             if love.keyboard.isDown(key) then
@@ -148,7 +158,7 @@ function love.update(dt)
                 local audio = love.audio.newSource("Songs/" .. song .. "/Music.mp3", "stream")
                 audio:setVolume(0.6)
                 audio:play()
-                
+
                 self.Background = love.graphics.newImage(require("Songs." .. song .. ".data").BackgroundImage)
                 self.ActiveAudio = audio
             end
