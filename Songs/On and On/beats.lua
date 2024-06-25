@@ -1,6 +1,6 @@
 return {
     {
-       ["Time"] = 2,
+       ["Time"] = 1.6,
        ["Beats"] = {
             1,
             3
@@ -8,26 +8,9 @@ return {
        ["SpeedMod"] = 1
     },
     {
-        ["Time"] = 3,
+        ["Time"] = 5.78,
         ["Beats"] = {
-             1,
-             3
-        },
-        ["SpeedMod"] = 1
-     },
-     {
-        ["Time"] = 4,
-        ["Beats"] = {
-             1,
-             3
-        },
-        ["SpeedMod"] = 1
-     },
-    {
-        ["Time"] = 4,
-        ["Beats"] = {
-            2,
-            4
+            2,4
         },
         ["SpeedMod"] = 1
     }

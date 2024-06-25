@@ -24,6 +24,7 @@ self.SongKeyCodes = {
 }
 
 self.ActiveSong = nil
+self.ActiveAudio = nil
 self.GameStarted = false
 
 self.Beats = {[1] = {}, [2] = {}, [3] = {}, [4] = {}}
@@ -34,8 +35,8 @@ function love.load()
     love.window.setMode(300, 500)
 end
 
-function love.draw(dt)
-    if self.GameStarted == false then return end
+function love.draw()
+    if self.GameStarted == false then love.graphics.print(tostring(self.TimeSinceGameBegan) .. "time") return end
     local BeatMap = require(self.ActiveSong)
     for i = 1, 4 do
         local circleX = spacing * i + circleRadius * (2 * i - 1)
@@ -60,8 +61,6 @@ function love.draw(dt)
             love.graphics.setColor(1, 1, 1)
 
             -- calculate score based on how centered it was
-            -- Furthest point they can be apart is 39.999...
-            -- Minimum is obviously 0
             for _,beat in pairs(self.Beats[i]) do
                 local distance = math.abs(beat.PosY - circleY)
                 if distance <= circleRadius and beat.Hit == false then
@@ -107,6 +106,20 @@ function love.draw(dt)
 end
 
 function love.update(dt)
+    if love.keyboard.isDown("j") then
+        -- pause switch
+        if self.GameStarted == true then
+            self.GameStarted = false
+            self.ActiveAudio:pause()
+        end
+        
+    end
+
+    if love.keyboard.isDown("k") then
+        self.GameStarted = true
+        self.ActiveAudio:play()
+    end
+
     if self.GameStarted then
         self.TimeSinceGameBegan = self.TimeSinceGameBegan + dt
     else
@@ -118,6 +131,7 @@ function love.update(dt)
                 local audio = love.audio.newSource("Songs/" .. song .. "/Music.mp3", "stream")
                 audio:setVolume(0.6)
                 audio:play()
+                self.ActiveAudio = audio
             end
         end
     end
