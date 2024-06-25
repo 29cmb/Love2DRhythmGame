@@ -2,7 +2,7 @@ local self = {}
 local circleRadius = 20
 local spacing = (300 - (4 * circleRadius * 2)) / 5
 local circleY = 500 - circleRadius - 40
-local speed = 3
+
 
 local UI = require("Packages.UI")
 
@@ -29,7 +29,7 @@ local Sprites = {
     ["Bomb"] = "Images/bomb.png",
     ["PowerupBorder"] = "Images/PowerupBorder.png"
 }
-
+self.Speed = 3
 self.Powerup = "None"
 -- Clock: Slow down the game
 -- Golden beat: 2x points
@@ -57,6 +57,19 @@ self.Powerups = {
         end,
         Undo = function()
             self.ScoreMultiplier = 1
+        end
+    },
+    ["Slow"] = {
+        Duration = 10,
+        Sprite = "Images/bomb.png",
+        SpriteOffset = {x = 22, y = 30},
+        Callback = function()
+            self.Speed = self.Speed / 2
+            self.ActiveAudio:setPitch(.5)
+        end,
+        Undo = function()
+            self.Speed = self.Speed * 2
+            self.ActiveAudio:setPitch(1)
         end
     }
 }
@@ -126,7 +139,7 @@ function love.draw()
                 end
                 
                 if self.GamePaused == false then
-                    beat.PosY = beat.PosY + (speed * (beat.SpeedMod or 1))
+                    beat.PosY = beat.PosY + (self.Speed * (beat.SpeedMod or 1))
                 end
             else
                 self.Beats[i][beat] = nil
