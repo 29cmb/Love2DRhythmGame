@@ -126,4 +126,12 @@ return {
         },
         ["SpeedMod"] = 1
     },
+    {
+        ["Time"] = 29,
+        ["Beats"] = {
+            4
+        },
+        ["SpeedMod"] = 2,
+        ["Powerup"] = "2xScore"
+    }
 } -- 2.3 subtraction from each beat from start to finish at a constant speed.

@@ -27,6 +27,11 @@ local Sprites = {
     ["Bomb"] = "Images/bomb.png"
 }
 
+self.Powerup = "None"
+-- Clock: Slow down the game
+-- Golden beat: 2x points
+
+
 self.ActiveSong = nil
 self.ActiveAudio = nil
 self.GameStarted = false
@@ -37,6 +42,22 @@ self.TimeSinceGameBegan = 0
 self.ActiveBeats = {}
 
 self.Background = nil
+self.ScoreMultiplier = 1
+
+self.Powerups = {
+    ["2xScore"] = {
+        Duration = 4,
+        Sprite = "Images/bomb.png",
+        SpriteOffset = {x = 22, y = 30},
+        Callback = function()
+            self.ScoreMultiplier = 2
+        end,
+        Undo = function()
+            self.ScoreMultiplier = 1
+        end
+    }
+}
+
 
 function love.load()
     love.window.setMode(300, 500)
@@ -45,6 +66,10 @@ function love.load()
 
     for name,spr in pairs(Sprites) do
         Sprites[name] = love.graphics.newImage(spr)
+    end
+
+    for _, data in pairs(self.Powerups) do 
+        data.Sprite = love.graphics.newImage(data.Sprite)
     end
 end
 
@@ -69,7 +94,10 @@ function love.draw()
 
         for _,beat in pairs(self.Beats[i]) do 
             if beat.Hit == false then
-                if beat.Bomb == false then 
+                if beat.Powerup ~= "None" then
+                    local powerup = self.Powerups[beat.Powerup]
+                    love.graphics.draw(powerup.Sprite, circleX, beat.PosY, 0, 1, 1, powerup.SpriteOffset.x, powerup.SpriteOffset.y)
+                elseif beat.Bomb == false then 
                     love.graphics.setColor(self.Colors[i])
                     love.graphics.circle("fill", circleX, beat.PosY, circleRadius)
                     love.graphics.setColor(0,0,0)
@@ -102,22 +130,25 @@ function love.draw()
                 if distance <= circleRadius and beat.Hit == false then
                     beat.Hit = true
 
-                    if beat.Bomb == true then 
+                    if beat.Powerup ~= "None" then 
+                        self.Powerups[beat.Powerup].Callback()
+                        print("Powerup " .. beat.Powerup .. " activated")
+                    elseif beat.Bomb == true then 
                         self.Score = math.clamp(self.Score - 2000)
                     elseif distance <= 2 then
-                            self.Score = self.Score + 500
-                            print("500")
+                        self.Score = self.Score + (500 * self.ScoreMultiplier)
+                        print("500")
                     elseif distance <= 5 then
-                        self.Score = self.Score + 350
+                        self.Score = self.Score + (350 * self.ScoreMultiplier)
                         print("350")
                     elseif distance <= 10 then
-                        self.Score = self.Score + 200
+                        self.Score = self.Score + (200 * self.ScoreMultiplier)
                         print("200")
-                    elseif distance <= 20 then
-                        self.Score = self.Score + 100
+                    elseif distance <= 15 then
+                        self.Score = self.Score + (100 * self.ScoreMultiplier)
                         print("100")
                     else
-                        self.Score = self.Score + 50
+                        self.Score = self.Score + (50 * self.ScoreMultiplier)
                     end
                 end
             end
@@ -137,7 +168,8 @@ function love.draw()
                     ["PosY"] = -5,
                     ["Hit"] = false,
                     ["SpeedMod"] = beat.SpeedMod,
-                    ["Bomb"] = beat.Bomb or false
+                    ["Bomb"] = beat.Bomb or false,
+                    ["Powerup"] = beat.Powerup or "None"
                 })
             end
         end
