@@ -31,7 +31,9 @@ local Sprites = {
     ["PowerupBorder"] = "Images/PowerupBorder.png",
     ["Pause"] = "Images/Pause.png",
     ["Resume"] = "Images/Resume.png",
-    ["MenuBg"] = "Images/MenuBg.png"
+    ["MainMenu"] = "Images/MenuBg.png",
+    ["PlayMenu"] = "Images/PlayMenu.png",
+    ["ExitGame"] = "Images/ExitGame.png"
 }
 self.Speed = 3
 self.Powerup = "None"
@@ -50,6 +52,8 @@ self.ActiveBeats = {}
 
 self.Background = nil
 self.ScoreMultiplier = 1
+
+self.MenuPage = "MainMenu"
 
 self.Powerups = {
     ["2xScore"] = {
@@ -104,20 +108,11 @@ function love.draw()
     
 
     if self.GameStarted == false then
-
-        love.graphics.draw(Sprites.MenuBg)
+        love.graphics.draw(Sprites[self.MenuPage])
         return
     end
-    if self.GamePaused then
-        love.graphics.print(self.TimeSinceGameBegan .. " time has passed")
-        love.graphics.setColor(1,1,1,0.5)
-        love.graphics.draw(Sprites.Resume, 230, 10)
-        love.graphics.setColor(1,1,1,1)
-    else
-        love.graphics.setColor(1,1,1,0.5)
-        love.graphics.draw(Sprites.Pause, 230, 10)
-        love.graphics.setColor(1,1,1,1)
-    end
+
+    
 
     if self.Powerup ~= "None" then 
         love.graphics.draw(Sprites.PowerupBorder)
@@ -211,6 +206,16 @@ function love.draw()
             end
         end
     end
+    
+    if self.GamePaused then
+        love.graphics.print(self.TimeSinceGameBegan .. " time has passed")
+        love.graphics.draw(Sprites.Resume, 230, 10)
+        love.graphics.draw(Sprites.ExitGame, 130, 85)
+    else
+        love.graphics.setColor(1,1,1,0.5)
+        love.graphics.draw(Sprites.Pause, 230, 10)
+        love.graphics.setColor(1,1,1,1)
+    end
 end
 
 function love.update(dt)
@@ -267,6 +272,32 @@ function unpause()
     end
 end
 
+function endGame()
+    self.GameStarted = false
+    self.GamePaused = false
+
+    self.Score = 0
+    self.Speed = 3
+    self.PowerupTimer = 0
+    self.ActiveSong = nil
+
+    self.Speed = 3
+    self.Powerup = "None"
+    self.PowerupTimer = 0
+
+    self.ActiveSong = nil
+    self.ActiveAudio = nil
+
+    self.Beats = {[1] = {}, [2] = {}, [3] = {}, [4] = {}}
+    self.TimeSinceGameBegan = 0
+    self.ActiveBeats = {}
+
+    self.Background = nil
+    self.ScoreMultiplier = 1
+
+    self.MenuPage = "MainMenu"
+end
+
 function table.find(table, value)
     for _, v in pairs(table) do
         if v == value then
@@ -302,8 +333,27 @@ function love.mousepressed(x, y, button)
                 pause()
             end
         end
-    else
 
+        if self.GamePaused == true then 
+            if collision:CheckCollision(x, y, 1, 1, 130, 85, 168, 67) then 
+                endGame()
+            end
+        end
+    else
+        if self.MenuPage == "MainMenu" then 
+            if collision:CheckCollision(x, y, 1, 1, 62, 155, 177, 93) then
+                --startGame("On and On")
+                self.MenuPage = "PlayMenu"
+            elseif collision:CheckCollision(x, y, 1, 1, 62, 267, 177, 93) then 
+                love.system.openURL("https://github.com/29cmb/Love2DRhythmGame")
+            end
+            -- 62, 267
+        elseif self.MenuPage == "PlayMenu" then
+            -- 62, 235
+            if collision:CheckCollision(x, y, 1, 1, 62, 235, 117, 93) then 
+                startGame("On and On")
+            end
+        end
     end
  end
  
