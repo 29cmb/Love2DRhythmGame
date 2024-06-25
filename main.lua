@@ -2,9 +2,9 @@ local self = {}
 local circleRadius = 20
 local spacing = (300 - (4 * circleRadius * 2)) / 5
 local circleY = 500 - circleRadius - 40
-
 local speed = 3
 
+self.Score = 0
 self.Colors = {
     [1] = {255/255, 0, 0},
     [2] = {255/255, 150/255, 0},
@@ -43,7 +43,7 @@ function love.draw()
                 love.graphics.circle("fill", circleX, beat.PosY, circleRadius)
                 love.graphics.setColor(1,1,1)
 
-                beat.PosY = beat.PosY + speed
+                beat.PosY = beat.PosY + (speed * (beat.SpeedMod or 1))
             end
         end
 
@@ -63,7 +63,8 @@ function love.draw()
             for _,v in pairs(beat.Beats) do 
                 table.insert(self.Beats[v], {
                     ["PosY"] = 0,
-                    ["Hit"] = false
+                    ["Hit"] = false,
+                    ["SpeedMod"] = beat.SpeedMod
                 })
             end
         end
