@@ -33,10 +33,19 @@ self.ActiveBeats = {}
 
 function love.load()
     love.window.setMode(300, 500)
+    background = love.graphics.newImage("Images/Background.png")
 end
 
 function love.draw()
+    
+    for i = 0, love.graphics.getWidth() / background:getWidth() do
+        for j = 0, love.graphics.getHeight() / background:getHeight() do
+            love.graphics.draw(background, i * background:getWidth(), j * background:getHeight())
+        end
+    end
+
     if self.GameStarted == false then love.graphics.print(tostring(self.TimeSinceGameBegan) .. "time") return end
+
     local BeatMap = require(self.ActiveSong)
     for i = 1, 4 do
         local circleX = spacing * i + circleRadius * (2 * i - 1)

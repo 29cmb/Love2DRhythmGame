@@ -75,5 +75,12 @@ return {
         ["Beats"] = {
             1,2
         }
+    },
+    {
+        ["Time"] = 22.8,
+        ["Beats"] = {
+            3,4
+        },
+        ["SpeedMod"] = 1
     }
 } -- 2.3 subtraction from each beat from start to finish at a constant speed.
