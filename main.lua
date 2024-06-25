@@ -48,7 +48,7 @@ self.ScoreMultiplier = 1
 self.Powerups = {
     ["2xScore"] = {
         Duration = 10,
-        Sprite = "Images/bomb.png",
+        Sprite = "Images/GoldenBeat.png",
         SpriteOffset = {x = 22, y = 30},
         Callback = function()
             self.ScoreMultiplier = 2
@@ -91,6 +91,10 @@ function love.draw()
 
     if self.Powerup ~= "None" then 
         love.graphics.draw(Sprites.PowerupBorder)
+        love.graphics.push()
+        love.graphics.scale(2,2)
+        love.graphics.print(self.Powerup .. "!", 50, 30)
+        love.graphics.pop()
     end
 
     local BeatMap = require(self.ActiveSong)
