@@ -106,13 +106,6 @@ function love.draw()
     if self.GameStarted == false then
 
         love.graphics.draw(Sprites.MenuBg)
-
-        UI.draw({
-            x = 115, 
-            y = 30,
-            UI.button({"On and On", on_click = function() startGame("On and On") end}),
-        })
-
         return
     end
     if self.GamePaused then
@@ -309,6 +302,8 @@ function love.mousepressed(x, y, button)
                 pause()
             end
         end
+    else
+
     end
  end
  
