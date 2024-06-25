@@ -19,6 +19,13 @@ self.KeyCodes = {
     [4] = "f"
 }
 
+self.SongKeyCodes = {
+    ["On and On"] = "1"
+}
+
+self.ActiveSong = nil
+self.GameStarted = false
+
 self.Beats = {[1] = {}, [2] = {}, [3] = {}, [4] = {}}
 self.TimeSinceGameBegan = 0
 self.ActiveBeats = {}
@@ -28,7 +35,8 @@ function love.load()
 end
 
 function love.draw(dt)
-    local BeatMap = require("beats")
+    if self.GameStarted == false then return end
+    local BeatMap = require(self.ActiveSong)
     for i = 1, 4 do
         local circleX = spacing * i + circleRadius * (2 * i - 1)
 
@@ -87,7 +95,6 @@ function love.draw(dt)
     for _, beat in pairs(BeatMap) do
         if self.TimeSinceGameBegan >= beat.Time and not table.find(self.ActiveBeats, beat) then
             table.insert(self.ActiveBeats, beat)
-            print("Beat time")
             for _,v in pairs(beat.Beats) do 
                 table.insert(self.Beats[v], {
                     ["PosY"] = -5,
@@ -100,7 +107,20 @@ function love.draw(dt)
 end
 
 function love.update(dt)
-    self.TimeSinceGameBegan = self.TimeSinceGameBegan + dt
+    if self.GameStarted then
+        self.TimeSinceGameBegan = self.TimeSinceGameBegan + dt
+    else
+        for song, key in pairs(self.SongKeyCodes) do 
+            if love.keyboard.isDown(key) then
+                self.ActiveSong = "Songs." .. song .. ".Beats"
+                self.GameStarted = true
+                print("Started")
+                local audio = love.audio.newSource("Songs/" .. song .. "/Music.mp3", "stream")
+                audio:setVolume(0.6)
+                audio:play()
+            end
+        end
+    end
 end
 
 function table.find(table, value)
