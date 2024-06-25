@@ -23,6 +23,10 @@ self.SongKeyCodes = {
     ["On and On"] = "1"
 }
 
+local Sprites = {
+    ["Bomb"] = "Images/bomb.png"
+}
+
 self.ActiveSong = nil
 self.ActiveAudio = nil
 self.GameStarted = false
@@ -38,6 +42,10 @@ function love.load()
     love.window.setMode(300, 500)
     love.window.setTitle("Rhythm Game")
     background = love.graphics.newImage("Images/Background.png")
+
+    for name,spr in pairs(Sprites) do
+        Sprites[name] = love.graphics.newImage(spr)
+    end
 end
 
 function love.draw()
@@ -61,12 +69,16 @@ function love.draw()
 
         for _,beat in pairs(self.Beats[i]) do 
             if beat.Hit == false then
-                love.graphics.setColor(self.Colors[i])
-                love.graphics.circle("fill", circleX, beat.PosY, circleRadius)
-                love.graphics.setColor(0,0,0)
-                love.graphics.circle("line", circleX, beat.PosY, circleRadius)
-                love.graphics.setColor(1,1,1)
-
+                if beat.Bomb == false then 
+                    love.graphics.setColor(self.Colors[i])
+                    love.graphics.circle("fill", circleX, beat.PosY, circleRadius)
+                    love.graphics.setColor(0,0,0)
+                    love.graphics.circle("line", circleX, beat.PosY, circleRadius)
+                    love.graphics.setColor(1,1,1)
+                elseif beat.Bomb == true then
+                    love.graphics.draw(Sprites.Bomb, circleX, beat.PosY, circleRadius)
+                end
+                
                 if self.GamePaused == false then
                     beat.PosY = beat.PosY + (speed * (beat.SpeedMod or 1))
                 end
@@ -90,9 +102,11 @@ function love.draw()
                 if distance <= circleRadius and beat.Hit == false then
                     beat.Hit = true
 
-                    if distance <= 2 then
-                        self.Score = self.Score + 500
-                        print("500")
+                    if beat.Bomb == true then 
+                        self.Score = math.clamp(self.Score - 1000)
+                    elseif distance <= 2 then
+                            self.Score = self.Score + 500
+                            print("500")
                     elseif distance <= 5 then
                         self.Score = self.Score + 350
                         print("350")
@@ -122,7 +136,8 @@ function love.draw()
                 table.insert(self.Beats[v], {
                     ["PosY"] = -5,
                     ["Hit"] = false,
-                    ["SpeedMod"] = beat.SpeedMod
+                    ["SpeedMod"] = beat.SpeedMod,
+                    ["Bomb"] = beat.Bomb or false
                 })
             end
         end

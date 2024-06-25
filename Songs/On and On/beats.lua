@@ -71,6 +71,14 @@ return {
         ["SpeedMod"] = 1
     },
     {
+        ["Time"] = 16.8,
+        ["Beats"] = {
+            4
+        },
+        ["SpeedMod"] = 1,
+        ["Bomb"] = true
+    },
+    {
         ["Time"] = 20,
         ["Beats"] = {
             1,2
