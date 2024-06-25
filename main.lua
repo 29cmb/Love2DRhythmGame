@@ -163,7 +163,6 @@ function love.draw()
                     if beat.Powerup ~= "None" then 
                         self.Powerups[beat.Powerup].Callback()
                         print("Powerup " .. beat.Powerup .. " activated")
-
                         self.Powerup = beat.Powerup
                         self.PowerupTimer = self.Powerups[beat.Powerup].Duration
                     elseif beat.Bomb == true then 
