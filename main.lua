@@ -24,13 +24,14 @@ self.SongKeyCodes = {
 }
 
 local Sprites = {
-    ["Bomb"] = "Images/bomb.png"
+    ["Bomb"] = "Images/bomb.png",
+    ["PowerupBorder"] = "Images/PowerupBorder.png"
 }
 
 self.Powerup = "None"
 -- Clock: Slow down the game
 -- Golden beat: 2x points
-
+self.PowerupTimer = 0
 
 self.ActiveSong = nil
 self.ActiveAudio = nil
@@ -46,7 +47,7 @@ self.ScoreMultiplier = 1
 
 self.Powerups = {
     ["2xScore"] = {
-        Duration = 4,
+        Duration = 10,
         Sprite = "Images/bomb.png",
         SpriteOffset = {x = 22, y = 30},
         Callback = function()
@@ -88,6 +89,10 @@ function love.draw()
         love.graphics.print(self.TimeSinceGameBegan .. " time has passed")
     end
 
+    if self.Powerup ~= "None" then 
+        love.graphics.draw(Sprites.PowerupBorder)
+    end
+
     local BeatMap = require(self.ActiveSong)
     for i = 1, 4 do
         local circleX = spacing * i + circleRadius * (2 * i - 1)
@@ -97,7 +102,7 @@ function love.draw()
                 if beat.Powerup ~= "None" then
                     local powerup = self.Powerups[beat.Powerup]
                     love.graphics.draw(powerup.Sprite, circleX, beat.PosY, 0, 1, 1, powerup.SpriteOffset.x, powerup.SpriteOffset.y)
-                elseif beat.Bomb == false then 
+                elseif beat.Bomb == false then
                     love.graphics.setColor(self.Colors[i])
                     love.graphics.circle("fill", circleX, beat.PosY, circleRadius)
                     love.graphics.setColor(0,0,0)
@@ -133,6 +138,9 @@ function love.draw()
                     if beat.Powerup ~= "None" then 
                         self.Powerups[beat.Powerup].Callback()
                         print("Powerup " .. beat.Powerup .. " activated")
+
+                        self.Powerup = beat.Powerup
+                        self.PowerupTimer = self.Powerups[beat.Powerup].Duration
                     elseif beat.Bomb == true then 
                         self.Score = math.clamp(self.Score - 2000)
                     elseif distance <= 2 then
@@ -196,6 +204,12 @@ function love.update(dt)
     if self.GameStarted then
         if self.GamePaused == false then 
             self.TimeSinceGameBegan = self.TimeSinceGameBegan + dt
+            self.PowerupTimer = self.PowerupTimer - dt
+            if self.PowerupTimer <= 0 and self.Powerup ~= "None" then 
+                self.Powerups[self.Powerup].Undo()
+                self.PowerupTimer = 0
+                self.Powerup = "None"
+            end
         end
     else
         for song, key in pairs(self.SongKeyCodes) do 
