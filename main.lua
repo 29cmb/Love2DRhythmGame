@@ -76,7 +76,9 @@ function love.draw()
                     love.graphics.circle("line", circleX, beat.PosY, circleRadius)
                     love.graphics.setColor(1,1,1)
                 elseif beat.Bomb == true then
-                    love.graphics.draw(Sprites.Bomb, circleX, beat.PosY, circleRadius)
+                    love.graphics.circle("line", circleX, beat.PosY, circleRadius)
+                    love.graphics.draw(Sprites.Bomb, circleX, beat.PosY, 0, 1, 1, 22, 30) -- why is the sprite off-center? No idea.
+                    
                 end
                 
                 if self.GamePaused == false then
