@@ -90,7 +90,7 @@ function love.draw()
         UI.draw({
             x = 115, 
             y = 30,
-            UI.button({"On and On", on_click = function() startGame("On and On") end})
+            UI.button({"On and On", on_click = function() startGame("On and On") end}),
         })
         return
     end
@@ -200,18 +200,11 @@ end
 function love.update(dt)
     if love.keyboard.isDown("j") then
         -- pause switch
-        if self.GamePaused == false then
-            self.GamePaused = true
-            self.ActiveAudio:pause()
-        end
-        
+        pause()
     end
 
     if love.keyboard.isDown("k") then
-        if self.GamePaused == true then
-            self.GamePaused = false
-            self.ActiveAudio:play()
-        end
+        unpause()
     end
 
     if self.GameStarted then
@@ -234,7 +227,7 @@ function love.update(dt)
 end
 
 function startGame(song)
-    self.ActiveSong = "Songs." .. song .. ".Beats"
+    self.ActiveSong = "Songs." .. song .. ".beats"
     self.GameStarted = true
 
     local audio = love.audio.newSource("Songs/" .. song .. "/Music.mp3", "stream")
@@ -243,6 +236,20 @@ function startGame(song)
 
     self.Background = love.graphics.newImage(require("Songs." .. song .. ".data").BackgroundImage)
     self.ActiveAudio = audio
+end
+
+function pause()
+    if self.GamePaused == false then
+        self.GamePaused = true
+        self.ActiveAudio:pause()
+    end
+end
+
+function unpause()
+    if self.GamePaused == true then
+        self.GamePaused = false
+        self.ActiveAudio:play()
+    end
 end
 
 function table.find(table, value)
