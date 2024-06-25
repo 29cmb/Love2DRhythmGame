@@ -209,4 +209,4 @@ return {
         ["SpeedMod"] = 2,
         ["Powerup"] = "Slow"
     }
-} -- 2.3 subtraction from each beat from start to finish at a constant speed.
+} -- 2.5 is the exact number

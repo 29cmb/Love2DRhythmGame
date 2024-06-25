@@ -3,7 +3,6 @@ local circleRadius = 20
 local spacing = (300 - (4 * circleRadius * 2)) / 5
 local circleY = 500 - circleRadius - 40
 
-
 local UI = require("Packages.UI")
 
 self.Score = 0
@@ -155,10 +154,13 @@ function love.draw()
             love.graphics.circle("line", circleX, circleY, circleRadius)
             love.graphics.setColor(1, 1, 1)
 
+            print("Time: " .. self.TimeSinceGameBegan - 2.5 .. " on " .. i)
+
             -- calculate score based on how centered it was
             for _,beat in pairs(self.Beats[i]) do
                 local distance = math.abs(beat.PosY - circleY)
                 if distance <= circleRadius and beat.Hit == false then
+                    print("StartTime is " .. beat.StartTime .. " this means the difference is exactly " .. self.TimeSinceGameBegan - beat.StartTime)
                     beat.Hit = true
 
                     if beat.Powerup ~= "None" then 
@@ -199,6 +201,7 @@ function love.draw()
             table.insert(self.ActiveBeats, beat)
             for _,v in pairs(beat.Beats) do 
                 table.insert(self.Beats[v], {
+                    ["StartTime"] = beat.Time,
                     ["PosY"] = -5,
                     ["Hit"] = false,
                     ["SpeedMod"] = beat.SpeedMod,
@@ -309,6 +312,6 @@ function love.mousepressed(x, y, button)
     UI.textinput(t)
  end
  
- function love.keypressed(key)
+function love.keypressed(key)
     UI.keypressed(key)
- end
+end
