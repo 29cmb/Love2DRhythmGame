@@ -26,6 +26,7 @@ self.Beats = {[1] = {
     }
 }, [2] = {}, [3] = {}, [4] = {}}
 self.TimeSinceGameBegan = 0
+self.ActiveBeats = {}
 
 function love.load()
     love.window.setMode(300, 500)
@@ -56,12 +57,28 @@ function love.draw()
     end
 
     for _, beat in pairs(BeatMap) do
-        if math.floor(self.TimeSinceGameBegan) == beat.Time then
-
+        if self.TimeSinceGameBegan >= beat.Time and not table.find(self.ActiveBeats, beat) then
+            table.insert(self.ActiveBeats, beat)
+            print("Beat time")
+            for _,v in pairs(beat.Beats) do 
+                table.insert(self.Beats[v], {
+                    ["PosY"] = 0,
+                    ["Hit"] = false
+                })
+            end
         end
     end
 end
 
 function love.update(dt)
     self.TimeSinceGameBegan = self.TimeSinceGameBegan + dt
+end
+
+function table.find(table, value)
+    for _, v in pairs(table) do
+        if v == value then
+            return true
+        end
+    end
+    return false
 end
