@@ -31,18 +31,22 @@ self.Beats = {[1] = {}, [2] = {}, [3] = {}, [4] = {}}
 self.TimeSinceGameBegan = 0
 self.ActiveBeats = {}
 
+self.Background = nil
+
 function love.load()
     love.window.setMode(300, 500)
     background = love.graphics.newImage("Images/Background.png")
 end
 
 function love.draw()
-    
-    for i = 0, love.graphics.getWidth() / background:getWidth() do
-        for j = 0, love.graphics.getHeight() / background:getHeight() do
-            love.graphics.draw(background, i * background:getWidth(), j * background:getHeight())
+    if self.Background ~= nil then 
+        for i = 0, love.graphics.getWidth() / self.Background:getWidth() do
+            for j = 0, love.graphics.getHeight() / self.Background:getHeight() do
+                love.graphics.draw(self.Background, i * self.Background:getWidth(), j * self.Background:getHeight())
+            end
         end
     end
+    
 
     if self.GameStarted == false then love.graphics.print(tostring(self.TimeSinceGameBegan) .. "time") return end
 
@@ -140,6 +144,7 @@ function love.update(dt)
                 local audio = love.audio.newSource("Songs/" .. song .. "/Music.mp3", "stream")
                 audio:setVolume(0.6)
                 audio:play()
+                self.Background = love.graphics.newImage(require("Songs." .. song .. ".data").BackgroundImage)
                 self.ActiveAudio = audio
             end
         end
