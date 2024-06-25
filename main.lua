@@ -3,8 +3,6 @@ local circleRadius = 20
 local spacing = (300 - (4 * circleRadius * 2)) / 5
 local circleY = 500 - circleRadius - 40
 
-local Beats = require("beats")
-
 local speed = 3
 
 self.Colors = {
@@ -34,6 +32,7 @@ function love.load()
 end
 
 function love.draw()
+    local BeatMap = require("beats")
     for i = 1, 4 do
         local circleX = spacing * i + circleRadius * (2 * i - 1)
 
@@ -56,14 +55,13 @@ function love.draw()
         end
     end
 
-    -- for _, beat in pairs(beats) do
-    --     if math.floor(self.TimeSinceGameBegan) == beat.Time then
+    for _, beat in pairs(BeatMap) do
+        if math.floor(self.TimeSinceGameBegan) == beat.Time then
 
-    --     end
-    -- end
+        end
+    end
 end
 
 function love.update(dt)
-    Timer.update(dt)
     self.TimeSinceGameBegan = self.TimeSinceGameBegan + dt
 end
