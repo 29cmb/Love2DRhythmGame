@@ -19,12 +19,7 @@ self.KeyCodes = {
     [4] = "f"
 }
 
-self.Beats = {[1] = {
-    {
-        ["PosY"] = circleY - 90,
-        ["Hit"] = false
-    }
-}, [2] = {}, [3] = {}, [4] = {}}
+self.Beats = {[1] = {}, [2] = {}, [3] = {}, [4] = {}}
 self.TimeSinceGameBegan = 0
 self.ActiveBeats = {}
 
@@ -32,7 +27,7 @@ function love.load()
     love.window.setMode(300, 500)
 end
 
-function love.draw()
+function love.draw(dt)
     local BeatMap = require("beats")
     for i = 1, 4 do
         local circleX = spacing * i + circleRadius * (2 * i - 1)
@@ -44,6 +39,8 @@ function love.draw()
                 love.graphics.setColor(1,1,1)
 
                 beat.PosY = beat.PosY + (speed * (beat.SpeedMod or 1))
+            else
+                self.Beats[i][beat] = nil
             end
         end
 
@@ -53,8 +50,39 @@ function love.draw()
             love.graphics.setColor(self.Colors[i])
             love.graphics.circle("fill", circleX, circleY, circleRadius)
             love.graphics.setColor(1, 1, 1)
+
+            -- calculate score based on how centered it was
+            -- Furthest point they can be apart is 39.999...
+            -- Minimum is obviously 0
+            for _,beat in pairs(self.Beats[i]) do
+                local distance = math.abs(beat.PosY - circleY)
+                if distance <= circleRadius and beat.Hit == false then
+                    beat.Hit = true
+
+                    if distance <= 2 then
+                        self.Score = self.Score + 500
+                        print("500")
+                    elseif distance <= 5 then
+                        self.Score = self.Score + 350
+                        print("350")
+                    elseif distance <= 10 then
+                        self.Score = self.Score + 200
+                        print("200")
+                    elseif distance <= 20 then
+                        self.Score = self.Score + 100
+                        print("100")
+                    else
+                        self.Score = self.Score + 50
+                    end
+                end
+            end
         end
     end
+
+    love.graphics.push()
+    love.graphics.scale(1.5, 1.5)
+    love.graphics.print("Score: " .. self.Score, 10, 10)
+    love.graphics.pop()
 
     for _, beat in pairs(BeatMap) do
         if self.TimeSinceGameBegan >= beat.Time and not table.find(self.ActiveBeats, beat) then
@@ -62,7 +90,7 @@ function love.draw()
             print("Beat time")
             for _,v in pairs(beat.Beats) do 
                 table.insert(self.Beats[v], {
-                    ["PosY"] = 0,
+                    ["PosY"] = -5,
                     ["Hit"] = false,
                     ["SpeedMod"] = beat.SpeedMod
                 })
