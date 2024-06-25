@@ -36,6 +36,7 @@ self.Background = nil
 
 function love.load()
     love.window.setMode(300, 500)
+    love.window.setTitle("Rhythm Game")
     background = love.graphics.newImage("Images/Background.png")
 end
 
@@ -173,4 +174,14 @@ function table.find(table, value)
         end
     end
     return false
+end
+
+function math.clamp(val, lower, upper)
+    if not lower then lower = 0 end
+    if not upper then upper = math.huge end
+
+    assert(val, "Value not provided")
+
+    if lower > upper then lower, upper = upper, lower end -- swap if boundaries supplied the wrong way
+    return math.max(lower, math.min(upper, val))
 end
