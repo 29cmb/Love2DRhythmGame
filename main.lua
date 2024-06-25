@@ -209,7 +209,6 @@ function love.draw()
             table.insert(self.ActiveBeats, beat)
             for _,v in pairs(beat.Beats) do 
                 table.insert(self.Beats[v], {
-                    ["StartTime"] = beat.Time,
                     ["PosY"] = -5,
                     ["Hit"] = false,
                     ["SpeedMod"] = beat.SpeedMod,
@@ -302,11 +301,13 @@ function love.mousepressed(x, y, button)
        input = UI.mousepressed(input)
     end
 
-    if collision:CheckCollision(x, y, 1, 1, 230, 10, 65, 65) then
-        if self.GamePaused == true then
-            unpause()
-        else
-            pause()
+    if self.GameStarted == true then
+        if collision:CheckCollision(x, y, 1, 1, 230, 10, 65, 65) then
+            if self.GamePaused == true then
+                unpause()
+            else
+                pause()
+            end
         end
     end
  end
