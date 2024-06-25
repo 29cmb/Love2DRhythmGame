@@ -30,7 +30,8 @@ local Sprites = {
     ["Bomb"] = "Images/bomb.png",
     ["PowerupBorder"] = "Images/PowerupBorder.png",
     ["Pause"] = "Images/Pause.png",
-    ["Resume"] = "Images/Resume.png"
+    ["Resume"] = "Images/Resume.png",
+    ["MenuBg"] = "Images/MenuBg.png"
 }
 self.Speed = 3
 self.Powerup = "None"
@@ -103,24 +104,26 @@ function love.draw()
     
 
     if self.GameStarted == false then
+
+        love.graphics.draw(Sprites.MenuBg)
+
         UI.draw({
             x = 115, 
             y = 30,
             UI.button({"On and On", on_click = function() startGame("On and On") end}),
         })
+
         return
     end
     if self.GamePaused then
         love.graphics.print(self.TimeSinceGameBegan .. " time has passed")
-        love.graphics.push()
         love.graphics.setColor(1,1,1,0.5)
         love.graphics.draw(Sprites.Resume, 230, 10)
-        love.graphics.pop()
+        love.graphics.setColor(1,1,1,1)
     else
-        love.graphics.push()
         love.graphics.setColor(1,1,1,0.5)
         love.graphics.draw(Sprites.Pause, 230, 10)
-        love.graphics.pop()
+        love.graphics.setColor(1,1,1,1)
     end
 
     if self.Powerup ~= "None" then 
@@ -170,7 +173,7 @@ function love.draw()
             -- calculate score based on how centered it was
             for _,beat in pairs(self.Beats[i]) do
                 local distance = math.abs(beat.PosY - circleY)
-                if distance <= circleRadius and beat.Hit == false then
+                if distance <= (circleRadius * 2) and beat.Hit == false then
                     beat.Hit = true
 
                     if beat.Powerup ~= "None" then 
