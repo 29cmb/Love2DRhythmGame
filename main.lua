@@ -58,6 +58,8 @@ function love.draw()
             if beat.Hit == false then
                 love.graphics.setColor(self.Colors[i])
                 love.graphics.circle("fill", circleX, beat.PosY, circleRadius)
+                love.graphics.setColor(0,0,0)
+                love.graphics.circle("line", circleX, beat.PosY, circleRadius)
                 love.graphics.setColor(1,1,1)
 
                 beat.PosY = beat.PosY + (speed * (beat.SpeedMod or 1))
@@ -71,6 +73,8 @@ function love.draw()
         else
             love.graphics.setColor(self.Colors[i])
             love.graphics.circle("fill", circleX, circleY, circleRadius)
+            love.graphics.setColor(0,0,0)
+            love.graphics.circle("line", circleX, circleY, circleRadius)
             love.graphics.setColor(1, 1, 1)
 
             -- calculate score based on how centered it was
@@ -140,10 +144,11 @@ function love.update(dt)
             if love.keyboard.isDown(key) then
                 self.ActiveSong = "Songs." .. song .. ".Beats"
                 self.GameStarted = true
-                print("Started")
+
                 local audio = love.audio.newSource("Songs/" .. song .. "/Music.mp3", "stream")
                 audio:setVolume(0.6)
                 audio:play()
+                
                 self.Background = love.graphics.newImage(require("Songs." .. song .. ".data").BackgroundImage)
                 self.ActiveAudio = audio
             end
