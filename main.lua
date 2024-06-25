@@ -1,9 +1,10 @@
-local self = {}
+local self = {} -- Why do I use self? oooo purple
 local circleRadius = 20
 local spacing = (300 - (4 * circleRadius * 2)) / 5
 local circleY = 500 - circleRadius - 40
 
 local UI = require("Packages.UI")
+local collision = require("collision")
 
 self.Score = 0
 self.Colors = {
@@ -12,6 +13,7 @@ self.Colors = {
     [3] = {255/255, 217/255, 0},
     [4] = {5/255, 255/255, 0}
 }
+
 
 self.KeyCodes = {
     [1] = "a",
@@ -26,7 +28,9 @@ self.SongKeyCodes = {
 
 local Sprites = {
     ["Bomb"] = "Images/bomb.png",
-    ["PowerupBorder"] = "Images/PowerupBorder.png"
+    ["PowerupBorder"] = "Images/PowerupBorder.png",
+    ["Pause"] = "Images/Pause.png",
+    ["Resume"] = "Images/Resume.png"
 }
 self.Speed = 3
 self.Powerup = "None"
@@ -108,6 +112,15 @@ function love.draw()
     end
     if self.GamePaused then
         love.graphics.print(self.TimeSinceGameBegan .. " time has passed")
+        love.graphics.push()
+        love.graphics.setColor(1,1,1,0.5)
+        love.graphics.draw(Sprites.Resume, 230, 10)
+        love.graphics.pop()
+    else
+        love.graphics.push()
+        love.graphics.setColor(1,1,1,0.5)
+        love.graphics.draw(Sprites.Pause, 230, 10)
+        love.graphics.pop()
     end
 
     if self.Powerup ~= "None" then 
@@ -145,7 +158,7 @@ function love.draw()
             end
         end
 
-        if not love.keyboard.isDown(self.KeyCodes[i]) then
+        if not love.keyboard.isDown(self.KeyCodes[i]) or self.GamePaused then
             love.graphics.circle("line", circleX, circleY, circleRadius)
         else
             love.graphics.setColor(self.Colors[i])
@@ -207,7 +220,6 @@ end
 
 function love.update(dt)
     if love.keyboard.isDown("j") then
-        -- pause switch
         pause()
     end
 
@@ -285,6 +297,14 @@ function love.mousepressed(x, y, button)
     local input = { x = x, y = y }
     if button == 1 then
        input = UI.mousepressed(input)
+    end
+
+    if collision:CheckCollision(x, y, 1, 1, 230, 10, 65, 65) then
+        if self.GamePaused == true then
+            unpause()
+        else
+            pause()
+        end
     end
  end
  
