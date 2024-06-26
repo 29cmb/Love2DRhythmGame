@@ -47,8 +47,10 @@ self.GameStarted = false
 self.GamePaused = false
 
 self.Beats = {[1] = {}, [2] = {}, [3] = {}, [4] = {}}
+
 self.TimeSinceGameBegan = 0
 self.ActiveBeats = {}
+
 
 self.Background = nil
 self.ScoreMultiplier = 1
@@ -111,7 +113,6 @@ function love.draw()
         love.graphics.draw(Sprites[self.MenuPage])
         return
     end
-
     
 
     if self.Powerup ~= "None" then 
@@ -127,27 +128,29 @@ function love.draw()
         local circleX = spacing * i + circleRadius * (2 * i - 1)
 
         for _,beat in pairs(self.Beats[i]) do 
-            if beat.Hit == false then
+            if beat.Hit == false or (beat.Trail and (beat.Trail.Held == false or beat.Trail.Holding == true)) then
                 
-                if beat.Trail then 
+                if beat.Trail and beat.Trail.Time then 
                     love.graphics.setColor(self.Colors[i], 0.7)
-                    love.graphics.rectangle("fill", circleX - 10, beat.PosY - circleRadius, circleRadius, -(beat.Trail * 60 * self.Speed)) -- negative I guess?
-                    love.graphics.circle("fill", circleX, beat.PosY - circleRadius - (beat.Trail*60*self.Speed), circleRadius/2) -- curved corners
+                    love.graphics.rectangle("fill", circleX - 10, beat.PosY - circleRadius, circleRadius, -(beat.Trail.Time * 60 * self.Speed)) -- negative I guess?
+                    love.graphics.circle("fill", circleX, beat.PosY - circleRadius - (beat.Trail.Time * 60 *self.Speed), circleRadius/2) -- curved corners
+                    love.graphics.setColor(1, 1, 1)
                 end
 
-                if beat.Powerup ~= "None" then
-                    local powerup = self.Powerups[beat.Powerup]
-                    love.graphics.draw(powerup.Sprite, circleX, beat.PosY, 0, 1, 1, powerup.SpriteOffset.x, powerup.SpriteOffset.y)
-                elseif beat.Bomb == false then
-                    love.graphics.setColor(self.Colors[i])
-                    love.graphics.circle("fill", circleX, beat.PosY, circleRadius)
-                    love.graphics.setColor(0,0,0)
-                    love.graphics.circle("line", circleX, beat.PosY, circleRadius)
-                    love.graphics.setColor(1,1,1)
-                elseif beat.Bomb == true then
-                    love.graphics.draw(Sprites.Bomb, circleX, beat.PosY, 0, 1, 1, 22, 30) -- why is the sprite off-center? No idea.
+                if beat.Hit == false then 
+                    if beat.Powerup ~= "None" then
+                        local powerup = self.Powerups[beat.Powerup]
+                        love.graphics.draw(powerup.Sprite, circleX, beat.PosY, 0, 1, 1, powerup.SpriteOffset.x, powerup.SpriteOffset.y)
+                    elseif beat.Bomb == false then
+                        love.graphics.setColor(self.Colors[i])
+                        love.graphics.circle("fill", circleX, beat.PosY, circleRadius)
+                        love.graphics.setColor(0,0,0)
+                        love.graphics.circle("line", circleX, beat.PosY, circleRadius)
+                        love.graphics.setColor(1,1,1)
+                    elseif beat.Bomb == true then
+                        love.graphics.draw(Sprites.Bomb, circleX, beat.PosY, 0, 1, 1, 22, 30) -- why is the sprite off-center? No idea.
+                    end
                 end
-
                 
                 
                 if self.GamePaused == false then
@@ -211,8 +214,13 @@ function love.draw()
                     ["SpeedMod"] = beat.SpeedMod,
                     ["Bomb"] = beat.Bomb or false,
                     ["Powerup"] = beat.Powerup or "None",
-                    ["Trail"] = beat.Trail,
-                    ["StartTime"] = self.TimeSinceGameBegan
+                    ["Trail"] = {
+                        ["Time"] = beat.Trail or nil,
+                        ["Holding"] = false,
+                        ["TimeHolding"] = 0,
+                        ["Held"] = false
+                    },
+
                 })
             end
         end
