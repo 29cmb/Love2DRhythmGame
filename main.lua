@@ -128,7 +128,7 @@ function love.draw()
         local circleX = spacing * i + circleRadius * (2 * i - 1)
 
         for _,beat in pairs(self.Beats[i]) do 
-            if beat.Hit == false or (beat.Trail and (beat.Trail.Held == false or beat.Trail.Holding == true)) then
+            if beat.Hit == false or (beat.Trail and (beat.Trail.Held == false and beat.Trail.Holding == true)) then
                 
                 if beat.Trail and beat.Trail.Time then 
                     love.graphics.setColor(self.Colors[i], 0.7)
@@ -153,7 +153,7 @@ function love.draw()
                 end
                 
                 
-                if self.GamePaused == false then
+                if self.GamePaused == false and beat.Hit == false then
                     beat.PosY = beat.PosY + (self.Speed * (beat.SpeedMod or 1))
                 end
             else
@@ -163,6 +163,15 @@ function love.draw()
 
         if not love.keyboard.isDown(self.KeyCodes[i]) or self.GamePaused then
             love.graphics.circle("line", circleX, circleY, circleRadius)
+            for _,beat in pairs(self.Beats[i]) do
+                if beat.Hit and beat.Trail and beat.Trail.Time then 
+                    if beat.Trail.Holding == true then 
+                        print('no more hold for you')
+                        beat.Trail.Held = true
+                        beat.Trail.Holding = false
+                    end
+                end
+            end
         else
             love.graphics.setColor(self.Colors[i])
             love.graphics.circle("fill", circleX, circleY, circleRadius)
@@ -173,26 +182,31 @@ function love.draw()
             -- calculate score based on how centered it was
             for _,beat in pairs(self.Beats[i]) do
                 local distance = math.abs(beat.PosY - circleY)
-                if distance <= (circleRadius * 2) and beat.Hit == false then
+                if distance <= (circleRadius * 2) and (beat.Hit == false or (beat.Trail and beat.Trail.Time)) then
+                    if beat.Hit == false then 
+                        if beat.Powerup ~= "None" then 
+                            self.Powerups[beat.Powerup].Callback()
+                            print("Powerup " .. beat.Powerup .. " activated")
+                            self.Powerup = beat.Powerup
+                            self.PowerupTimer = self.Powerups[beat.Powerup].Duration
+                        elseif beat.Bomb == true then 
+                            self.Score = math.clamp(self.Score - 2000)
+                        elseif distance <= 2 then
+                            self.Score = self.Score + (500 * self.ScoreMultiplier)
+                        elseif distance <= 5 then
+                            self.Score = self.Score + (350 * self.ScoreMultiplier)
+                        elseif distance <= 10 then
+                            self.Score = self.Score + (200 * self.ScoreMultiplier)
+                        elseif distance <= 15 then
+                            self.Score = self.Score + (100 * self.ScoreMultiplier)
+                        else
+                            self.Score = self.Score + (50 * self.ScoreMultiplier)
+                        end
+                    end 
                     beat.Hit = true
 
-                    if beat.Powerup ~= "None" then 
-                        self.Powerups[beat.Powerup].Callback()
-                        print("Powerup " .. beat.Powerup .. " activated")
-                        self.Powerup = beat.Powerup
-                        self.PowerupTimer = self.Powerups[beat.Powerup].Duration
-                    elseif beat.Bomb == true then 
-                        self.Score = math.clamp(self.Score - 2000)
-                    elseif distance <= 2 then
-                        self.Score = self.Score + (500 * self.ScoreMultiplier)
-                    elseif distance <= 5 then
-                        self.Score = self.Score + (350 * self.ScoreMultiplier)
-                    elseif distance <= 10 then
-                        self.Score = self.Score + (200 * self.ScoreMultiplier)
-                    elseif distance <= 15 then
-                        self.Score = self.Score + (100 * self.ScoreMultiplier)
-                    else
-                        self.Score = self.Score + (50 * self.ScoreMultiplier)
+                    if beat.Trail and beat.Trail.Time and beat.Trail.Held == false then 
+                        beat.Trail.Holding = true
                     end
                 end
             end
@@ -215,12 +229,10 @@ function love.draw()
                     ["Bomb"] = beat.Bomb or false,
                     ["Powerup"] = beat.Powerup or "None",
                     ["Trail"] = {
-                        ["Time"] = beat.Trail or nil,
-                        ["Holding"] = false,
-                        ["TimeHolding"] = 0,
-                        ["Held"] = false
+                        ["Time"] = beat.Trail or nil, 
+                        ["Held"] = false,
+                        ["Holding"] = false
                     },
-
                 })
             end
         end
@@ -255,6 +267,17 @@ function love.update(dt)
             end
         end
     end
+
+    for i = 1, 4 do 
+        for _,beat in pairs(self.Beats[i]) do 
+            if beat.Trail and beat.Trail.Time then
+                if beat.Trail.Holding == true then
+                    beat.Trail.Time = math.clamp(beat.Trail.Time - dt)
+                end
+            end
+        end
+    end
+    
 end
 
 function startGame(song)
