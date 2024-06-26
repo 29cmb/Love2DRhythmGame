@@ -132,10 +132,12 @@ function love.draw()
                 
                 if beat.Trail and beat.Trail.Time then
                     if beat.Hit == true then beat.PosY = circleY end
-                    love.graphics.setColor(self.Colors[i], 0.7)
-                    love.graphics.rectangle("fill", circleX - 10, beat.PosY - circleRadius, circleRadius, -(beat.Trail.Time * 60 * self.Speed)) -- negative I guess?
-                    love.graphics.circle("fill", circleX, beat.PosY - circleRadius - (beat.Trail.Time * 60 *self.Speed), circleRadius/2) -- curved corners
-                    love.graphics.setColor(1, 1, 1)
+                    if beat.Trail.Time > 0 then
+                        love.graphics.setColor(self.Colors[i], 0.7)
+                        love.graphics.rectangle("fill", circleX - 10, beat.PosY - circleRadius, circleRadius, -(beat.Trail.Time * 60 * self.Speed)) -- negative I guess?
+                        love.graphics.circle("fill", circleX, beat.PosY - circleRadius - (beat.Trail.Time * 60 * self.Speed), circleRadius/2) -- curved corners
+                        love.graphics.setColor(1, 1, 1)
+                    end
                 end
 
                 if beat.Hit == false then 
@@ -167,9 +169,20 @@ function love.draw()
             for _,beat in pairs(self.Beats[i]) do
                 if beat.Hit and beat.Trail and beat.Trail.Time then 
                     if beat.Trail.Holding == true then 
-                        print('no more hold for you')
                         beat.Trail.Held = true
                         beat.Trail.Holding = false
+
+                        local time = math.abs(beat.Trail.Time)
+
+                        if time < 0.1 then 
+                            self.Score = self.Score + 500
+                        elseif time < 0.25 then
+                            self.Score = self.Score + 250
+                        elseif time < 0.5 then
+                            self.Score = self.Score + 100
+                        else
+                            self.Score = self.Score + 50
+                        end 
                     end
                 end
             end
@@ -203,7 +216,8 @@ function love.draw()
                         else
                             self.Score = self.Score + (50 * self.ScoreMultiplier)
                         end
-                    end 
+                    end
+
                     beat.Hit = true
 
                     if beat.Trail and beat.Trail.Time and beat.Trail.Held == false then 
@@ -273,12 +287,11 @@ function love.update(dt)
         for _,beat in pairs(self.Beats[i]) do 
             if beat.Trail and beat.Trail.Time then
                 if beat.Trail.Holding == true then
-                    beat.Trail.Time = math.clamp(beat.Trail.Time - dt)
+                    beat.Trail.Time = beat.Trail.Time - dt
                 end
             end
         end
     end
-    
 end
 
 function startGame(song)
