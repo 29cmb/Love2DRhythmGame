@@ -130,7 +130,8 @@ function love.draw()
         for _,beat in pairs(self.Beats[i]) do 
             if beat.Hit == false or (beat.Trail and (beat.Trail.Held == false and beat.Trail.Holding == true)) then
                 
-                if beat.Trail and beat.Trail.Time then 
+                if beat.Trail and beat.Trail.Time then
+                    if beat.Hit == true then beat.PosY = circleY end
                     love.graphics.setColor(self.Colors[i], 0.7)
                     love.graphics.rectangle("fill", circleX - 10, beat.PosY - circleRadius, circleRadius, -(beat.Trail.Time * 60 * self.Speed)) -- negative I guess?
                     love.graphics.circle("fill", circleX, beat.PosY - circleRadius - (beat.Trail.Time * 60 *self.Speed), circleRadius/2) -- curved corners
