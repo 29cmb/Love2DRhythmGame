@@ -267,7 +267,7 @@ end
 function love.update(dt)
     if self.GameStarted then
         if self.GamePaused == false then 
-            self.TimeSinceGameBegan = self.TimeSinceGameBegan + dt
+            self.TimeSinceGameBegan = self.TimeSinceGameBegan + ((dt/3)*self.Speed)
             self.PowerupTimer = self.PowerupTimer - dt
             if self.PowerupTimer <= 0 and self.Powerup ~= "None" then 
                 self.Powerups[self.Powerup].Undo()
