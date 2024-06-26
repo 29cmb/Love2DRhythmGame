@@ -1,4 +1,4 @@
-local self = {} -- Why do I use self? oooo purple
+local self = {} -- Why am I using self here? Well you see, oooo purple
 local circleRadius = 20
 local spacing = (300 - (4 * circleRadius * 2)) / 5
 local circleY = 500 - circleRadius - 40
@@ -128,6 +128,12 @@ function love.draw()
 
         for _,beat in pairs(self.Beats[i]) do 
             if beat.Hit == false then
+                
+                if beat.Trail then 
+                    love.graphics.setColor(self.Colors[i], 0.7)
+                    love.graphics.rectangle("fill", circleX - 10, beat.PosY - circleRadius, circleRadius, -200) -- negative I guess?
+                end
+
                 if beat.Powerup ~= "None" then
                     local powerup = self.Powerups[beat.Powerup]
                     love.graphics.draw(powerup.Sprite, circleX, beat.PosY, 0, 1, 1, powerup.SpriteOffset.x, powerup.SpriteOffset.y)
@@ -140,6 +146,8 @@ function love.draw()
                 elseif beat.Bomb == true then
                     love.graphics.draw(Sprites.Bomb, circleX, beat.PosY, 0, 1, 1, 22, 30) -- why is the sprite off-center? No idea.
                 end
+
+                
                 
                 if self.GamePaused == false then
                     beat.PosY = beat.PosY + (self.Speed * (beat.SpeedMod or 1))
@@ -201,7 +209,9 @@ function love.draw()
                     ["Hit"] = false,
                     ["SpeedMod"] = beat.SpeedMod,
                     ["Bomb"] = beat.Bomb or false,
-                    ["Powerup"] = beat.Powerup or "None"
+                    ["Powerup"] = beat.Powerup or "None",
+                    ["Trail"] = beat.Trail,
+                    ["StartTime"] = self.TimeSinceGameBegan
                 })
             end
         end
@@ -219,14 +229,6 @@ function love.draw()
 end
 
 function love.update(dt)
-    if love.keyboard.isDown("j") then
-        pause()
-    end
-
-    if love.keyboard.isDown("k") then
-        unpause()
-    end
-
     if self.GameStarted then
         if self.GamePaused == false then 
             self.TimeSinceGameBegan = self.TimeSinceGameBegan + dt

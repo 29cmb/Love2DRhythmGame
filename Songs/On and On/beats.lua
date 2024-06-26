@@ -5,6 +5,7 @@ return {
             1,
             3
        },
+       ["Trail"] = 5,
        ["SpeedMod"] = 1
     },
     {
