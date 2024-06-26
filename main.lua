@@ -131,7 +131,8 @@ function love.draw()
                 
                 if beat.Trail then 
                     love.graphics.setColor(self.Colors[i], 0.7)
-                    love.graphics.rectangle("fill", circleX - 10, beat.PosY - circleRadius, circleRadius, -200) -- negative I guess?
+                    love.graphics.rectangle("fill", circleX - 10, beat.PosY - circleRadius, circleRadius, -(beat.Trail * 60 * self.Speed)) -- negative I guess?
+                    love.graphics.circle("fill", circleX, beat.PosY - circleRadius - (beat.Trail*60*self.Speed), circleRadius/2) -- curved corners
                 end
 
                 if beat.Powerup ~= "None" then
