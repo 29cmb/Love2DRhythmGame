@@ -5,7 +5,7 @@ return {
             1,
             3
        },
-       ["Trail"] = 2,
+       ["Trail"] = 1.5,
        ["SpeedMod"] = 1
     },
     {
@@ -13,6 +13,7 @@ return {
         ["Beats"] = {
             2,4
         },
+        ["Trail"] = 1.5,
         ["SpeedMod"] = 1
     },
     {
@@ -77,27 +78,30 @@ return {
             4
         },
         ["SpeedMod"] = 1,
-        ["Bomb"] = true
+        ["Bomb"] = true,
     },
     {
         ["Time"] = 20,
         ["Beats"] = {
             1,2
-        }
+        },
+        ["Trail"] = 1,
     },
     {
         ["Time"] = 22.8,
         ["Beats"] = {
             3,4
         },
-        ["SpeedMod"] = 1
+        ["SpeedMod"] = 1,
+        ["Trail"] = 1,
     },
     {
         ["Time"] = 25.4,
         ["Beats"] = {
             2,3
         },
-        ["SpeedMod"] = 1
+        ["SpeedMod"] = 1,
+        ["Trail"] = 1,
     },
     {
         ["Time"] = 26.8,
@@ -140,7 +144,8 @@ return {
         ["Beats"] = {
             1, 4
         },
-        ["SpeedMod"] = 1
+        ["SpeedMod"] = 1,
+        ["Trail"] = 1.5,
     },
     {
         ["Time"] = 33.2,
@@ -210,4 +215,4 @@ return {
         ["SpeedMod"] = 2,
         ["Powerup"] = "Slow"
     }
-} -- 2.5 is the exact number
+}
