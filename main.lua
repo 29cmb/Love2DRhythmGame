@@ -52,8 +52,8 @@ local ParticleSystems = {
     ["HitBeat"] = {
         ["Image"] = "Images/Sparkle.png",
         ["Size"] = 64,
-        ["LifeTime"] = {5,10},
-        ["Speed"] = 90,
+        ["LifeTime"] = {0.5,1},
+        ["Speed"] = 0,
     }
 }
 
@@ -124,7 +124,9 @@ function love.load()
     for name,sfx in pairs(SFX) do
         SFX[name] = love.audio.newSource(sfx, "stream")
     end
-
+    for _, data in pairs(self.Powerups) do 
+        data.Sprite = love.graphics.newImage(data.Sprite)
+    end
     for name,data in pairs(ParticleSystems) do
         for i = 1, 4 do
             if not data.Image then return end
@@ -132,6 +134,9 @@ function love.load()
             local particleSystem = love.graphics.newParticleSystem(img, 128)
             particleSystem:setParticleLifetime(data.LifeTime[1], data.LifeTime[2])
             particleSystem:setSpeed(data.Speed)
+            particleSystem:setLinearAcceleration(-2500, -2500, 2500, 2500)
+            particleSystem:setSpread(10 * math.pi)
+            
 
             if not ParticleSystems[i] then ParticleSystems[i] = {} end
             ParticleSystems[i][name] = particleSystem
@@ -139,9 +144,7 @@ function love.load()
         
     end
 
-    for _, data in pairs(self.Powerups) do 
-        data.Sprite = love.graphics.newImage(data.Sprite)
-    end
+    
 end
 
 self.VisualScore = 0
@@ -259,7 +262,7 @@ function love.draw()
                 if distance <= (circleRadius * 2) and (beat.Hit == false or (beat.Trail and beat.Trail.Time)) then
                     if beat.Hit == false then
                         ParticleSystems[i].HitBeat:setColors(self.Colors[i])
-                        ParticleSystems[i].HitBeat:emit(100)
+                        ParticleSystems[i].HitBeat:emit(10)
                         if beat.Powerup ~= "None" then 
                             self.Powerups[beat.Powerup].Callback()
                             SFX.Powerup:play()
