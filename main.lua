@@ -44,7 +44,8 @@ local Fonts = {
 }
 
 local SFX = {
-    ["Powerup"] = "SFX/Powerup.wav"
+    ["Powerup"] = "SFX/Powerup.wav",
+    ["Point"] = "SFX/Point.wav"
 }
 
 self.Speed = 3
@@ -144,6 +145,7 @@ function love.draw()
         if self.VisualScore < self.Score then 
             love.graphics.draw(Sprites.ExitEndGameOverlay)
             self.VisualScore = math.clamp(self.VisualScore + math.floor((self.Score/300)), 0, self.Score)
+            SFX.Point:play()
         else
             love.graphics.draw(Sprites.FinishedOverlay)
         end
@@ -379,6 +381,7 @@ function endGame()
     self.Speed = 3
     self.Powerup = "None"
     self.PowerupTimer = 0
+    self.VisualScore = 0
 
     self.ActiveSong = nil
     self.ActiveAudio:stop()
