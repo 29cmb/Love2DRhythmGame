@@ -34,7 +34,8 @@ local Sprites = {
     ["MainMenu"] = "Images/MenuBg.png",
     ["PlayMenu"] = "Images/PlayMenu.png",
     ["ExitGame"] = "Images/ExitGame.png",
-    ["FinishedOverlay"] = "Images/FinishedOverlay.png"
+    ["FinishedOverlay"] = "Images/FinishedOverlay.png",
+    ["ExitEndGameOverlay"] = "Images/ExitGameEndGameOverlay.png"
 }
 
 local Fonts = {
@@ -111,6 +112,8 @@ function love.load()
     end
 end
 
+self.VisualScore = 0
+
 function love.draw()
     if self.Background ~= nil then 
         for i = 0, love.graphics.getWidth() / self.Background:getWidth() do
@@ -127,10 +130,18 @@ function love.draw()
     end
 
     if self.GameFinished == true then 
-        love.graphics.draw(Sprites.FinishedOverlay)
+        
         love.graphics.setFont(Fonts.Score)
         
-        love.graphics.printf(self.Score,90,225,125,"center")
+        
+        if self.VisualScore < self.Score then 
+            love.graphics.draw(Sprites.ExitEndGameOverlay)
+            self.VisualScore = math.clamp(self.VisualScore + math.floor((self.Score/300)), 0, self.Score)
+        else
+            love.graphics.draw(Sprites.FinishedOverlay)
+        end
+
+        love.graphics.printf(self.VisualScore,90,225,125,"center")
         return
     end
     
@@ -396,25 +407,25 @@ end
 
 -- UI shennanigans
 function love.mousepressed(x, y, button)
-    local input = { x = x, y = y }
-    if button == 1 then
-       input = UI.mousepressed(input)
-    end
+local input = { x = x, y = y }
+if button == 1 then
+    input = UI.mousepressed(input)
+end
 
-    if self.GameStarted == true then
-        if self.GameFinished == true then
-            if collision:CheckCollision(x, y, 1, 1, 24, 376, 254, 100) then 
-                endGame()
-            end
-        else
-            if collision:CheckCollision(x, y, 1, 1, 230, 10, 65, 65) then
-                if self.GamePaused == true then
-                    unpause()
-                else
-                    pause()
-                end
+if self.GameStarted == true then
+    if self.GameFinished == true then
+        if collision:CheckCollision(x, y, 1, 1, 24, 376, 254, 100) then 
+            endGame()
+        end
+    else
+        if collision:CheckCollision(x, y, 1, 1, 230, 10, 65, 65) then
+            if self.GamePaused == true then
+                unpause()
+            else
+                pause()
             end
         end
+    end
 
         if self.GamePaused == true then 
             if collision:CheckCollision(x, y, 1, 1, 130, 85, 168, 67) then 
@@ -424,37 +435,14 @@ function love.mousepressed(x, y, button)
     else
         if self.MenuPage == "MainMenu" then 
             if collision:CheckCollision(x, y, 1, 1, 62, 155, 177, 93) then
-                --startGame("On and On")
                 self.MenuPage = "PlayMenu"
             elseif collision:CheckCollision(x, y, 1, 1, 62, 267, 177, 93) then 
                 love.system.openURL("https://github.com/29cmb/Love2DRhythmGame")
             end
-            -- 62, 267
         elseif self.MenuPage == "PlayMenu" then
-            -- 62, 235
             if collision:CheckCollision(x, y, 1, 1, 62, 235, 117, 93) then 
                 startGame("On and On")
             end
         end
     end
- end
- 
- function love.mousereleased(x, y, button)
-    local input = { x = x, y = y }
-    if button == 1 then
-       input = UI.mousereleased(input)
-    end
- end
- 
- function love.mousemoved(x, y)
-    local input = { x = x, y = y }
-    UI.mousemoved(input)
- end
- 
- function love.textinput(t)
-    UI.textinput(t)
- end
- 
-function love.keypressed(key)
-    UI.keypressed(key)
 end
