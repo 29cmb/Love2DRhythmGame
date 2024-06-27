@@ -43,6 +43,10 @@ local Fonts = {
     ["Score"] = {"Fonts/good times rg.otf", 25}
 }
 
+local SFX = {
+    ["Powerup"] = "SFX/Powerup.wav"
+}
+
 self.Speed = 3
 self.Powerup = "None"
 -- Clock: Slow down the game
@@ -107,6 +111,10 @@ function love.load()
         Fonts[name] = love.graphics.newFont(font[1], font[2])
     end
 
+    for name,sfx in pairs(SFX) do
+        SFX[name] = love.audio.newSource(sfx, "stream")
+    end
+
     for _, data in pairs(self.Powerups) do 
         data.Sprite = love.graphics.newImage(data.Sprite)
     end
@@ -130,7 +138,6 @@ function love.draw()
     end
 
     if self.GameFinished == true then 
-        
         love.graphics.setFont(Fonts.Score)
         
         
@@ -227,6 +234,8 @@ function love.draw()
                     if beat.Hit == false then 
                         if beat.Powerup ~= "None" then 
                             self.Powerups[beat.Powerup].Callback()
+                            SFX.Powerup:play()
+
                             print("Powerup " .. beat.Powerup .. " activated")
                             self.Powerup = beat.Powerup
                             self.PowerupTimer = self.Powerups[beat.Powerup].Duration
