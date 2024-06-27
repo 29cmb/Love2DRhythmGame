@@ -127,9 +127,6 @@ function love.draw()
 
     if self.Powerup ~= "None" then 
         love.graphics.draw(Sprites.PowerupBorder)
-        love.graphics.push()
-        love.graphics.print(self.Powerup .. "!", 50, 30)
-        love.graphics.pop()
     end
 
     local BeatMap = require(self.ActiveSong)
