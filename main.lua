@@ -48,6 +48,15 @@ local SFX = {
     ["Point"] = "SFX/Point.wav"
 }
 
+local ParticleSystems = {
+    ["HitBeat"] = {
+        ["Image"] = "Images/Sparkle.png",
+        ["Size"] = 64,
+        ["LifeTime"] = {5,10},
+        ["Speed"] = 90,
+    }
+}
+
 self.Speed = 3
 self.Powerup = "None"
 -- Clock: Slow down the game
@@ -116,6 +125,20 @@ function love.load()
         SFX[name] = love.audio.newSource(sfx, "stream")
     end
 
+    for name,data in pairs(ParticleSystems) do
+        for i = 1, 4 do
+            if not data.Image then return end
+            local img = love.graphics.newImage(data.Image)
+            local particleSystem = love.graphics.newParticleSystem(img, 128)
+            particleSystem:setParticleLifetime(data.LifeTime[1], data.LifeTime[2])
+            particleSystem:setSpeed(data.Speed)
+
+            if not ParticleSystems[i] then ParticleSystems[i] = {} end
+            ParticleSystems[i][name] = particleSystem
+        end
+        
+    end
+
     for _, data in pairs(self.Powerups) do 
         data.Sprite = love.graphics.newImage(data.Sprite)
     end
@@ -131,7 +154,6 @@ function love.draw()
             end
         end
     end
-    
 
     if self.GameStarted == false then
         love.graphics.draw(Sprites[self.MenuPage])
@@ -162,7 +184,9 @@ function love.draw()
     local BeatMap = require(self.ActiveSong)
     for i = 1, 4 do
         local circleX = spacing * i + circleRadius * (2 * i - 1)
-
+        for _,pSystem in pairs(ParticleSystems[i]) do 
+            love.graphics.draw(pSystem, circleX, circleY)
+        end
         for _,beat in pairs(self.Beats[i]) do 
             if beat.Hit == false or (beat.Trail and (beat.Trail.Held == false and beat.Trail.Holding == true)) then
                 
@@ -233,7 +257,9 @@ function love.draw()
             for _,beat in pairs(self.Beats[i]) do
                 local distance = math.abs(beat.PosY - circleY)
                 if distance <= (circleRadius * 2) and (beat.Hit == false or (beat.Trail and beat.Trail.Time)) then
-                    if beat.Hit == false then 
+                    if beat.Hit == false then
+                        ParticleSystems[i].HitBeat:setColors(self.Colors[i])
+                        ParticleSystems[i].HitBeat:emit(100)
                         if beat.Powerup ~= "None" then 
                             self.Powerups[beat.Powerup].Callback()
                             SFX.Powerup:play()
@@ -310,6 +336,11 @@ function love.update(dt)
 
     if love.keyboard.isDown("l") then 
         self.GameFinished = true
+    end
+    for i = 1, 4 do 
+        for _,pSystem in pairs(ParticleSystems[i]) do
+            pSystem:update(dt)
+        end
     end
 
     if self.GameStarted then
