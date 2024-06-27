@@ -1,5 +1,5 @@
 return {
     SongName = "On and On",
-    Artist = "Alan Walker",
+    Artist = "Cartoon, Daniel Levi, Jéja",
     BackgroundImage = "Images/Background.png"
 }

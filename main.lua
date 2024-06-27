@@ -143,8 +143,6 @@ function love.load()
         end
         
     end
-
-    
 end
 
 self.VisualScore = 0
@@ -334,9 +332,12 @@ function love.draw()
         love.graphics.setColor(1,1,1,1)
     end
 end
-
+local gameStarted = false
 function love.update(dt)
-
+    if gameStarted == false then 
+        gameStarted = true
+        endGame()
+    end
     if love.keyboard.isDown("l") then 
         self.GameFinished = true
     end
@@ -379,6 +380,10 @@ function startGame(song)
     self.ActiveSong = "Songs." .. song .. ".beats"
     self.GameStarted = true
 
+    if self.ActiveAudio ~= nil then 
+        self.ActiveAudio:stop()
+    end
+
     local audio = love.audio.newSource("Songs/" .. song .. "/Music.mp3", "stream")
     audio:setVolume(0.6)
     audio:play()
@@ -418,7 +423,10 @@ function endGame()
     self.VisualScore = 0
 
     self.ActiveSong = nil
-    self.ActiveAudio:stop()
+    if self.ActiveAudio ~= nil then 
+        self.ActiveAudio:stop()
+    end
+   
     self.ActiveAudio = nil
 
     self.Beats = {[1] = {}, [2] = {}, [3] = {}, [4] = {}}
@@ -429,6 +437,9 @@ function endGame()
     self.ScoreMultiplier = 1
 
     self.MenuPage = "MainMenu"
+
+    self.ActiveAudio = love.audio.newSource("NonLevelMusic/MenuLoop.mp3", "stream")
+    self.ActiveAudio:play()
 end
 
 function table.find(table, value)
@@ -453,25 +464,25 @@ end
 
 -- UI shennanigans
 function love.mousepressed(x, y, button)
-local input = { x = x, y = y }
-if button == 1 then
-    input = UI.mousepressed(input)
-end
+    local input = { x = x, y = y }
+    if button == 1 then
+        input = UI.mousepressed(input)
+    end
 
-if self.GameStarted == true then
-    if self.GameFinished == true then
-        if collision:CheckCollision(x, y, 1, 1, 24, 376, 254, 100) then 
-            endGame()
-        end
-    else
-        if collision:CheckCollision(x, y, 1, 1, 230, 10, 65, 65) then
-            if self.GamePaused == true then
-                unpause()
-            else
-                pause()
+    if self.GameStarted == true then
+        if self.GameFinished == true then
+            if collision:CheckCollision(x, y, 1, 1, 24, 376, 254, 100) then 
+                endGame()
+            end
+        else
+            if collision:CheckCollision(x, y, 1, 1, 230, 10, 65, 65) then
+                if self.GamePaused == true then
+                    unpause()
+                else
+                    pause()
+                end
             end
         end
-    end
 
         if self.GamePaused == true then 
             if collision:CheckCollision(x, y, 1, 1, 130, 85, 168, 67) then 
