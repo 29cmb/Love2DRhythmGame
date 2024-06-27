@@ -33,7 +33,8 @@ local Sprites = {
     ["Resume"] = "Images/Resume.png",
     ["MainMenu"] = "Images/MenuBg.png",
     ["PlayMenu"] = "Images/PlayMenu.png",
-    ["ExitGame"] = "Images/ExitGame.png"
+    ["ExitGame"] = "Images/ExitGame.png",
+    ["FinishedOverlay"] = "Images/FinishedOverlay.png"
 }
 
 local Fonts = {
@@ -51,6 +52,7 @@ self.ActiveSong = nil
 self.ActiveAudio = nil
 self.GameStarted = false
 self.GamePaused = false
+self.GameFinished = false
 
 self.Beats = {[1] = {}, [2] = {}, [3] = {}, [4] = {}}
 
@@ -121,6 +123,13 @@ function love.draw()
 
     if self.GameStarted == false then
         love.graphics.draw(Sprites[self.MenuPage])
+        return
+    end
+
+    if self.GameFinished == true then 
+        love.graphics.draw(Sprites.FinishedOverlay)
+        love.graphics.setFont(Fonts.Score)
+        love.graphics.printf(self.Score,90,225,125,"center")
         return
     end
     
@@ -242,7 +251,7 @@ function love.draw()
     for _, beat in pairs(BeatMap) do
         if self.TimeSinceGameBegan >= beat.Time and not table.find(self.ActiveBeats, beat) then
             if beat.End == true then 
-                
+                self.GameFinished = true
             else
                 table.insert(self.ActiveBeats, beat)
                 for _,v in pairs(beat.Beats) do
@@ -275,6 +284,11 @@ function love.draw()
 end
 
 function love.update(dt)
+
+    if love.keyboard.isDown("l") then 
+        self.GameFinished = true
+    end
+
     if self.GameStarted then
         if self.GamePaused == false then 
             self.TimeSinceGameBegan = self.TimeSinceGameBegan + ((dt/3)*self.Speed)
