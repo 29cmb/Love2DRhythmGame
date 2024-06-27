@@ -283,4 +283,8 @@ return {
         },
         ["Trail"] = 1.4
     },
+    {
+        ["Time"] = 55,
+        ["End"] = true
+    }
 }

@@ -35,6 +35,12 @@ local Sprites = {
     ["PlayMenu"] = "Images/PlayMenu.png",
     ["ExitGame"] = "Images/ExitGame.png"
 }
+
+local Fonts = {
+    ["Headers"] = {"Fonts/SF Archery Black.ttf", 40},
+    ["Score"] = {"Fonts/good times rg.otf", 25}
+}
+
 self.Speed = 3
 self.Powerup = "None"
 -- Clock: Slow down the game
@@ -94,6 +100,10 @@ function love.load()
         Sprites[name] = love.graphics.newImage(spr)
     end
 
+    for name,font in pairs(Fonts) do 
+        Fonts[name] = love.graphics.newFont(font[1], font[2])
+    end
+
     for _, data in pairs(self.Powerups) do 
         data.Sprite = love.graphics.newImage(data.Sprite)
     end
@@ -118,7 +128,6 @@ function love.draw()
     if self.Powerup ~= "None" then 
         love.graphics.draw(Sprites.PowerupBorder)
         love.graphics.push()
-        love.graphics.scale(2,2)
         love.graphics.print(self.Powerup .. "!", 50, 30)
         love.graphics.pop()
     end
@@ -229,26 +238,30 @@ function love.draw()
     end
 
     love.graphics.push()
-    love.graphics.scale(1.5, 1.5)
+    love.graphics.setFont(Fonts.Score)
     love.graphics.print("Score: " .. self.Score, 10, 10)
     love.graphics.pop()
 
     for _, beat in pairs(BeatMap) do
         if self.TimeSinceGameBegan >= beat.Time and not table.find(self.ActiveBeats, beat) then
-            table.insert(self.ActiveBeats, beat)
-            for _,v in pairs(beat.Beats) do 
-                table.insert(self.Beats[v], {
-                    ["PosY"] = -5,
-                    ["Hit"] = false,
-                    ["SpeedMod"] = beat.SpeedMod,
-                    ["Bomb"] = beat.Bomb or false,
-                    ["Powerup"] = beat.Powerup or "None",
-                    ["Trail"] = {
-                        ["Time"] = beat.Trail or nil, 
-                        ["Held"] = false,
-                        ["Holding"] = false
-                    },
-                })
+            if beat.End == true then 
+                
+            else
+                table.insert(self.ActiveBeats, beat)
+                for _,v in pairs(beat.Beats) do
+                    table.insert(self.Beats[v], {
+                        ["PosY"] = -5,
+                        ["Hit"] = false,
+                        ["SpeedMod"] = beat.SpeedMod,
+                        ["Bomb"] = beat.Bomb or false,
+                        ["Powerup"] = beat.Powerup or "None",
+                        ["Trail"] = {
+                            ["Time"] = beat.Trail or nil, 
+                            ["Held"] = false,
+                            ["Holding"] = false
+                        },
+                    })
+                end
             end
         end
     end
