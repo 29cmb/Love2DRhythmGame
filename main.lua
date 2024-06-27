@@ -5,6 +5,7 @@ local circleY = 500 - circleRadius - 40
 
 local UI = require("Packages.UI")
 local collision = require("collision")
+local editor = require("editor")
 
 self.Score = 0
 self.Colors = {
@@ -21,6 +22,8 @@ self.KeyCodes = {
     [3] = "d",
     [4] = "f"
 }
+
+self.InEditor = true;
 
 self.SongKeyCodes = {
     ["On and On"] = "1"
@@ -109,45 +112,55 @@ self.Powerups = {
 
 
 function love.load()
-    love.window.setMode(300, 500)
-    love.window.setTitle("Rhythm Game")
-    background = love.graphics.newImage("Images/Background.png")
+    if self.InEditor == false then
+        love.window.setMode(300, 500)
+        love.window.setTitle("Rhythm Game")
+        background = love.graphics.newImage("Images/Background.png")
 
-    for name,spr in pairs(Sprites) do
-        Sprites[name] = love.graphics.newImage(spr)
-    end
-
-    for name,font in pairs(Fonts) do 
-        Fonts[name] = love.graphics.newFont(font[1], font[2])
-    end
-
-    for name,sfx in pairs(SFX) do
-        SFX[name] = love.audio.newSource(sfx, "stream")
-    end
-    for _, data in pairs(self.Powerups) do 
-        data.Sprite = love.graphics.newImage(data.Sprite)
-    end
-    for name,data in pairs(ParticleSystems) do
-        for i = 1, 4 do
-            if not data.Image then return end
-            local img = love.graphics.newImage(data.Image)
-            local particleSystem = love.graphics.newParticleSystem(img, 128)
-            particleSystem:setParticleLifetime(data.LifeTime[1], data.LifeTime[2])
-            particleSystem:setSpeed(data.Speed)
-            particleSystem:setLinearAcceleration(-2500, -2500, 2500, 2500)
-            particleSystem:setSpread(10 * math.pi)
-            
-
-            if not ParticleSystems[i] then ParticleSystems[i] = {} end
-            ParticleSystems[i][name] = particleSystem
+        for name,spr in pairs(Sprites) do
+            Sprites[name] = love.graphics.newImage(spr)
         end
-        
+
+        for name,font in pairs(Fonts) do 
+            Fonts[name] = love.graphics.newFont(font[1], font[2])
+        end
+
+        for name,sfx in pairs(SFX) do
+            SFX[name] = love.audio.newSource(sfx, "stream")
+        end
+        for _, data in pairs(self.Powerups) do 
+            data.Sprite = love.graphics.newImage(data.Sprite)
+        end
+        for name,data in pairs(ParticleSystems) do
+            for i = 1, 4 do
+                if not data.Image then return end
+                local img = love.graphics.newImage(data.Image)
+                local particleSystem = love.graphics.newParticleSystem(img, 128)
+                particleSystem:setParticleLifetime(data.LifeTime[1], data.LifeTime[2])
+                particleSystem:setSpeed(data.Speed)
+                particleSystem:setLinearAcceleration(-2500, -2500, 2500, 2500)
+                particleSystem:setSpread(10 * math.pi)
+                
+
+                if not ParticleSystems[i] then ParticleSystems[i] = {} end
+                ParticleSystems[i][name] = particleSystem
+            end
+            
+        end
+    else
+        editor.load()
     end
 end
 
 self.VisualScore = 0
 
 function love.draw()
+
+    if self.InEditor == true then
+        editor.draw()
+        return
+    end
+
     if self.Background ~= nil then 
         for i = 0, love.graphics.getWidth() / self.Background:getWidth() do
             for j = 0, love.graphics.getHeight() / self.Background:getHeight() do
@@ -323,7 +336,6 @@ function love.draw()
     end
     
     if self.GamePaused then
-        love.graphics.print(self.TimeSinceGameBegan .. " time has passed")
         love.graphics.draw(Sprites.Resume, 230, 10)
         love.graphics.draw(Sprites.ExitGame, 130, 85)
     else
@@ -334,6 +346,12 @@ function love.draw()
 end
 local gameStarted = false
 function love.update(dt)
+
+    if self.InEditor == true then
+        editor.update()
+        return
+    end
+
     if gameStarted == false then 
         gameStarted = true
         endGame()
@@ -464,9 +482,9 @@ end
 
 -- UI shennanigans
 function love.mousepressed(x, y, button)
-    local input = { x = x, y = y }
-    if button == 1 then
-        input = UI.mousepressed(input)
+    if self.InEditor then
+        editor.mousepressed(x, y, button)
+        return
     end
 
     if self.GameStarted == true then
