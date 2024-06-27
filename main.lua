@@ -129,6 +129,7 @@ function love.draw()
     if self.GameFinished == true then 
         love.graphics.draw(Sprites.FinishedOverlay)
         love.graphics.setFont(Fonts.Score)
+        
         love.graphics.printf(self.Score,90,225,125,"center")
         return
     end
@@ -347,10 +348,12 @@ end
 function endGame()
     self.GameStarted = false
     self.GamePaused = false
+    self.GameFinished = false
 
     self.Score = 0
     self.Speed = 3
     self.PowerupTimer = 0
+    
     self.ActiveSong = nil
 
     self.Speed = 3
@@ -358,6 +361,7 @@ function endGame()
     self.PowerupTimer = 0
 
     self.ActiveSong = nil
+    self.ActiveAudio:stop()
     self.ActiveAudio = nil
 
     self.Beats = {[1] = {}, [2] = {}, [3] = {}, [4] = {}}
@@ -398,11 +402,17 @@ function love.mousepressed(x, y, button)
     end
 
     if self.GameStarted == true then
-        if collision:CheckCollision(x, y, 1, 1, 230, 10, 65, 65) then
-            if self.GamePaused == true then
-                unpause()
-            else
-                pause()
+        if self.GameFinished == true then
+            if collision:CheckCollision(x, y, 1, 1, 24, 376, 254, 100) then 
+                endGame()
+            end
+        else
+            if collision:CheckCollision(x, y, 1, 1, 230, 10, 65, 65) then
+                if self.GamePaused == true then
+                    unpause()
+                else
+                    pause()
+                end
             end
         end
 

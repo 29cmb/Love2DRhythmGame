@@ -284,7 +284,7 @@ return {
         ["Trail"] = 1.4
     },
     {
-        ["Time"] = 55,
+        ["Time"] = 57,
         ["End"] = true
     }
 }
