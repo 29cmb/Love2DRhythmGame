@@ -23,7 +23,7 @@ self.KeyCodes = {
     [4] = "f"
 }
 
-self.InEditor = true;
+self.InEditor = false;
 
 self.SongKeyCodes = {
     ["On and On"] = "1"
@@ -512,7 +512,8 @@ function love.mousepressed(x, y, button)
             if collision:CheckCollision(x, y, 1, 1, 62, 155, 177, 93) then
                 self.MenuPage = "PlayMenu"
             elseif collision:CheckCollision(x, y, 1, 1, 62, 267, 177, 93) then 
-                love.system.openURL("https://github.com/29cmb/Love2DRhythmGame")
+                editor.load()
+                self.InEditor = true
             end
         elseif self.MenuPage == "PlayMenu" then
             if collision:CheckCollision(x, y, 1, 1, 62, 235, 117, 93) then 

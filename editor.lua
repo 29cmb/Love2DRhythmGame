@@ -161,6 +161,7 @@ local Powerups = {
 
 
 local BeatMap = {}
+local beats = {[1] = {}, [2] = {}, [3] = {}, [4] = {}}
 
 function getBeatDataFromTime(time)
     for _,data in pairs(BeatMap) do 
