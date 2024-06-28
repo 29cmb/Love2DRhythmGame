@@ -108,6 +108,8 @@ function countFilesInDirectory(directory)
     return fileCount
 end
 
+local fileName = nil
+
 local buttons = {
     ['Playtest'] = {
         ["x"] = 285,
@@ -239,9 +241,11 @@ local buttons = {
         end,
         ["callback"] = function()
             love.filesystem.setIdentity("rhythm-game-levels")
-            -- print(countFilesInDirectory(love.filesystem.getSaveDirectory()))
-            local fileName = "Level" .. (countFilesInDirectory(love.filesystem.getSaveDirectory()) + 1) .. ".lua"
-            love.filesystem.newFile(fileName)
+            if fileName == nil then 
+                fileName = "Level" .. (countFilesInDirectory("") - 3) .. ".lua" 
+                love.filesystem.newFile(fileName)
+            end
+            
             love.filesystem.write(fileName, "return " .. tableToString(BeatMap, ""))
         end
     }
