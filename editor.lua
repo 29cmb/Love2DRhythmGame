@@ -62,7 +62,7 @@ local Powerups = {
 local BeatMap = {}
 local beats = {[1] = {}, [2] = {}, [3] = {}, [4] = {}}
 local activeBeats = {}
-local timePassed = 0
+local timePassed = 2.5
 
 local Colors = {
     [1] = {255/255, 0, 0},
@@ -87,6 +87,7 @@ local buttons = {
             playtestMode = not playtestMode
             beats = {[1] = {}, [2] = {}, [3] = {}, [4] = {}}
             activeBeats = {}
+            timePassed = 2.5
         end
     },
     ["PlaceBeat"] = {
@@ -329,8 +330,8 @@ function editor.draw()
         for _,beatData in pairs(BeatMap) do
             for _,beat in pairs(beatData.Beats) do
                 if not table.find(activeBeats, beatData) then 
-                    table.insert(activeBeats, beatData)
                     if beatData.Time <= 2.5 then
+                        table.insert(activeBeats, beatData)
                         table.insert(beats[beat], {
                             ["PosY"] = (460 - (circleRadius * 2)) - (168 * beatData.Time),
                             ["Hit"] = false,
@@ -344,7 +345,8 @@ function editor.draw()
                             },
                         })
                     else
-                        if timePassed >= beatData.Time then 
+                        if beatData.Time <= timePassed then 
+                            table.insert(activeBeats, beatData)
                             table.insert(beats[beat], {
                                 ["PosY"] = -5,
                                 ["Hit"] = false,
@@ -407,7 +409,7 @@ function editor.mousepressed(x,y,button)
 
         if boundary == 0 then return end
 
-        if editorMode == "placing" then 
+        if editorMode == "placing" then
             local beatData = getBeatDataFromTime(math.round(time, 1))
             if beatData then
                 if not table.find(beatData.Beats, boundary) and beatData.Bomb ~= true then
@@ -444,6 +446,7 @@ function editor.mousepressed(x,y,button)
                 end
             else
                 table.insert(BeatMap, {
+
                     ["Time"] = math.round(time, 1),
                     ["Beats"] = {
                         boundary
