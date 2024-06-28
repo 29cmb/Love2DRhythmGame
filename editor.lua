@@ -3,6 +3,8 @@ local circleRadius = 20
 local spacing = (300 - (4 * circleRadius * 2)) / 5
 local circleY = 500 - circleRadius - 40
 
+local collision = require("collision")
+
 local Sprites = {
     ["Bomb"] = "Images/bomb.png",
     ["PowerupBorder"] = "Images/PowerupBorder.png",
@@ -29,9 +31,22 @@ local Colors = {
     [3] = {255/255, 217/255, 0},
     [4] = {5/255, 255/255, 0}
 }
-
-
 local playtestMode = false
+
+local buttons = {
+    ['Playtest'] = {
+        ["x"] = 285,
+        ["y"] = 10,
+        ["scaleX"] = 65,
+        ["scaleY"] = 65,
+        ["condition"] = function()
+            return true
+        end,
+        ["callback"] = function()
+            playtestMode = not playtestMode
+        end
+    }
+}
 
 function editor.load()
     love.window.setMode(1024, 500)
@@ -58,8 +73,13 @@ function editor.draw()
         end
     end
 
-    love.graphics.line((spacing + circleRadius + 314), 0, (spacing + circleRadius + 320.5), 768)
-    love.graphics.line((spacing * 5 + circleRadius * (2 * 5 - 1)) + 346, 0, spacing * 5 + circleRadius * (2 * 5 - 1) + 338.5, 768)
+    love.graphics.line((spacing + circleRadius + 314), 0, (spacing + circleRadius + 314), 768)
+    love.graphics.line((spacing * 5 + circleRadius * (2 * 5 - 1)) + 343.5, 0, spacing * 5 + circleRadius * (2 * 5 - 1) + 343.5, 768)
+    if playtestMode == true then 
+        love.graphics.draw(Sprites.Pause, 285, 10)
+    else
+        love.graphics.draw(Sprites.Resume, 285, 10)
+    end
 end
 
 function editor.update(dt)
@@ -69,7 +89,11 @@ function editor.update(dt)
 end
 
 function editor.mousepressed(x,y,button)
-
+    for _,button in pairs(buttons) do 
+        if collision:CheckCollision(x, y, 1, 1, button.x, button.y, button.scaleX, button.scaleY) and button.condition() == true then 
+            button.callback()
+        end
+    end
 end
 
 return editor
