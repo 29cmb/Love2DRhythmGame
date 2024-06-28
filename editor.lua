@@ -19,7 +19,8 @@ local Sprites = {
     ["DeleteBeat"] = "Images/DeleteBeat.png",
     ["PageUp"] = "Images/PageUp.png",
     ["PageDown"] = "Images/PageDown.png",
-    ["Reset"] = "Images/ResetLevel.png"
+    ["Reset"] = "Images/ResetLevel.png",
+    ["Save"] = "Images/Save.png"
 }
 
 local Fonts = {
@@ -190,7 +191,22 @@ local buttons = {
             return playtestMode == false
         end,
         ["callback"] = function()
-            BeatMap = {}
+            local confirmed = love.window.showMessageBox("Confirm?", "Are you sure you would like to erase this level?", {"Cancel", "Confirm"}, "info", true)
+            if confirmed == 2 then 
+                BeatMap = {}
+            end
+        end
+    },
+    ["Save"] = {
+        ["x"] = 675,
+        ["y"] = 150,
+        ["scaleX"] = 65,
+        ["scaleY"] = 65,
+        ["condition"] = function()
+            return playtestMode == false
+        end,
+        ["callback"] = function()
+            
         end
     }
 }
@@ -376,6 +392,9 @@ function editor.draw()
     -- exit
     love.graphics.draw(Sprites.ExitGame, 10, 10)
 
+    -- save
+    love.graphics.draw(Sprites.Save, 675, 150)
+
     if playtestMode == true then 
         for _,beatData in pairs(BeatMap) do
             if not table.find(activeBeats, beatData) then 
@@ -498,7 +517,6 @@ function editor.mousepressed(x,y,button)
                 end
             else
                 table.insert(BeatMap, {
-
                     ["Time"] = math.round(time, 1),
                     ["Beats"] = {
                         boundary
@@ -511,17 +529,12 @@ function editor.mousepressed(x,y,button)
                 if beats.Time >= time - 0.2 and beats.Time <= time + 0.2 then 
                     for i2, beat in pairs(beats.Beats) do 
                         if beat == boundary then
-                            print("bye bye")
                             table.remove(BeatMap[i].Beats, i2)
                             break
                         end
                     end
-                else
-                    print("No time")
                 end
             end
-        else
-            print("Editor mode is " .. editorMode)
         end
     end
 end
