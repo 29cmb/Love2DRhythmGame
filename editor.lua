@@ -592,4 +592,10 @@ function math.round(num, decimalPlaces)
     return math.floor(num * mult + 0.5) / mult
 end
 
+function editor.fileLoaded(file)
+    file:open("r")
+    local data = load(file:read())()
+    BeatMap = data
+end
+
 return editor

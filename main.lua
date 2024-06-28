@@ -520,7 +520,7 @@ function love.mousepressed(x, y, button)
                 else
                     love.window.setMode(1024, 500)
                 end
-                
+
                 editorLoaded = true
                 self.InEditor = true
             end
@@ -533,16 +533,25 @@ function love.mousepressed(x, y, button)
 end
 
 function love.filedropped(file) 
-    if self.GameStarted == false then 
-        if self.InEditor == false then 
-            if editorLoaded == false then 
-                editor.load()
-            else
-                love.window.setMode(1024, 500)
+    if self.GameStarted == false then
+        filename = file:getFilename()
+	    ext = filename:match("%.%w+$")
+        if ext == ".lua" then 
+             if self.InEditor == false then 
+                if editorLoaded == false then 
+                    editor.load()
+                else
+                    love.window.setMode(1024, 500)
+                end
+
+                editorLoaded = true
+                self.InEditor = true
             end
 
-            editorLoaded = true
-            self.InEditor = true
+            local confirm = love.window.showMessageBox("Confirm", "Would you like to load level '" .. File:getFilename() .. "'?", {"No", "Yes"}, "info", true)
+            if confirm == 2 then 
+                editor.fileLoaded(file)
+            end
         end
     end
 end
