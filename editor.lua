@@ -530,7 +530,7 @@ function editor.mousepressed(x,y,button)
 
     if collided == false and editorMode ~= "none" and playtestMode == false then -- only do editor modes if the user did not press a button
         local time = ((((460 - (circleRadius * 2)) - y)/(460 - (circleRadius * 2))) * 2.5) + ((page-1) * 2.5)
-        if time <= 0 then return end
+        if time <= 0 then return end 
 
         local boundary = 0
 
@@ -551,6 +551,7 @@ function editor.mousepressed(x,y,button)
         holdingBeatPosY = y
 
         if editorMode == "placing" then
+            holding = true
             local beatData = getBeatDataFromTime(math.round(time, 1))
             if beatData then
                 if not table.find(beatData.Beats, boundary) and beatData.Bomb ~= true then
@@ -610,33 +611,30 @@ function editor.mousepressed(x,y,button)
 end
 
 function editor.mousemoved(x, y)
-    if y + 80 < holdingBeatPosY and playtestMode == false then 
+    if playtestMode == false and holdingColumn ~= 0 and holdingBeatPosY ~= 0 and holdingBeatPosX ~= 0 and holding == true then
         local time = math.round(((((460 - (circleRadius * 2)) - holdingBeatPosY)/(460 - (circleRadius * 2))) * 2.5) + ((page-1) * 2.5), 1)
-        local d = {}
-        local i = nil
+        if y + 80 < holdingBeatPosY then 
+            for index, data in pairs(BeatMap) do
+                if data.Time == time and table.find(data.Beats, holdingColumn) then
+                    local trailTime = 2
+                    BeatMap[index].Trail = trailTime
 
-        for index, data in pairs(BeatMap) do
-            if data.Time == time and table.find(data.Beats, holdingColumn) then 
-                d = data
-                table.remove(data, index)
-                i = index
-                print("yes")
-            else
-                print(time, data.Time, "nuh uh")
+                    return
+                end
+            end
+        else
+            for index, data in pairs(BeatMap) do
+                if data.Time == time and table.find(data.Beats, holdingColumn) then 
+                    BeatMap[index].Trail = nil
+                    return
+                end
             end
         end
-
-        if i == nil then print("NO") return end
-
-        local trailTime = 10 -- i don't want to have to go through this again, placeholder
-
-        BeatMap[i].Trail = trailTime
-    else
-
     end
 end
 
-function editor.mousereleased(x, y, button) 
+function editor.mousereleased(x, y, button)
+    holding = false
     if holdingColumn ~= 0 and holdingBeatPosY ~= 0 and holdingBeatPosX ~= 0 and playtestMode == false then 
         if y + 80 < holdingBeatPosY then 
             print("Higher")
