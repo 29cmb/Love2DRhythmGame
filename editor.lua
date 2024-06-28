@@ -207,9 +207,35 @@ function editor.mousepressed(x,y,button)
 
             if boundary == 0 then return end
 
-            
+            local beatData = getBeatDataFromTime(math.round(time, 2))
+            if beatData then 
+                if not table.find(beatData.Beats, boundary) then
+                    table.insert(beatData.Beats, boundary)
+                end
+            else
+                table.insert(BeatMap, {
+                    ["Time"] = math.round(time, 2),
+                    ["Beats"] = {
+                        boundary
+                    }
+                })
+            end
         end
     end
+end
+
+function table.find(table, value)
+    for _, v in pairs(table) do
+        if v == value then
+            return true
+        end
+    end
+    return false
+end
+
+function math.round(num, decimalPlaces)
+    local mult = 10^decimalPlaces
+    return math.floor(num * mult + 0.5) / mult
 end
 
 return editor
