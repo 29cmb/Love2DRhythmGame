@@ -8,6 +8,7 @@ local collision = require("collision")
 local Sprites = {
     ["Bomb"] = "Images/bomb.png",
     ["PowerupBorder"] = "Images/PowerupBorder.png",
+    ["GoldenBeat"] = "Images/GoldenBeat.png",
     ["Pause"] = "Images/Pause.png",
     ["Resume"] = "Images/Resume.png",
     ["ExitGame"] = "Images/ExitGame.png",
@@ -80,9 +81,21 @@ local buttons = {
             editorMode = "placeBomb"
         end
     },
-    ["DeleteBeat"] = {
+    ["PlaceGoldenBeat"] = {
         ["x"] = 285,
         ["y"] = 220,
+        ["scaleX"] = 65,
+        ["scaleY"] = 65,
+        ["condition"] = function()
+            return playtestMode == false
+        end,
+        ["callback"] = function()
+            editorMode = "placeGoldenBeat"
+        end
+    },
+    ["DeleteBeat"] = {
+        ["x"] = 285,
+        ["y"] = 290,
         ["scaleX"] = 65,
         ["scaleY"] = 65,
         ["condition"] = function()
@@ -119,6 +132,34 @@ local buttons = {
     }
 }
 
+local Powerups = {
+    ["2xScore"] = {
+        Duration = 5,
+        Sprite = "Images/GoldenBeat.png",
+        SpriteOffset = {x = 22, y = 30},
+        Callback = function()
+            self.ScoreMultiplier = 2
+        end,
+        Undo = function()
+            self.ScoreMultiplier = 1
+        end
+    },
+    ["Slow"] = {
+        Duration = 5,
+        Sprite = "Images/Slowness.png",
+        SpriteOffset = {x = 22, y = 30},
+        Callback = function()
+            self.Speed = self.Speed * 0.75
+            self.ActiveAudio:setPitch(.75)
+        end,
+        Undo = function()
+            self.Speed = self.Speed * 1.25
+            self.ActiveAudio:setPitch(1)
+        end
+    }
+}
+
+
 local BeatMap = {}
 
 function getBeatDataFromTime(time)
@@ -139,6 +180,10 @@ function editor.load()
 
     for name,font in pairs(Fonts) do 
         Fonts[name] = love.graphics.newFont(font[1], font[2])
+    end
+
+    for _, data in pairs(Powerups) do 
+        data.Sprite = love.graphics.newImage(data.Sprite)
     end
 end
 
@@ -169,6 +214,9 @@ function editor.draw()
 
                 if beat.Bomb and beat.Bomb == true then 
                     love.graphics.draw(Sprites.Bomb, circleX, posY, 0, 1, 1, 22, 30) -- why is the sprite off-center? No idea.
+                elseif beat.Powerup then
+                    local powerup = Powerups[beat.Powerup]
+                    love.graphics.draw(powerup.Sprite, circleX, posY, 0, 1, 1, powerup.SpriteOffset.x, powerup.SpriteOffset.y)
                 else
                     love.graphics.setColor(Colors[i])
                     love.graphics.circle("fill", circleX, posY, circleRadius)
@@ -203,8 +251,14 @@ function editor.draw()
     love.graphics.draw(Sprites.Bomb, 400, 215)
     love.graphics.pop()
 
+    -- 2x Points Placer
+    love.graphics.draw(Sprites.Outline, 285, 220)
+    love.graphics.push()
+    love.graphics.scale(0.75, 0.75)
+    love.graphics.draw(Sprites.GoldenBeat, 398, 310)
+    love.graphics.pop()
     -- Beat remover
-    love.graphics.draw(Sprites.DeleteBeat, 285, 220)
+    love.graphics.draw(Sprites.DeleteBeat, 285, 290)
 
     -- page up
     love.graphics.draw(Sprites.PageUp, 675, 10)
@@ -283,6 +337,21 @@ function editor.mousepressed(x,y,button)
                     ["Bomb"] = true
                 })
             end
+        elseif editorMode == "placeGoldenBeat" then
+            local beatData = getBeatDataFromTime(math.round(time, 1))
+            if beatData then 
+                if not table.find(beatData.Beats, boundary) and beatData.Powerup == "2xScore" then
+                    table.insert(beatData.Beats, boundary)
+                end
+            else
+                table.insert(BeatMap, {
+                    ["Time"] = math.round(time, 1),
+                    ["Beats"] = {
+                        boundary
+                    },
+                    ["Powerup"] = "2xScore"
+                })
+            end
         elseif editorMode == "delete" then 
             for i,beats in pairs(BeatMap) do 
                 if beats.Time <= time + 0.2 or beats.Time >= time - 0.2 then 
@@ -294,6 +363,8 @@ function editor.mousepressed(x,y,button)
                     end
                 end
             end
+        else
+            print("Editor mode is " .. editorMode)
         end
     end
 end
