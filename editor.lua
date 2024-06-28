@@ -63,9 +63,21 @@ local buttons = {
             editorMode = "placing"
         end
     },
-    ["DeleteBeat"] = {
+    ["PlaceBomb"] = {
         ["x"] = 285,
         ["y"] = 150,
+        ["scaleX"] = 65,
+        ["scaleY"] = 65,
+        ["condition"] = function()
+            return playtestMode == false
+        end,
+        ["callback"] = function()
+            editorMode = "placeBomb"
+        end
+    },
+    ["DeleteBeat"] = {
+        ["x"] = 285,
+        ["y"] = 220,
         ["scaleX"] = 65,
         ["scaleY"] = 65,
         ["condition"] = function()
@@ -145,11 +157,16 @@ function editor.draw()
         for _,beat in pairs(BeatMap) do 
             if beat.Time >= ((page - 1) * 2.5) and beat.Time <= ((page) * 2.5) and table.find(beat.Beats, i) then
                 local posY = (460 - (circleRadius * 2)) - (168 * (beat.Time - ((page-1) * 2.5)))
-                love.graphics.setColor(Colors[i])
-                love.graphics.circle("fill", circleX, posY, circleRadius)
-                love.graphics.setColor(0,0,0)
-                love.graphics.circle("line", circleX, posY, circleRadius)
-                love.graphics.setColor(1,1,1)
+
+                if beat.Bomb and beat.Bomb == true then 
+                    love.graphics.draw(Sprites.Bomb, circleX, posY, 0, 1, 1, 22, 30) -- why is the sprite off-center? No idea.
+                else
+                    love.graphics.setColor(Colors[i])
+                    love.graphics.circle("fill", circleX, posY, circleRadius)
+                    love.graphics.setColor(0,0,0)
+                    love.graphics.circle("line", circleX, posY, circleRadius)
+                    love.graphics.setColor(1,1,1)
+                end
             end
         end
     end
@@ -170,8 +187,15 @@ function editor.draw()
     love.graphics.circle("fill", 318, 113, 15)
     love.graphics.setColor(1,1,1)
 
+    -- Bomb placer
+    love.graphics.draw(Sprites.Outline, 285, 150)
+    love.graphics.push()
+    love.graphics.scale(0.75, 0.75)
+    love.graphics.draw(Sprites.Bomb, 400, 215)
+    love.graphics.pop()
+
     -- Beat remover
-    love.graphics.draw(Sprites.DeleteBeat, 285, 150)
+    love.graphics.draw(Sprites.DeleteBeat, 285, 220)
 
     -- page up
     love.graphics.draw(Sprites.PageUp, 675, 10)
@@ -220,7 +244,7 @@ function editor.mousepressed(x,y,button)
         if editorMode == "placing" then 
             local beatData = getBeatDataFromTime(math.round(time, 1))
             if beatData then 
-                if not table.find(beatData.Beats, boundary) then
+                if not table.find(beatData.Beats, boundary) and beatData.Bomb == false then
                     table.insert(beatData.Beats, boundary)
                 end
             else
@@ -229,6 +253,21 @@ function editor.mousepressed(x,y,button)
                     ["Beats"] = {
                         boundary
                     }
+                })
+            end
+        elseif editorMode == "placeBomb" then
+            local beatData = getBeatDataFromTime(math.round(time, 1))
+            if beatData then 
+                if not table.find(beatData.Beats, boundary) and beatData.Bomb == true then
+                    table.insert(beatData.Beats, boundary)
+                end
+            else
+                table.insert(BeatMap, {
+                    ["Time"] = math.round(time, 1),
+                    ["Beats"] = {
+                        boundary
+                    },
+                    ["Bomb"] = true
                 })
             end
         elseif editorMode == "delete" then 
