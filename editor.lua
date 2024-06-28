@@ -80,7 +80,7 @@ local buttons = {
         ["y"] = 10,
         ["scaleX"] = 65,
         ["scaleY"] = 65,
-        ["confition"] = function()
+        ["condition"] = function()
             return playtestMode == false
         end,
         ["callback"] = function()
@@ -103,6 +103,16 @@ local buttons = {
 }
 
 local BeatMap = {}
+
+function getBeatDataFromTime(time)
+    for _,data in pairs(BeatMap) do 
+        if data.Time == time then
+            return data
+        end
+    end
+
+    return false
+end
 
 function editor.load()
     love.window.setMode(1024, 500)
@@ -164,6 +174,13 @@ function editor.update(dt)
     end
 end
 
+local placementSpacing = {
+    [1] = {(spacing + circleRadius + 314), spacing * (1 + 0.5) + circleRadius * (2 * (1 + 0.5) - 1) + 362.5},
+    [2] = {spacing * (1 + 0.5) + circleRadius * (2 * (1 + 0.5) - 1) + 362.5, spacing * (2 + 0.5) + circleRadius * (2 * (2 + 0.5) - 1) + 362.5},
+    [3] = {spacing * (2 + 0.5) + circleRadius * (2 * (2 + 0.5) - 1) + 362.5, spacing * (3 + 0.5) + circleRadius * (2 * (3 + 0.5) - 1) + 362.5},
+    [4] = {spacing * (3 + 0.5) + circleRadius * (2 * (3 + 0.5) - 1) + 362.5, (spacing * 5 + circleRadius * (2 * 5 - 1)) + 343.5}
+}
+
 function editor.mousepressed(x,y,button)
     local collided = false
     for _,button in pairs(buttons) do 
@@ -175,10 +192,22 @@ function editor.mousepressed(x,y,button)
 
     if collided == false then -- only do editor modes if the user did not press a button
         if editorMode == "placing" then 
-            local time = ((((460 - (circleRadius * 2)) - y)/(460 - (circleRadius * 2))) * 2.5) * page
+            local time = ((((460 - (circleRadius * 2)) - y)/(460 - (circleRadius * 2))) * 2.5) + ((page-1) * 2.5)
             if time <= 0 then return end
 
-            -- todo: do something with time
+            local boundary = 0
+
+            if x > (spacing + circleRadius + 314) and x < (spacing * 5 + circleRadius * (2 * 5 - 1)) + 343.5 then 
+                for index, v in pairs(placementSpacing) do 
+                    if x > v[1] and x < v[2] then 
+                        boundary = index
+                    end
+                end
+            end
+
+            if boundary == 0 then return end
+
+            
         end
     end
 end
