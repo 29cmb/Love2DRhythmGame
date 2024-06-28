@@ -201,23 +201,23 @@ function editor.mousepressed(x,y,button)
         end
     end
 
-    if collided == false then -- only do editor modes if the user did not press a button
-        if editorMode == "placing" then 
-            local time = ((((460 - (circleRadius * 2)) - y)/(460 - (circleRadius * 2))) * 2.5) + ((page-1) * 2.5)
-            if time <= 0 then return end
+    if collided == false and editorMode ~= "none" then -- only do editor modes if the user did not press a button
+        local time = ((((460 - (circleRadius * 2)) - y)/(460 - (circleRadius * 2))) * 2.5) + ((page-1) * 2.5)
+        if time <= 0 then return end
 
-            local boundary = 0
+        local boundary = 0
 
-            if x > (spacing + circleRadius + 314) and x < (spacing * 5 + circleRadius * (2 * 5 - 1)) + 343.5 then 
-                for index, v in pairs(placementSpacing) do 
-                    if x > v[1] and x < v[2] then 
-                        boundary = index
-                    end
+        if x > (spacing + circleRadius + 314) and x < (spacing * 5 + circleRadius * (2 * 5 - 1)) + 343.5 then 
+            for index, v in pairs(placementSpacing) do 
+                if x > v[1] and x < v[2] then 
+                    boundary = index
                 end
             end
+        end
 
-            if boundary == 0 then return end
+        if boundary == 0 then return end
 
+        if editorMode == "placing" then 
             local beatData = getBeatDataFromTime(math.round(time, 1))
             if beatData then 
                 if not table.find(beatData.Beats, boundary) then
@@ -230,6 +230,17 @@ function editor.mousepressed(x,y,button)
                         boundary
                     }
                 })
+            end
+        elseif editorMode == "delete" then 
+            for i,beats in pairs(BeatMap) do 
+                if beats.Time <= time + 0.2 or beats.Time >= time - 0.2 then 
+                    for i2, beat in pairs(beats.Beats) do 
+                        if beat == boundary then 
+                            table.remove(BeatMap[i].Beats, i2)
+                            break
+                        end
+                    end
+                end
             end
         end
     end
