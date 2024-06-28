@@ -15,7 +15,9 @@ local Sprites = {
     ["ExitEndGameOverlay"] = "Images/ExitGameEndGameOverlay.png",
     ["Background"] = "Images/Background.png",
     ["Outline"] = "Images/ButtonOutline.png",
-    ["DeleteBeat"] = "Images/DeleteBeat.png"
+    ["DeleteBeat"] = "Images/DeleteBeat.png",
+    ["PageUp"] = "Images/PageUp.png",
+    ["PageDown"] = "Images/PageDown.png"
 }
 
 local KeyCodes = {
@@ -72,6 +74,31 @@ local buttons = {
         ["callback"] = function()
             editorMode = "delete"
         end
+    },
+    ["PageUp"] = {
+        ["x"] = 675,
+        ["y"] = 10,
+        ["scaleX"] = 65,
+        ["scaleY"] = 65,
+        ["confition"] = function()
+            return playtestMode == false
+        end,
+        ["callback"] = function()
+            page = page + 1
+        end
+    },
+    ["PageDown"] = {
+        ["x"] = 675,
+        ["y"] = 80,
+        ["scaleX"] = 65,
+        ["scaleY"] = 65,
+        ["condition"] = function()
+            return playtestMode == false
+        end,
+        ["callback"] = function()
+            if page <= 1 then return end
+            page = page - 1
+        end
     }
 }
 
@@ -124,6 +151,11 @@ function editor.draw()
 
     -- Beat remover
     love.graphics.draw(Sprites.DeleteBeat, 285, 150)
+
+    -- page up
+    love.graphics.draw(Sprites.PageUp, 675, 10)
+    -- page down
+    love.graphics.draw(Sprites.PageDown, 675, 80)
 end
 
 function editor.update(dt)
