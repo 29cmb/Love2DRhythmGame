@@ -65,6 +65,7 @@ local BeatMap = {}
 local beats = {[1] = {}, [2] = {}, [3] = {}, [4] = {}}
 local activeBeats = {}
 local timePassed = 2.5
+local getStartedHint = true
 
 local Colors = {
     [1] = {255/255, 0, 0},
@@ -434,6 +435,11 @@ function editor.draw()
     -- save
     love.graphics.draw(Sprites.Save, 675, 150)
 
+    if getStartedHint then
+        love.graphics.setFont(Fonts.Score)
+        love.graphics.printf("Drag a file or place a beat to get started!", 700, 300, 200)
+    end
+
     if playtestMode == true then 
         for _,beatData in pairs(BeatMap) do
             if not table.find(activeBeats, beatData) then 
@@ -519,6 +525,8 @@ function editor.mousepressed(x,y,button)
 
         if boundary == 0 then return end
 
+        getStartedHint = false
+
         if editorMode == "placing" then
             local beatData = getBeatDataFromTime(math.round(time, 1))
             if beatData then
@@ -596,6 +604,8 @@ function editor.fileLoaded(file)
     file:open("r")
     local data = load(file:read())()
     BeatMap = data
+
+    love.window.showMessageBox("Success", "Level '" .. file:getFilename() .. "' loaded successfully")
 end
 
 return editor

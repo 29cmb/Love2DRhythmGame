@@ -548,7 +548,7 @@ function love.filedropped(file)
                 self.InEditor = true
             end
 
-            local confirm = love.window.showMessageBox("Confirm", "Would you like to load level '" .. File:getFilename() .. "'?", {"No", "Yes"}, "info", true)
+            local confirm = love.window.showMessageBox("Confirm", "Would you like to load level '" .. file:getFilename() .. "'?", {"No", "Yes"}, "info", true)
             if confirm == 2 then 
                 editor.fileLoaded(file)
             end
