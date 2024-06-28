@@ -141,6 +141,18 @@ function editor.draw()
         if i ~= 4 then 
             love.graphics.line(spacing * (i + 0.5) + circleRadius * (2 * (i + 0.5) - 1) + 362.5, 0, spacing * (i + 0.5) + circleRadius * (2 * (i + 0.5) - 1) + 362.5, 500)
         end
+
+        for _,beat in pairs(BeatMap) do 
+            if beat.Time >= ((page - 1) * 2.5) and beat.Time <= ((page) * 2.5) and table.find(beat.Beats, i) then
+                print(beat.Time)
+                local posY = (460 - (circleRadius * 2)) - --[[((460 - (circleRadius * 2)) / beat.Time)]] (168 * (beat.Time - ((page-1) * 2.5)))
+                love.graphics.setColor(Colors[i])
+                love.graphics.circle("fill", circleX, posY, circleRadius)
+                love.graphics.setColor(0,0,0)
+                love.graphics.circle("line", circleX, posY, circleRadius)
+                love.graphics.setColor(1,1,1)
+            end
+        end
     end
 
     love.graphics.line((spacing + circleRadius + 314), 0, (spacing + circleRadius + 314), 768)
