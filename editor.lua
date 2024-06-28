@@ -339,10 +339,10 @@ function editor.draw()
 
     if playtestMode == true then 
         for _,beatData in pairs(BeatMap) do
-            for _,beat in pairs(beatData.Beats) do
-                if not table.find(activeBeats, beatData) then 
-                    if beatData.Time <= 2.5 then
-                        table.insert(activeBeats, beatData)
+            if not table.find(activeBeats, beatData) then 
+                if beatData.Time <= 2.5 then
+                    table.insert(activeBeats, beatData)
+                    for _,beat in pairs(beatData.Beats) do
                         table.insert(beats[beat], {
                             ["PosY"] = (460 - (circleRadius * 2)) - (168 * beatData.Time),
                             ["Hit"] = false,
@@ -355,9 +355,11 @@ function editor.draw()
                                 ["Holding"] = false
                             },
                         })
-                    else
-                        if beatData.Time <= timePassed then 
-                            table.insert(activeBeats, beatData)
+                    end
+                else
+                    if beatData.Time <= timePassed then 
+                        table.insert(activeBeats, beatData)
+                        for _,beat in pairs(beatData.Beats) do
                             table.insert(beats[beat], {
                                 ["PosY"] = -5,
                                 ["Hit"] = false,
@@ -371,9 +373,9 @@ function editor.draw()
                                 },
                             })
                         end
-                    end 
+                    end
                 end 
-            end
+            end 
         end
     end
 end
@@ -404,7 +406,7 @@ function editor.mousepressed(x,y,button)
         end
     end
 
-    if collided == false and editorMode ~= "none" then -- only do editor modes if the user did not press a button
+    if collided == false and editorMode ~= "none" and playtestMode == true then -- only do editor modes if the user did not press a button
         local time = ((((460 - (circleRadius * 2)) - y)/(460 - (circleRadius * 2))) * 2.5) + ((page-1) * 2.5)
         if time <= 0 then return end
 
