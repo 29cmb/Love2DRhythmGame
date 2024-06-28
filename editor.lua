@@ -33,6 +33,37 @@ local KeyCodes = {
     [4] = "f"
 }
 
+local Powerups = {
+    ["2xScore"] = {
+        Duration = 5,
+        Sprite = "Images/GoldenBeat.png",
+        SpriteOffset = {x = 22, y = 30},
+        Callback = function()
+           
+        end,
+        Undo = function()
+            
+        end
+    },
+    ["Slow"] = {
+        Duration = 5,
+        Sprite = "Images/Slowness.png",
+        SpriteOffset = {x = 22, y = 30},
+        Callback = function()
+            
+        end,
+        Undo = function()
+            
+        end
+    }
+}
+
+
+local BeatMap = {}
+local beats = {[1] = {}, [2] = {}, [3] = {}, [4] = {}}
+local activeBeats = {}
+local timePassed = 0
+
 local Colors = {
     [1] = {255/255, 0, 0},
     [2] = {255/255, 150/255, 0},
@@ -54,6 +85,8 @@ local buttons = {
         end,
         ["callback"] = function()
             playtestMode = not playtestMode
+            beats = {[1] = {}, [2] = {}, [3] = {}, [4] = {}}
+            activeBeats = {}
         end
     },
     ["PlaceBeat"] = {
@@ -144,36 +177,7 @@ local buttons = {
     }
 }
 
-local Powerups = {
-    ["2xScore"] = {
-        Duration = 5,
-        Sprite = "Images/GoldenBeat.png",
-        SpriteOffset = {x = 22, y = 30},
-        Callback = function()
-           
-        end,
-        Undo = function()
-            
-        end
-    },
-    ["Slow"] = {
-        Duration = 5,
-        Sprite = "Images/Slowness.png",
-        SpriteOffset = {x = 22, y = 30},
-        Callback = function()
-            
-        end,
-        Undo = function()
-            
-        end
-    }
-}
 
-
-local BeatMap = {}
-local beats = {[1] = {}, [2] = {}, [3] = {}, [4] = {}}
-local activeBeats = {}
-local timePassed = 0
 
 function getBeatDataFromTime(time)
     for _,data in pairs(BeatMap) do 
@@ -239,6 +243,42 @@ function editor.draw()
                     end
                 end
             end
+        else
+            for _,beat in pairs(beats[i]) do 
+                if beat.Hit == false or (beat.Trail and (beat.Trail.Held == false and beat.Trail.Holding == true)) then
+                    if beat.Trail and beat.Trail.Time then
+                        if beat.Hit == true then beat.PosY = circleY end
+                        if beat.Trail.Time > 0 then
+                            love.graphics.setColor(Colors[i], 0.7)
+                            love.graphics.rectangle("fill", circleX - 10, beat.PosY - circleRadius, circleRadius, -(beat.Trail.Time * 60 * 3)) -- negative I guess?
+                            love.graphics.circle("fill", circleX, beat.PosY - circleRadius - (beat.Trail.Time * 60 * 3), circleRadius/2) -- curved corners
+                            love.graphics.setColor(1, 1, 1)
+                        end
+                    end
+    
+                    if beat.Hit == false then 
+                        if beat.Powerup ~= "None" then
+                            local powerup = Powerups[beat.Powerup]
+                            love.graphics.draw(powerup.Sprite, circleX, beat.PosY, 0, 1, 1, powerup.SpriteOffset.x, powerup.SpriteOffset.y)
+                        elseif beat.Bomb == false then
+                            love.graphics.setColor(Colors[i])
+                            love.graphics.circle("fill", circleX, beat.PosY, circleRadius)
+                            love.graphics.setColor(0,0,0)
+                            love.graphics.circle("line", circleX, beat.PosY, circleRadius)
+                            love.graphics.setColor(1,1,1)
+                        elseif beat.Bomb == true then
+                            love.graphics.draw(Sprites.Bomb, circleX, beat.PosY, 0, 1, 1, 22, 30) -- why is the sprite off-center? No idea.
+                        end
+                    end
+                    
+                    
+                    if beat.Hit == false then
+                        beat.PosY = beat.PosY + 3
+                    end
+                else
+                    beats[i][beat] = nil
+                end
+            end
         end
     end
 
@@ -289,6 +329,7 @@ function editor.draw()
         for _,beatData in pairs(BeatMap) do
             for _,beat in pairs(beatData.Beats) do
                 if not table.find(activeBeats, beatData) then 
+                    table.insert(activeBeats, beatData)
                     if beatData.Time <= 2.5 then
                         table.insert(beats[beat], {
                             ["PosY"] = (460 - (circleRadius * 2)) - (168 * beatData.Time),
@@ -304,14 +345,14 @@ function editor.draw()
                         })
                     else
                         if timePassed >= beatData.Time then 
-                            table.insert(beats[v], {
+                            table.insert(beats[beat], {
                                 ["PosY"] = -5,
                                 ["Hit"] = false,
                                 ["SpeedMod"] = 1,
-                                ["Bomb"] = beat.Bomb or false,
-                                ["Powerup"] = beat.Powerup or "None",
+                                ["Bomb"] = beatData.Bomb or false,
+                                ["Powerup"] = beatData.Powerup or "None",
                                 ["Trail"] = {
-                                    ["Time"] = beat.Trail or nil, 
+                                    ["Time"] = beatData.Trail or nil, 
                                     ["Held"] = false,
                                     ["Holding"] = false
                                 },
