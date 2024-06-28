@@ -350,7 +350,7 @@ local gameStarted = false
 function love.update(dt)
 
     if self.InEditor == true then
-        editor.update()
+        editor.update(dt)
         return
     end
 

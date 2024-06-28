@@ -150,10 +150,10 @@ local Powerups = {
         Sprite = "Images/GoldenBeat.png",
         SpriteOffset = {x = 22, y = 30},
         Callback = function()
-            self.ScoreMultiplier = 2
+           
         end,
         Undo = function()
-            self.ScoreMultiplier = 1
+            
         end
     },
     ["Slow"] = {
@@ -161,12 +161,10 @@ local Powerups = {
         Sprite = "Images/Slowness.png",
         SpriteOffset = {x = 22, y = 30},
         Callback = function()
-            self.Speed = self.Speed * 0.75
-            self.ActiveAudio:setPitch(.75)
+            
         end,
         Undo = function()
-            self.Speed = self.Speed * 1.25
-            self.ActiveAudio:setPitch(1)
+            
         end
     }
 }
@@ -174,6 +172,8 @@ local Powerups = {
 
 local BeatMap = {}
 local beats = {[1] = {}, [2] = {}, [3] = {}, [4] = {}}
+local activeBeats = {}
+local timePassed = 0
 
 function getBeatDataFromTime(time)
     for _,data in pairs(BeatMap) do 
@@ -201,7 +201,6 @@ function editor.load()
 end
 
 function editor.draw()
-
     love.graphics.draw(Sprites.Background, 363, 0)
 
     for i = 1, 4 do 
@@ -221,21 +220,23 @@ function editor.draw()
             love.graphics.line(spacing * (i + 0.5) + circleRadius * (2 * (i + 0.5) - 1) + 362.5, 0, spacing * (i + 0.5) + circleRadius * (2 * (i + 0.5) - 1) + 362.5, 500)
         end
 
-        for _,beat in pairs(BeatMap) do 
-            if beat.Time >= ((page - 1) * 2.5) and beat.Time <= ((page) * 2.5) and table.find(beat.Beats, i) then
-                local posY = (460 - (circleRadius * 2)) - (168 * (beat.Time - ((page-1) * 2.5)))
-
-                if beat.Bomb and beat.Bomb == true then 
-                    love.graphics.draw(Sprites.Bomb, circleX, posY, 0, 1, 1, 22, 30) -- why is the sprite off-center? No idea.
-                elseif beat.Powerup then
-                    local powerup = Powerups[beat.Powerup]
-                    love.graphics.draw(powerup.Sprite, circleX, posY, 0, 1, 1, powerup.SpriteOffset.x, powerup.SpriteOffset.y)
-                else
-                    love.graphics.setColor(Colors[i])
-                    love.graphics.circle("fill", circleX, posY, circleRadius)
-                    love.graphics.setColor(0,0,0)
-                    love.graphics.circle("line", circleX, posY, circleRadius)
-                    love.graphics.setColor(1,1,1)
+        if playtestMode == false then 
+            for _,beat in pairs(BeatMap) do 
+                if beat.Time >= ((page - 1) * 2.5) and beat.Time <= ((page) * 2.5) and table.find(beat.Beats, i) then
+                    local posY = (460 - (circleRadius * 2)) - (168 * (beat.Time - ((page-1) * 2.5)))
+    
+                    if beat.Bomb and beat.Bomb == true then 
+                        love.graphics.draw(Sprites.Bomb, circleX, posY, 0, 1, 1, 22, 30) -- why is the sprite off-center? No idea.
+                    elseif beat.Powerup then
+                        local powerup = Powerups[beat.Powerup]
+                        love.graphics.draw(powerup.Sprite, circleX, posY, 0, 1, 1, powerup.SpriteOffset.x, powerup.SpriteOffset.y)
+                    else
+                        love.graphics.setColor(Colors[i])
+                        love.graphics.circle("fill", circleX, posY, circleRadius)
+                        love.graphics.setColor(0,0,0)
+                        love.graphics.circle("line", circleX, posY, circleRadius)
+                        love.graphics.setColor(1,1,1)
+                    end
                 end
             end
         end
@@ -281,14 +282,55 @@ function editor.draw()
     love.graphics.setFont(Fonts.Headers)
     love.graphics.print("Page " .. page, 750, 50)
     love.graphics.pop()
-
     -- exit
     love.graphics.draw(Sprites.ExitGame, 10, 10)
+
+    if playtestMode == true then 
+        for _,beatData in pairs(BeatMap) do
+            for _,beat in pairs(beatData.Beats) do
+                if not table.find(activeBeats, beatData) then 
+                    if beatData.Time <= 2.5 then
+                        table.insert(beats[beat], {
+                            ["PosY"] = (460 - (circleRadius * 2)) - (168 * beatData.Time),
+                            ["Hit"] = false,
+                            ["SpeedMod"] = 1,
+                            ["Bomb"] = beatData.Bomb or false,
+                            ["Powerup"] = beatData.Powerup or "None",
+                            ["Trail"] = {
+                                ["Time"] = beatData.Trail or nil, 
+                                ["Held"] = false,
+                                ["Holding"] = false
+                            },
+                        })
+                    else
+                        if timePassed >= beatData.Time then 
+                            table.insert(beats[v], {
+                                ["PosY"] = -5,
+                                ["Hit"] = false,
+                                ["SpeedMod"] = 1,
+                                ["Bomb"] = beat.Bomb or false,
+                                ["Powerup"] = beat.Powerup or "None",
+                                ["Trail"] = {
+                                    ["Time"] = beat.Trail or nil, 
+                                    ["Held"] = false,
+                                    ["Holding"] = false
+                                },
+                            })
+                        end
+                    end 
+                end 
+            end
+        end
+    end
 end
 
 function editor.update(dt)
     if love.keyboard.isDown("k") then 
         playtestMode = true
+    end
+
+    if playtestMode == true then 
+        timePassed = timePassed + dt
     end
 end
 
@@ -326,8 +368,8 @@ function editor.mousepressed(x,y,button)
 
         if editorMode == "placing" then 
             local beatData = getBeatDataFromTime(math.round(time, 1))
-            if beatData then 
-                if not table.find(beatData.Beats, boundary) and beatData.Bomb == false then
+            if beatData then
+                if not table.find(beatData.Beats, boundary) and beatData.Bomb ~= true then
                     table.insert(beatData.Beats, boundary)
                 end
             else
@@ -370,13 +412,16 @@ function editor.mousepressed(x,y,button)
             end
         elseif editorMode == "delete" then 
             for i,beats in pairs(BeatMap) do 
-                if beats.Time <= time + 0.2 or beats.Time >= time - 0.2 then 
+                if beats.Time >= time - 0.2 and beats.Time <= time + 0.2 then 
                     for i2, beat in pairs(beats.Beats) do 
-                        if beat == boundary then 
+                        if beat == boundary then
+                            print("bye bye")
                             table.remove(BeatMap[i].Beats, i2)
                             break
                         end
                     end
+                else
+                    print("No time")
                 end
             end
         else
