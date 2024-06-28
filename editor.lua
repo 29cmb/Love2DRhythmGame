@@ -20,6 +20,11 @@ local Sprites = {
     ["PageDown"] = "Images/PageDown.png"
 }
 
+local Fonts = {
+    ["Headers"] = {"Fonts/SF Archery Black.ttf", 40},
+    ["Score"] = {"Fonts/good times rg.otf", 25}
+}
+
 local KeyCodes = {
     [1] = "a",
     [2] = "s",
@@ -131,6 +136,10 @@ function editor.load()
     for name, spr in pairs(Sprites) do 
         Sprites[name] = love.graphics.newImage(spr)
     end
+
+    for name,font in pairs(Fonts) do 
+        Fonts[name] = love.graphics.newFont(font[1], font[2])
+    end
 end
 
 function editor.draw()
@@ -201,6 +210,10 @@ function editor.draw()
     love.graphics.draw(Sprites.PageUp, 675, 10)
     -- page down
     love.graphics.draw(Sprites.PageDown, 675, 80)
+    love.graphics.push()
+    love.graphics.setFont(Fonts.Headers)
+    love.graphics.print("Page " .. page, 750, 50)
+    love.graphics.pop()
 end
 
 function editor.update(dt)
