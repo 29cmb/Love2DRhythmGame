@@ -76,6 +76,38 @@ local playtestMode = false
 local page = 1
 local editorMode = "none"
 
+local function tableToString(tbl, indent)
+    local result = "{\n"
+    local nextIndent = indent .. "    "
+    for k, v in pairs(tbl) do
+        if type(k) == "string" then
+            k = string.format("%q", k)
+        end
+        if type(v) == "string" then
+            v = string.format("%q", v)
+        elseif type(v) == "table" then
+            v = tableToString(v, nextIndent)
+        end
+        result = result .. string.format("%s[%s] = %s,\n", nextIndent, k, v)
+    end
+    result = result .. indent .. "}"
+    return result
+end
+
+function countFilesInDirectory(directory)
+    local files = love.filesystem.getDirectoryItems(directory)
+    local fileCount = 0
+
+    for _, file in ipairs(files) do
+        local filePath = directory .. "/" .. file
+        if love.filesystem.getInfo(filePath, "file") then
+            fileCount = fileCount + 1
+        end
+    end
+
+    return fileCount
+end
+
 local buttons = {
     ['Playtest'] = {
         ["x"] = 285,
@@ -206,11 +238,14 @@ local buttons = {
             return playtestMode == false
         end,
         ["callback"] = function()
-            
+            love.filesystem.setIdentity("rhythm-game-levels")
+            -- print(countFilesInDirectory(love.filesystem.getSaveDirectory()))
+            local fileName = "Level" .. (countFilesInDirectory(love.filesystem.getSaveDirectory()) + 1) .. ".lua"
+            love.filesystem.newFile(fileName)
+            love.filesystem.write(fileName, "return " .. tableToString(BeatMap, ""))
         end
     }
 }
-
 
 
 function getBeatDataFromTime(time)
