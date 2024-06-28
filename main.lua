@@ -483,6 +483,7 @@ end
 
 
 -- UI shennanigans
+local editorLoaded = false
 function love.mousepressed(x, y, button)
     if self.InEditor then
         editor.mousepressed(x, y, button)
@@ -513,14 +514,35 @@ function love.mousepressed(x, y, button)
         if self.MenuPage == "MainMenu" then 
             if collision:CheckCollision(x, y, 1, 1, 62, 155, 177, 93) then
                 self.MenuPage = "PlayMenu"
-            elseif collision:CheckCollision(x, y, 1, 1, 62, 267, 177, 93) then 
-                editor.load()
+            elseif collision:CheckCollision(x, y, 1, 1, 62, 267, 177, 93) then
+                if editorLoaded == false then 
+                    editor.load()
+                else
+                    love.window.setMode(1024, 500)
+                end
+                
+                editorLoaded = true
                 self.InEditor = true
             end
         elseif self.MenuPage == "PlayMenu" then
             if collision:CheckCollision(x, y, 1, 1, 62, 235, 117, 93) then 
                 startGame("On and On")
             end
+        end
+    end
+end
+
+function love.filedropped(file) 
+    if self.GameStarted == false then 
+        if self.InEditor == false then 
+            if editorLoaded == false then 
+                editor.load()
+            else
+                love.window.setMode(1024, 500)
+            end
+
+            editorLoaded = true
+            self.InEditor = true
         end
     end
 end
