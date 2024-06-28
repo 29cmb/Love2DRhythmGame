@@ -556,4 +556,16 @@ function love.filedropped(file)
     end
 end
 
+function love.mousereleased(x, y, button)
+    if self.InEditor == true then 
+        editor.mousereleased(x, y, button)
+    end 
+end
+
+function love.mousemoved(x, y, dx, dy)
+    if self.InEditor == true then 
+        editor.mousemoved(x,y)
+    end
+end
+
 return self

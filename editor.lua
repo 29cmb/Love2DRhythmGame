@@ -110,6 +110,9 @@ function countFilesInDirectory(directory)
 end
 
 local fileName = nil
+local holdingColumn = 0
+local holdingBeatPosX = 0
+local holdingBeatPosY = 0
 
 local buttons = {
     ['Playtest'] = {
@@ -302,6 +305,16 @@ function editor.draw()
             for _,beat in pairs(BeatMap) do 
                 if beat.Time >= ((page - 1) * 2.5) and beat.Time <= ((page) * 2.5) and table.find(beat.Beats, i) then
                     local posY = (460 - (circleRadius * 2)) - (168 * (beat.Time - ((page-1) * 2.5)))
+
+                    if beat.Trail then
+                        if beat.Hit == true then beat.PosY = circleY end
+                        if beat.Trail > 0 then
+                            love.graphics.setColor(Colors[i], 0.7)
+                            love.graphics.rectangle("fill", circleX - 10, posY - circleRadius, circleRadius, -(beat.Trail * 60 * 3)) -- negative I guess?
+                            love.graphics.circle("fill", circleX, posY - circleRadius - (beat.Trail * 60 * 3), circleRadius/2) -- curved corners
+                            love.graphics.setColor(1, 1, 1)
+                        end
+                    end
     
                     if beat.Bomb and beat.Bomb == true then 
                         love.graphics.draw(Sprites.Bomb, circleX, posY, 0, 1, 1, 22, 30) -- why is the sprite off-center? No idea.
@@ -319,7 +332,7 @@ function editor.draw()
             end
         else
             for _,beat in pairs(beats[i]) do 
-                if beat.Hit == false or (beat.Trail and (beat.Trail.Held == false and beat.Trail.Holding == true)) then
+                if beat.Hit == false or ((beat.Trail and (beat.Trail.Held == false and beat.Trail.Holding == true or playtestMode == false))) then
                     if beat.Trail and beat.Trail.Time then
                         if beat.Hit == true then beat.PosY = circleY end
                         if beat.Trail.Time > 0 then
@@ -484,12 +497,18 @@ function editor.draw()
 end
 
 function editor.update(dt)
-    if love.keyboard.isDown("k") then 
-        playtestMode = true
-    end
-
     if playtestMode == true then 
         timePassed = timePassed + dt
+
+        for i = 1, 4 do 
+            for _,beat in pairs(beats[i]) do 
+                if beat.Trail and beat.Trail.Time then
+                    if beat.Trail.Holding == true then
+                        beat.Trail.Time = beat.Trail.Time - dt
+                    end
+                end
+            end
+        end
     end
 end
 
@@ -526,6 +545,10 @@ function editor.mousepressed(x,y,button)
         if boundary == 0 then return end
 
         getStartedHint = false
+
+        holdingColumn = boundary
+        holdingBeatPosX = x
+        holdingBeatPosY = y
 
         if editorMode == "placing" then
             local beatData = getBeatDataFromTime(math.round(time, 1))
@@ -583,6 +606,47 @@ function editor.mousepressed(x,y,button)
                 end
             end
         end
+    end
+end
+
+function editor.mousemoved(x, y)
+    if y + 80 < holdingBeatPosY and playtestMode == false then 
+        local time = math.round(((((460 - (circleRadius * 2)) - holdingBeatPosY)/(460 - (circleRadius * 2))) * 2.5) + ((page-1) * 2.5), 1)
+        local d = {}
+        local i = nil
+
+        for index, data in pairs(BeatMap) do
+            if data.Time == time and table.find(data.Beats, holdingColumn) then 
+                d = data
+                table.remove(data, index)
+                i = index
+                print("yes")
+            else
+                print(time, data.Time, "nuh uh")
+            end
+        end
+
+        if i == nil then print("NO") return end
+
+        local trailTime = 10 -- i don't want to have to go through this again, placeholder
+
+        BeatMap[i].Trail = trailTime
+    else
+
+    end
+end
+
+function editor.mousereleased(x, y, button) 
+    if holdingColumn ~= 0 and holdingBeatPosY ~= 0 and holdingBeatPosX ~= 0 and playtestMode == false then 
+        if y + 80 < holdingBeatPosY then 
+            print("Higher")
+        end
+
+        holdingColumn = 0
+        holdingBeatPosY = 0
+        holdingBeatPosX = 0
+    else
+        print(holdingColumn, holdingBeatPosX, holdingBeatPosY, playtestMode)
     end
 end
 
