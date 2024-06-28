@@ -32,6 +32,9 @@ local Colors = {
     [4] = {5/255, 255/255, 0}
 }
 local playtestMode = false
+local page = 1
+
+local editorMode = "none"
 
 local buttons = {
     ['Playtest'] = {
@@ -55,7 +58,7 @@ local buttons = {
             return playtestMode == false
         end,
         ["callback"] = function()
-            -- Todo
+            editorMode = "placing"
         end
     },
     ["DeleteBeat"] = {
@@ -67,10 +70,12 @@ local buttons = {
             return playtestMode == false
         end,
         ["callback"] = function()
-            -- Todo
+            editorMode = "delete"
         end
     }
 }
+
+local BeatMap = {}
 
 function editor.load()
     love.window.setMode(1024, 500)
@@ -128,9 +133,20 @@ function editor.update(dt)
 end
 
 function editor.mousepressed(x,y,button)
+    local collided = false
     for _,button in pairs(buttons) do 
         if collision:CheckCollision(x, y, 1, 1, button.x, button.y, button.scaleX, button.scaleY) and button.condition() == true then 
             button.callback()
+            collided = true
+        end
+    end
+
+    if collided == false then -- only do editor modes if the user did not press a button
+        if editorMode == "placing" then 
+            local time = ((((460 - (circleRadius * 2)) - y)/(460 - (circleRadius * 2))) * 2.5) * page
+            if time <= 0 then return end
+
+            -- todo: do something with time
         end
     end
 end
