@@ -276,6 +276,17 @@ function editor.draw()
                     if beat.Hit == false then
                         beat.PosY = beat.PosY + 3
                     end
+
+                    if love.keyboard.isDown(KeyCodes[i]) then 
+                        local distance = math.abs(beat.PosY - circleY)
+                        if distance <= (circleRadius * 2) and (beat.Hit == false or (beat.Trail and beat.Trail.Time)) then
+                            beat.Hit = true
+        
+                            if beat.Trail and beat.Trail.Time and beat.Trail.Held == false then 
+                                beat.Trail.Holding = true
+                            end
+                        end
+                    end
                 else
                     beats[i][beat] = nil
                 end
