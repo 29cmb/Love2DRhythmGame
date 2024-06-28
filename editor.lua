@@ -10,12 +10,12 @@ local Sprites = {
     ["PowerupBorder"] = "Images/PowerupBorder.png",
     ["Pause"] = "Images/Pause.png",
     ["Resume"] = "Images/Resume.png",
-    ["MainMenu"] = "Images/MenuBg.png",
-    ["PlayMenu"] = "Images/PlayMenu.png",
     ["ExitGame"] = "Images/ExitGame.png",
     ["FinishedOverlay"] = "Images/FinishedOverlay.png",
     ["ExitEndGameOverlay"] = "Images/ExitGameEndGameOverlay.png",
-    ["Background"] = "Images/Background.png"
+    ["Background"] = "Images/Background.png",
+    ["Outline"] = "Images/ButtonOutline.png",
+    ["DeleteBeat"] = "Images/DeleteBeat.png"
 }
 
 local KeyCodes = {
@@ -45,6 +45,30 @@ local buttons = {
         ["callback"] = function()
             playtestMode = not playtestMode
         end
+    },
+    ["PlaceBeat"] = {
+        ["x"] = 285,
+        ["y"] = 80,
+        ["scaleX"] = 65,
+        ["scaleY"] = 65,
+        ["condition"] = function()
+            return playtestMode == false
+        end,
+        ["callback"] = function()
+            -- Todo
+        end
+    },
+    ["DeleteBeat"] = {
+        ["x"] = 285,
+        ["y"] = 150,
+        ["scaleX"] = 65,
+        ["scaleY"] = 65,
+        ["condition"] = function()
+            return playtestMode == false
+        end,
+        ["callback"] = function()
+            -- Todo
+        end
     }
 }
 
@@ -71,15 +95,30 @@ function editor.draw()
         else
             love.graphics.circle("line", circleX, circleY, circleRadius)
         end
+
+        if i ~= 4 then 
+            love.graphics.line(spacing * (i + 0.5) + circleRadius * (2 * (i + 0.5) - 1) + 362.5, 0, spacing * (i + 0.5) + circleRadius * (2 * (i + 0.5) - 1) + 362.5, 500)
+        end
     end
 
     love.graphics.line((spacing + circleRadius + 314), 0, (spacing + circleRadius + 314), 768)
     love.graphics.line((spacing * 5 + circleRadius * (2 * 5 - 1)) + 343.5, 0, spacing * 5 + circleRadius * (2 * 5 - 1) + 343.5, 768)
+
+    -- playtest button
     if playtestMode == true then 
         love.graphics.draw(Sprites.Pause, 285, 10)
     else
         love.graphics.draw(Sprites.Resume, 285, 10)
     end
+
+    -- Beat placer
+    love.graphics.draw(Sprites.Outline, 285, 80)
+    love.graphics.setColor(Colors[2])
+    love.graphics.circle("fill", 318, 113, 15)
+    love.graphics.setColor(1,1,1)
+
+    -- Beat remover
+    love.graphics.draw(Sprites.DeleteBeat, 285, 150)
 end
 
 function editor.update(dt)
