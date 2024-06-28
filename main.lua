@@ -111,7 +111,7 @@ self.Powerups = {
 }
 
 
-function love.load()
+function self.load()
     if self.InEditor == false then
         love.window.setMode(300, 500)
         love.window.setTitle("Rhythm Game")
@@ -151,6 +151,8 @@ function love.load()
         editor.load()
     end
 end
+
+love.load = self.load
 
 self.VisualScore = 0
 
@@ -522,3 +524,5 @@ function love.mousepressed(x, y, button)
         end
     end
 end
+
+return self

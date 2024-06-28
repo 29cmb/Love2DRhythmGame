@@ -41,7 +41,6 @@ local Colors = {
 }
 local playtestMode = false
 local page = 1
-
 local editorMode = "none"
 
 local buttons = {
@@ -128,6 +127,19 @@ local buttons = {
         ["callback"] = function()
             if page <= 1 then return end
             page = page - 1
+        end
+    },
+    ["Exit"] = {
+        ["x"] = 10,
+        ["y"] = 10,
+        ["scaleX"] = 168,
+        ["scaleY"] = 67,
+        ["condition"] = function()
+            return true
+        end,
+        ["callback"] = function()
+            require("main").InEditor = false
+            love.window.setMode(300, 500)
         end
     }
 }
@@ -269,6 +281,9 @@ function editor.draw()
     love.graphics.setFont(Fonts.Headers)
     love.graphics.print("Page " .. page, 750, 50)
     love.graphics.pop()
+
+    -- exit
+    love.graphics.draw(Sprites.ExitGame, 10, 10)
 end
 
 function editor.update(dt)
