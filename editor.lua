@@ -144,8 +144,7 @@ function editor.draw()
 
         for _,beat in pairs(BeatMap) do 
             if beat.Time >= ((page - 1) * 2.5) and beat.Time <= ((page) * 2.5) and table.find(beat.Beats, i) then
-                print(beat.Time)
-                local posY = (460 - (circleRadius * 2)) - --[[((460 - (circleRadius * 2)) / beat.Time)]] (168 * (beat.Time - ((page-1) * 2.5)))
+                local posY = (460 - (circleRadius * 2)) - (168 * (beat.Time - ((page-1) * 2.5)))
                 love.graphics.setColor(Colors[i])
                 love.graphics.circle("fill", circleX, posY, circleRadius)
                 love.graphics.setColor(0,0,0)
@@ -219,14 +218,14 @@ function editor.mousepressed(x,y,button)
 
             if boundary == 0 then return end
 
-            local beatData = getBeatDataFromTime(math.round(time, 2))
+            local beatData = getBeatDataFromTime(math.round(time, 1))
             if beatData then 
                 if not table.find(beatData.Beats, boundary) then
                     table.insert(beatData.Beats, boundary)
                 end
             else
                 table.insert(BeatMap, {
-                    ["Time"] = math.round(time, 2),
+                    ["Time"] = math.round(time, 1),
                     ["Beats"] = {
                         boundary
                     }
