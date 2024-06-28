@@ -18,7 +18,8 @@ local Sprites = {
     ["Outline"] = "Images/ButtonOutline.png",
     ["DeleteBeat"] = "Images/DeleteBeat.png",
     ["PageUp"] = "Images/PageUp.png",
-    ["PageDown"] = "Images/PageDown.png"
+    ["PageDown"] = "Images/PageDown.png",
+    ["Reset"] = "Images/ResetLevel.png"
 }
 
 local Fonts = {
@@ -99,6 +100,7 @@ local buttons = {
             return playtestMode == false
         end,
         ["callback"] = function()
+            if editorMode == "placing" then editorMode = "None" return end
             editorMode = "placing"
         end
     },
@@ -111,6 +113,7 @@ local buttons = {
             return playtestMode == false
         end,
         ["callback"] = function()
+            if editorMode == "placeBomb" then editorMode = "None" return end
             editorMode = "placeBomb"
         end
     },
@@ -123,6 +126,7 @@ local buttons = {
             return playtestMode == false
         end,
         ["callback"] = function()
+            if editorMode == "placeGoldenBeat" then editorMode = "None" return end
             editorMode = "placeGoldenBeat"
         end
     },
@@ -135,6 +139,7 @@ local buttons = {
             return playtestMode == false
         end,
         ["callback"] = function()
+            if editorMode == "delete" then editorMode = "None" return end
             editorMode = "delete"
         end
     },
@@ -174,6 +179,18 @@ local buttons = {
         ["callback"] = function()
             require("main").InEditor = false
             love.window.setMode(300, 500)
+        end
+    },
+    ["ResetLevel"] = {
+        ["x"] = 285,
+        ["y"] = 365,
+        ["scaleX"] = 65,
+        ["scaleY"] = 65,
+        ["condition"] = function()
+            return playtestMode == false
+        end,
+        ["callback"] = function()
+            BeatMap = {}
         end
     }
 }
@@ -305,27 +322,45 @@ function editor.draw()
     end
 
     -- Beat placer
+    if editorMode == "placing" then 
+        love.graphics.setColor(0.8,0.8,0.8,0.5)
+    end
     love.graphics.draw(Sprites.Outline, 285, 80)
     love.graphics.setColor(Colors[2])
     love.graphics.circle("fill", 318, 113, 15)
     love.graphics.setColor(1,1,1)
 
     -- Bomb placer
+    if editorMode == "placeBomb" then 
+        love.graphics.setColor(0.8,0.8,0.8,0.5)
+    end
     love.graphics.draw(Sprites.Outline, 285, 150)
     love.graphics.push()
     love.graphics.scale(0.75, 0.75)
     love.graphics.draw(Sprites.Bomb, 400, 215)
     love.graphics.pop()
 
+    love.graphics.setColor(1,1,1)
+
     -- 2x Points Placer
+    if editorMode == "placeGoldenBeat" then 
+        love.graphics.setColor(0.8,0.8,0.8,0.5)
+    end
     love.graphics.draw(Sprites.Outline, 285, 220)
     love.graphics.push()
     love.graphics.scale(0.75, 0.75)
     love.graphics.draw(Sprites.GoldenBeat, 398, 310)
     love.graphics.pop()
-    -- Beat remover
-    love.graphics.draw(Sprites.DeleteBeat, 285, 290)
 
+    love.graphics.setColor(1,1,1)
+
+    -- Beat remover
+    if editorMode == "delete" then 
+        love.graphics.setColor(0.8,0.8,0.8,0.5)
+    end
+
+    love.graphics.draw(Sprites.DeleteBeat, 285, 290)
+    love.graphics.setColor(1,1,1)
     -- page up
     love.graphics.draw(Sprites.PageUp, 675, 10)
     -- page down
@@ -334,6 +369,10 @@ function editor.draw()
     love.graphics.setFont(Fonts.Headers)
     love.graphics.print("Page " .. page, 750, 50)
     love.graphics.pop()
+
+    -- reset level
+    love.graphics.draw(Sprites.Reset, 285, 360)
+
     -- exit
     love.graphics.draw(Sprites.ExitGame, 10, 10)
 
