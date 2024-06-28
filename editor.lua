@@ -406,7 +406,7 @@ function editor.mousepressed(x,y,button)
         end
     end
 
-    if collided == false and editorMode ~= "none" and playtestMode == true then -- only do editor modes if the user did not press a button
+    if collided == false and editorMode ~= "none" and playtestMode == false then -- only do editor modes if the user did not press a button
         local time = ((((460 - (circleRadius * 2)) - y)/(460 - (circleRadius * 2))) * 2.5) + ((page-1) * 2.5)
         if time <= 0 then return end
 
