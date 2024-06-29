@@ -639,6 +639,10 @@ function editor.mousepressed(x,y,button)
                     for i2, beat in pairs(beats.Beats) do 
                         if beat == boundary then
                             table.remove(BeatMap[i].Beats, i2)
+                            if #BeatMap[i].Beats == 0 then 
+                                table.remove(BeatMap, i)
+                            end
+                            
                             break
                         end
                     end
