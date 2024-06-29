@@ -251,6 +251,7 @@ local buttons = {
             end
             
             love.filesystem.write(fileName, "return " .. tableToString(BeatMap, ""))
+            love.window.showMessageBox("Saved", "Save was successful!")
         end
     }
 }
@@ -447,6 +448,7 @@ function editor.draw()
 
     -- save
     love.graphics.draw(Sprites.Save, 675, 150)
+    love.graphics.print(fileName or "Unsaved", 750, 160)
 
     if getStartedHint then
         love.graphics.setFont(Fonts.Score)
