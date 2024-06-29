@@ -22,7 +22,9 @@ local Sprites = {
     ["PageDown"] = "Images/PageDown.png",
     ["Reset"] = "Images/ResetLevel.png",
     ["Save"] = "Images/Save.png",
-    ["Music"] = "Images/MusicSelector.png"
+    ["Music"] = "Images/MusicSelector.png",
+    ["LeftLargeButton"] = "Images/LeftLargeButton.png",
+    ["RightLargeButton"] = "Images/RightLargeButton.png"
 }
 
 local Fonts = {
@@ -121,7 +123,8 @@ local fileName = nil
 local holdingColumn = 0
 local holdingBeatPosX = 0
 local holdingBeatPosY = 0
-
+local musicSelectorItems = {}
+local musicSelectorPage = 1
 local musicSelectorOpen = false
 
 local buttons = {
@@ -288,6 +291,34 @@ local buttons = {
         ["callback"] = function()
             musicSelectorOpen = not musicSelectorOpen
         end
+    },
+    ["LargeButtonLeft"] = {
+        ["x"] = 715,
+        ["y"] = 400,
+        ["scaleX"] = 48,
+        ["scaleY"] = 128,
+        ["condition"] = function()
+            return musicSelectorOpen == true and playtestMode == false
+        end,
+        ["callback"] = function()
+            if musicSelectorPage > 1 then 
+                musicSelectorPage = musicSelectorPage - 1 
+            end
+        end
+    },
+    ["LargeButtonRight"] = {
+        ["x"] = 972.5,
+        ["y"] = 300,
+        ["scaleX"] = 48,
+        ["scaleY"] = 128,
+        ["condition"] = function()
+            return musicSelectorOpen == true and playtestMode == false
+        end,
+        ["callback"] = function()
+            if musicSelectorItems[musicSelectorPage + 1] ~= nil then 
+                musicSelectorPage = musicSelectorPage + 1
+            end
+        end
     }
 }
 
@@ -317,8 +348,7 @@ function editor.load()
     end
 end
 
-local musicSelectorItems = {}
-local musicSelectorPage = 1
+
 
 function editor.draw()
     love.graphics.draw(Sprites.Background, 363, 0)
@@ -328,7 +358,7 @@ function editor.draw()
     end
 
     if musicSelectorOpen == true then 
-        love.graphics.rectangle("fill", 725, 300, 250, 130)
+        love.graphics.rectangle("fill", 725, 300, 245, 130)
         musicSelectorItems = {}
 
         for _,song in pairs(love.filesystem.getDirectoryItems("/Songs")) do 
@@ -343,8 +373,11 @@ function editor.draw()
         love.graphics.scale(0.8)
         love.graphics.printf(musicSelectorItems[musicSelectorPage].Artist, 925, 410, 300)
         love.graphics.pop()
-
+        love.graphics.printf("Page " .. musicSelectorPage .. "/" .. #musicSelectorItems, 760, 400, 200, "right")
         love.graphics.setColor(1, 1, 1, 1)
+
+        love.graphics.draw(Sprites.LeftLargeButton, 675, 300)
+        love.graphics.draw(Sprites.RightLargeButton, 972.5, 300)
     end
 
     for i = 1, 4 do 
@@ -599,6 +632,7 @@ function editor.mousepressed(x,y,button)
     local collided = false
     for _,button in pairs(buttons) do 
         if collision:CheckCollision(x, y, 1, 1, button.x, button.y, button.scaleX, button.scaleY) and button.condition() == true then 
+            getStartedHint = false
             button.callback()
             collided = true
         end
@@ -609,6 +643,7 @@ function editor.mousepressed(x,y,button)
         if time <= 0 then return end 
 
         local boundary = 0
+        
 
         if x > (spacing + circleRadius + 314) and x < (spacing * 5 + circleRadius * (2 * 5 - 1)) + 343.5 then 
             for index, v in pairs(placementSpacing) do 
@@ -621,7 +656,6 @@ function editor.mousepressed(x,y,button)
         if boundary == 0 then return end
 
         getStartedHint = false
-
         holdingColumn = boundary
         holdingBeatPosX = x
         holdingBeatPosY = y
