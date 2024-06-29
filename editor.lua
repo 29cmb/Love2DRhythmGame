@@ -21,7 +21,8 @@ local Sprites = {
     ["PageUp"] = "Images/PageUp.png",
     ["PageDown"] = "Images/PageDown.png",
     ["Reset"] = "Images/ResetLevel.png",
-    ["Save"] = "Images/Save.png"
+    ["Save"] = "Images/Save.png",
+    ["Music"] = "Images/MusicSelector.png"
 }
 
 local Fonts = {
@@ -62,7 +63,12 @@ local Powerups = {
 }
 
 
-local BeatMap = {}
+local BeatMap = {
+    ["Data"] = {
+
+    },
+    ["Beats"] = {}
+}
 local beats = {[1] = {}, [2] = {}, [3] = {}, [4] = {}}
 local activeBeats = {}
 local timePassed = 2.5
@@ -114,6 +120,8 @@ local fileName = nil
 local holdingColumn = 0
 local holdingBeatPosX = 0
 local holdingBeatPosY = 0
+
+local musicSelectorOpen = true
 
 local buttons = {
     ['Playtest'] = {
@@ -245,7 +253,7 @@ local buttons = {
         ["callback"] = function()
             local confirmed = love.window.showMessageBox("Confirm?", "Are you sure you would like to erase this level?", {"Cancel", "Confirm"}, "info", true)
             if confirmed == 2 then 
-                BeatMap = {}
+                BeatMap.Beats = {}
             end
         end
     },
@@ -267,12 +275,24 @@ local buttons = {
             love.filesystem.write(fileName, "return " .. tableToString(BeatMap, ""))
             love.window.showMessageBox("Saved", "Save was successful!")
         end
+    },
+    ["MusicSelector"] = {
+        ["x"] = 675,
+        ["y"] = 220,
+        ["scaleX"] = 65,
+        ["scaleY"] = 65,
+        ["condition"] = function()
+            return playtestMode == false
+        end,
+        ["callback"] = function()
+            
+        end
     }
 }
 
 
 function getBeatDataFromTime(time)
-    for _,data in pairs(BeatMap) do 
+    for _,data in pairs(BeatMap.Beats) do 
         if data.Time == time then
             return data
         end
@@ -317,7 +337,7 @@ function editor.draw()
         end
 
         if playtestMode == false then 
-            for _,beat in pairs(BeatMap) do 
+            for _,beat in pairs(BeatMap.Beats) do 
                 if beat.Time >= ((page - 1) * 2.5) and beat.Time <= ((page) * 2.5) and table.find(beat.Beats, i) then
                     local posY = (460 - (circleRadius * 2)) - (168 * (beat.Time - ((page-1) * 2.5)))
 
@@ -476,13 +496,16 @@ function editor.draw()
     love.graphics.draw(Sprites.Save, 675, 150)
     love.graphics.print(fileName or "Unsaved", 750, 160)
 
+    -- music selector
+    love.graphics.draw(Sprites.Music, 675, 220)
+
     if getStartedHint then
         love.graphics.setFont(Fonts.Score)
         love.graphics.printf("Drag a file or place a beat to get started!", 700, 300, 200)
     end
 
     if playtestMode == true then 
-        for _,beatData in pairs(BeatMap) do
+        for _,beatData in pairs(BeatMap.Beats) do
             if not table.find(activeBeats, beatData) then 
                 if beatData.Time <= 2.5 then
                     table.insert(activeBeats, beatData)
@@ -588,7 +611,7 @@ function editor.mousepressed(x,y,button)
                     end
                 else
                     if not table.find(beatData.Beats, boundary) then 
-                        table.insert(BeatMap, {
+                        table.insert(BeatMap.Beats, {
                             ["Time"] = math.round(time, 1),
                             ["Beats"] = {
                                 boundary
@@ -597,7 +620,7 @@ function editor.mousepressed(x,y,button)
                     end
                 end
             else
-                table.insert(BeatMap, {
+                table.insert(BeatMap.Beats, {
                     ["Time"] = math.round(time, 1),
                     ["Beats"] = {
                         boundary
@@ -611,7 +634,7 @@ function editor.mousepressed(x,y,button)
                     table.insert(beatData.Beats, boundary)
                 else
                     if not table.find(beatData.Beats, boundary) then 
-                        table.insert(BeatMap, {
+                        table.insert(BeatMap.Beats, {
                             ["Time"] = math.round(time, 1),
                             ["Beats"] = {
                                 boundary
@@ -621,7 +644,7 @@ function editor.mousepressed(x,y,button)
                     end
                 end
             else
-                table.insert(BeatMap, {
+                table.insert(BeatMap.Beats, {
                     ["Time"] = math.round(time, 1),
                     ["Beats"] = {
                         boundary
@@ -639,7 +662,7 @@ function editor.mousepressed(x,y,button)
                     end
                 else
                     if not table.find(beatData.Beats, boundary)  then 
-                        table.insert(BeatMap, {
+                        table.insert(BeatMap.Beats, {
                             ["Time"] = math.round(time, 1),
                             ["Beats"] = {
                                 boundary
@@ -649,7 +672,7 @@ function editor.mousepressed(x,y,button)
                     end
                 end
             else
-                table.insert(BeatMap, {
+                table.insert(BeatMap.Beats, {
                     ["Time"] = math.round(time, 1),
                     ["Beats"] = {
                         boundary
@@ -666,7 +689,7 @@ function editor.mousepressed(x,y,button)
                     end
                 else
                     if not table.find(beatData.Beats, boundary)  then 
-                        table.insert(BeatMap, {
+                        table.insert(BeatMap.Beats, {
                             ["Time"] = math.round(time, 1),
                             ["Beats"] = {
                                 boundary
@@ -676,7 +699,7 @@ function editor.mousepressed(x,y,button)
                     end
                 end
             else
-                table.insert(BeatMap, {
+                table.insert(BeatMap.Beats, {
                     ["Time"] = math.round(time, 1),
                     ["Beats"] = {
                         boundary
@@ -685,13 +708,13 @@ function editor.mousepressed(x,y,button)
                 })
             end
         elseif editorMode == "delete" then 
-            for i,beats in pairs(BeatMap) do 
+            for i,beats in pairs(BeatMap.Beats) do 
                 if beats.Time >= time - 0.2 and beats.Time <= time + 0.2 then 
                     for i2, beat in pairs(beats.Beats) do 
                         if beat == boundary then
-                            table.remove(BeatMap[i].Beats, i2)
+                            table.remove(BeatMap.Beats[i].Beats, i2)
 
-                            if #BeatMap[i].Beats == 0 then 
+                            if #BeatMap.Beats[i].Beats == 0 then 
                                 table.remove(BeatMap, i)
                             end
 
@@ -708,18 +731,18 @@ function editor.mousemoved(x, y)
     if playtestMode == false and holdingColumn ~= 0 and holdingBeatPosY ~= 0 and holdingBeatPosX ~= 0 and holding == true then
         local time = math.round(((((460 - (circleRadius * 2)) - holdingBeatPosY)/(460 - (circleRadius * 2))) * 2.5) + ((page-1) * 2.5), 1)
         if y + 80 < holdingBeatPosY then 
-            for index, data in pairs(BeatMap) do
+            for index, data in pairs(BeatMap.Beats) do
                 if data.Time == time and table.find(data.Beats, holdingColumn) then
                     local trailTime = math.round(((((460 - (circleRadius * 2)) - y)/(460 - (circleRadius * 2))) * 2.5) + ((page-1) * 2.5), 1)
-                    BeatMap[index].Trail = (trailTime - 0.15) - time
+                    BeatMap.Beats[index].Trail = (trailTime - 0.15) - time
 
                     return
                 end
             end
         else
-            for index, data in pairs(BeatMap) do
+            for index, data in pairs(BeatMap.Beats) do
                 if data.Time == time and table.find(data.Beats, holdingColumn) then 
-                    BeatMap[index].Trail = nil
+                    BeatMap.Beats[index].Trail = nil
                     return
                 end
             end

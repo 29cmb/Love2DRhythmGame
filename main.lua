@@ -181,12 +181,11 @@ function love.draw()
             levelPositions = {}
             love.filesystem.setIdentity("rhythm-game-levels")
             for _, v in ipairs(love.filesystem.getDirectoryItems("")) do
-                if v:match("^.+(%..+)$") == ".rhythm" then -- a rhythm file is just a lua file in disguise, it will parse any formatted file.
+                if v:match("^.+(%..+)$") == ".rhythm" then -- a rhythm file is just a lua file in disguise, it will parse any formatted file as long as it is a lua table.
                     love.graphics.rectangle("fill", 2, (#levelPositions * 50) + 200, 400, 45)
                     love.graphics.setColor(0,0,0)
                     love.graphics.printf(v, 2, (#levelPositions * 50) + 200, 350)
                     love.graphics.setColor(1,1,1)
-                    print(10, (#levelPositions * 50), 400, 50)
                     table.insert(levelPositions, {
                         ["FileName"] = v,
                         ["PosY"] = (#levelPositions * 50)
@@ -549,6 +548,7 @@ function love.mousepressed(x, y, button)
 
                 editorLoaded = true
                 self.InEditor = true
+                self.ActiveAudio:stop()
             elseif collision:CheckCollision(x, y, 1, 1, 62, 340, 177, 93) then
                 self.MenuPage = "LevelsMenu"
             end
