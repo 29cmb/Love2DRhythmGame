@@ -556,8 +556,19 @@ function editor.mousepressed(x,y,button)
             holding = true
             local beatData = getBeatDataFromTime(math.round(time, 1))
             if beatData then
-                if not table.find(beatData.Beats, boundary) and beatData.Bomb ~= true then
-                    table.insert(beatData.Beats, boundary)
+                if beatData.Bomb ~= true then
+                    if not table.find(beatData.Beats, boundary) then 
+                        table.insert(beatData.Beats, boundary)
+                    end
+                else
+                    if not table.find(beatData.Beats, boundary) then 
+                        table.insert(BeatMap, {
+                            ["Time"] = math.round(time, 1),
+                            ["Beats"] = {
+                                boundary
+                            }
+                        })
+                    end
                 end
             else
                 table.insert(BeatMap, {
@@ -567,21 +578,34 @@ function editor.mousepressed(x,y,button)
                     }
                 })
             end
-        elseif editorMode == "placeBomb" then
+        elseif editorMode == "placeBomb" then -- JAAAAAANK
             local beatData = getBeatDataFromTime(math.round(time, 1))
             if beatData then 
-                if not table.find(beatData.Beats, boundary) and beatData.Bomb == true then
+                if beatData.Bomb == true and not table.find(beatData.Beats, boundary) then 
                     table.insert(beatData.Beats, boundary)
+                else
+                    if not table.find(beatData.Beats, boundary) then 
+                        table.insert(BeatMap, {
+                            ["Time"] = math.round(time, 1),
+                            ["Beats"] = {
+                                boundary
+                            },
+                            ["Bomb"] = true
+                        })
+                    end
                 end
             else
-                table.insert(BeatMap, {
-                    ["Time"] = math.round(time, 1),
-                    ["Beats"] = {
-                        boundary
-                    },
-                    ["Bomb"] = true
-                })
+                if not table.find(beatData.Beats, boundary) then 
+                    table.insert(BeatMap, {
+                        ["Time"] = math.round(time, 1),
+                        ["Beats"] = {
+                            boundary
+                        },
+                        ["Bomb"] = true
+                    })
+                end
             end
+            
         elseif editorMode == "placeGoldenBeat" then
             local beatData = getBeatDataFromTime(math.round(time, 1))
             if beatData then 
