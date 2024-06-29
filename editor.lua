@@ -317,7 +317,8 @@ local buttons = {
         end,
         ["callback"] = function()
             if musicSelectorPage > 1 then 
-                musicSelectorPage = musicSelectorPage - 1 
+                musicSelectorPage = musicSelectorPage - 1
+                BeatMap.Data.Song = musicSelectorItems[musicSelectorPage].SongName
             end
         end
     },
@@ -332,6 +333,7 @@ local buttons = {
         ["callback"] = function()
             if musicSelectorItems[musicSelectorPage + 1] ~= nil then 
                 musicSelectorPage = musicSelectorPage + 1
+                BeatMap.Data.Song = musicSelectorItems[musicSelectorPage].SongName
             end
         end
     }
@@ -377,6 +379,7 @@ function editor.draw()
         local songData = require("Songs." .. tostring(song) .. ".data")
         table.insert(musicSelectorItems, songData)
     end
+
     if musicSelectorOpen == true then 
         love.graphics.rectangle("fill", 725, 300, 245, 130)
         
