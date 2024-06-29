@@ -27,7 +27,8 @@ local Sprites = {
 
 local Fonts = {
     ["Headers"] = {"Fonts/SF Archery Black.ttf", 40},
-    ["Score"] = {"Fonts/good times rg.otf", 25}
+    ["Score"] = {"Fonts/good times rg.otf", 25},
+    ["SmallScore"] = {"Fonts/good times rg.otf", 15}
 }
 
 local KeyCodes = {
@@ -121,7 +122,7 @@ local holdingColumn = 0
 local holdingBeatPosX = 0
 local holdingBeatPosY = 0
 
-local musicSelectorOpen = true
+local musicSelectorOpen = false
 
 local buttons = {
     ['Playtest'] = {
@@ -285,7 +286,7 @@ local buttons = {
             return playtestMode == false
         end,
         ["callback"] = function()
-            
+            musicSelectorOpen = not musicSelectorOpen
         end
     }
 }
@@ -316,8 +317,25 @@ function editor.load()
     end
 end
 
+local musicSelectorItems = {}
+local musicSelectorPage = 1
+
 function editor.draw()
     love.graphics.draw(Sprites.Background, 363, 0)
+
+    if musicSelectorOpen == true then 
+        love.graphics.rectangle("fill", 725, 300, 250, 130)
+        musicSelectorItems = {}
+
+        for _,song in pairs(love.filesystem.getDirectoryItems("/Songs")) do 
+            local songData = require("Songs." .. tostring(song) .. ".data")
+            table.insert(musicSelectorItems, songData)
+        end
+
+        love.graphics.setColor(0, 0, 0)
+        love.graphics.setFont(Fonts.SmallScore)
+        love.graphics.printf(musicSelectorItems[musicSelectorPage].SongName, 740, 310, 100)
+    end
 
     for i = 1, 4 do 
         local circleX = spacing * i + circleRadius * (2 * i - 1) + 362.5
