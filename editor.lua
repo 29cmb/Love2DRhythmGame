@@ -127,6 +127,8 @@ local musicSelectorItems = {}
 local musicSelectorPage = 1
 local musicSelectorOpen = false
 
+local ActiveSong = nil
+
 local buttons = {
     ['Playtest'] = {
         ["x"] = 285,
@@ -141,6 +143,19 @@ local buttons = {
             beats = {[1] = {}, [2] = {}, [3] = {}, [4] = {}}
             activeBeats = {}
             timePassed = 2.5
+
+            if playtestMode == true then 
+                local audio = love.audio.newSource("Songs/" .. musicSelectorItems[musicSelectorPage].SongName .. "/Music.mp3", "stream")
+                audio:setVolume(1) 
+                audio:play()
+
+                ActiveAudio = audio
+            else
+                if ActiveAudio then 
+                    ActiveAudio:stop()
+                    ActiveAudio = nil
+                end
+            end
         end
     },
     ["PlaceBeat"] = {
@@ -356,15 +371,15 @@ function editor.draw()
         love.graphics.setFont(Fonts.Score)
         love.graphics.printf("Drag a file or place a beat to get started!", 700, 300, 200)
     end
+    musicSelectorItems = {}
 
+    for _,song in pairs(love.filesystem.getDirectoryItems("/Songs")) do 
+        local songData = require("Songs." .. tostring(song) .. ".data")
+        table.insert(musicSelectorItems, songData)
+    end
     if musicSelectorOpen == true then 
         love.graphics.rectangle("fill", 725, 300, 245, 130)
-        musicSelectorItems = {}
-
-        for _,song in pairs(love.filesystem.getDirectoryItems("/Songs")) do 
-            local songData = require("Songs." .. tostring(song) .. ".data")
-            table.insert(musicSelectorItems, songData)
-        end
+        
 
         love.graphics.setColor(0, 0, 0)
         love.graphics.setFont(Fonts.SmallScore)
