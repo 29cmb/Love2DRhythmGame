@@ -9,6 +9,7 @@ local Sprites = {
     ["Bomb"] = "Images/bomb.png",
     ["PowerupBorder"] = "Images/PowerupBorder.png",
     ["GoldenBeat"] = "Images/GoldenBeat.png",
+    ["Slowness"] = "Images/Slowness.png",
     ["Pause"] = "Images/Pause.png",
     ["Resume"] = "Images/Resume.png",
     ["ExitGame"] = "Images/ExitGame.png",
@@ -169,9 +170,22 @@ local buttons = {
             editorMode = "placeGoldenBeat"
         end
     },
-    ["DeleteBeat"] = {
+    ["PlaceIce"] = {
         ["x"] = 285,
         ["y"] = 290,
+        ["scaleX"] = 65,
+        ["scaleY"] = 65,
+        ["condition"] = function() 
+            return playtestMode == false 
+        end,
+        ["callback"] = function()
+            if editorMode == "placeIce" then editorMode = "None" return end
+            editorMode = "placeIce"
+        end
+    },
+    ["DeleteBeat"] = {
+        ["x"] = 285,
+        ["y"] = 350,
         ["scaleX"] = 65,
         ["scaleY"] = 65,
         ["condition"] = function()
@@ -222,7 +236,7 @@ local buttons = {
     },
     ["ResetLevel"] = {
         ["x"] = 285,
-        ["y"] = 365,
+        ["y"] = 430,
         ["scaleX"] = 65,
         ["scaleY"] = 65,
         ["condition"] = function()
@@ -424,12 +438,24 @@ function editor.draw()
 
     love.graphics.setColor(1,1,1)
 
+    -- ice-cube placer
+    if editorMode == "placeIce" then 
+        love.graphics.setColor(0.8,0.8,0.8,0.5)
+    end
+    love.graphics.draw(Sprites.Outline, 285, 290)
+    love.graphics.push()
+    love.graphics.scale(0.75, 0.75)
+    love.graphics.draw(Sprites.Slowness, 398, 402.5)
+    love.graphics.pop()
+
+    love.graphics.setColor(1,1,1)
+
     -- Beat remover
     if editorMode == "delete" then 
         love.graphics.setColor(0.8,0.8,0.8,0.5)
     end
 
-    love.graphics.draw(Sprites.DeleteBeat, 285, 290)
+    love.graphics.draw(Sprites.DeleteBeat, 285, 360)
     love.graphics.setColor(1,1,1)
     -- page up
     love.graphics.draw(Sprites.PageUp, 675, 10)
@@ -441,7 +467,7 @@ function editor.draw()
     love.graphics.pop()
 
     -- reset level
-    love.graphics.draw(Sprites.Reset, 285, 360)
+    love.graphics.draw(Sprites.Reset, 285, 430)
 
     -- exit
     love.graphics.draw(Sprites.ExitGame, 10, 10)
@@ -595,15 +621,13 @@ function editor.mousepressed(x,y,button)
                     end
                 end
             else
-                if not table.find(beatData.Beats, boundary) then 
-                    table.insert(BeatMap, {
-                        ["Time"] = math.round(time, 1),
-                        ["Beats"] = {
-                            boundary
-                        },
-                        ["Bomb"] = true
-                    })
-                end
+                table.insert(BeatMap, {
+                    ["Time"] = math.round(time, 1),
+                    ["Beats"] = {
+                        boundary
+                    },
+                    ["Bomb"] = true
+                })
             end
             
         elseif editorMode == "placeGoldenBeat" then
@@ -631,6 +655,33 @@ function editor.mousepressed(x,y,button)
                         boundary
                     },
                     ["Powerup"] = "2xScore"
+                })
+            end
+        elseif editorMode == "placeIce" then
+            local beatData = getBeatDataFromTime(math.round(time, 1))
+            if beatData then 
+                if beatData.Powerup == "Slow" then 
+                    if not table.find(beatData.Beats, boundary)  then
+                        table.insert(beatData.Beats, boundary)
+                    end
+                else
+                    if not table.find(beatData.Beats, boundary)  then 
+                        table.insert(BeatMap, {
+                            ["Time"] = math.round(time, 1),
+                            ["Beats"] = {
+                                boundary
+                            },
+                            ["Powerup"] = "Slow"
+                        })
+                    end
+                end
+            else
+                table.insert(BeatMap, {
+                    ["Time"] = math.round(time, 1),
+                    ["Beats"] = {
+                        boundary
+                    },
+                    ["Powerup"] = "Slow"
                 })
             end
         elseif editorMode == "delete" then 
