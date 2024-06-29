@@ -616,8 +616,8 @@ function editor.mousemoved(x, y)
         if y + 80 < holdingBeatPosY then 
             for index, data in pairs(BeatMap) do
                 if data.Time == time and table.find(data.Beats, holdingColumn) then
-                    local trailTime = 2
-                    BeatMap[index].Trail = trailTime
+                    local trailTime = math.round(((((460 - (circleRadius * 2)) - y)/(460 - (circleRadius * 2))) * 2.5) + ((page-1) * 2.5), 1)
+                    BeatMap[index].Trail = (trailTime - 0.15) - time
 
                     return
                 end
