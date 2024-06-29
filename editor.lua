@@ -260,7 +260,7 @@ local buttons = {
         ["callback"] = function()
             love.filesystem.setIdentity("rhythm-game-levels")
             if fileName == nil then 
-                fileName = "Level" .. (countFilesInDirectory("") - 3) .. ".lua" 
+                fileName = "Level" .. (countFilesInDirectory("") - 3) .. ".rhythm" 
                 love.filesystem.newFile(fileName)
             end
             

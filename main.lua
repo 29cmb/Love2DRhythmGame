@@ -36,6 +36,7 @@ local Sprites = {
     ["Resume"] = "Images/Resume.png",
     ["MainMenu"] = "Images/MenuBg.png",
     ["PlayMenu"] = "Images/PlayMenu.png",
+    ["LevelsMenu"] = "Images/LevelsMenu.png",
     ["ExitGame"] = "Images/ExitGame.png",
     ["FinishedOverlay"] = "Images/FinishedOverlay.png",
     ["ExitEndGameOverlay"] = "Images/ExitGameEndGameOverlay.png"
@@ -156,6 +157,8 @@ love.load = self.load
 
 self.VisualScore = 0
 
+local levelPositions = {}
+
 function love.draw()
 
     if self.InEditor == true then
@@ -173,6 +176,18 @@ function love.draw()
 
     if self.GameStarted == false then
         love.graphics.draw(Sprites[self.MenuPage])
+
+        if self.MenuPage == "LevelsMenu" then 
+            levelPositions = {}
+            love.filesystem.setIdentity("rhythm-game-levels")
+            for _, v in ipairs(love.filesystem.getDirectoryItems("")) do
+                if v:match("^.+(%..+)$") == ".rhythm" then
+                    love.graphics.rectangle("fill", 2, (#levelPositions * 50) + 200, 400, 50)
+                    print(10, (#levelPositions * 50), 400, 50)
+                end
+            end
+        end
+
         return
     end
 
@@ -396,20 +411,24 @@ function love.update(dt)
     end
 end
 
-function startGame(song)
-    self.ActiveSong = "Songs." .. song .. ".beats"
-    self.GameStarted = true
+function startGame(song, custom)
+    if custom == true then 
+        -- later
+    else
+        self.ActiveSong = "Songs." .. song .. ".beats"
+        self.GameStarted = true
 
-    if self.ActiveAudio ~= nil then 
-        self.ActiveAudio:stop()
+        if self.ActiveAudio ~= nil then 
+            self.ActiveAudio:stop()
+        end
+
+        local audio = love.audio.newSource("Songs/" .. song .. "/Music.mp3", "stream")
+        audio:setVolume(0.6)
+        audio:play()
+
+        self.Background = love.graphics.newImage(require("Songs." .. song .. ".data").BackgroundImage)
+        self.ActiveAudio = audio
     end
-
-    local audio = love.audio.newSource("Songs/" .. song .. "/Music.mp3", "stream")
-    audio:setVolume(0.6)
-    audio:play()
-
-    self.Background = love.graphics.newImage(require("Songs." .. song .. ".data").BackgroundImage)
-    self.ActiveAudio = audio
 end
 
 function pause()
@@ -512,9 +531,9 @@ function love.mousepressed(x, y, button)
         end
     else
         if self.MenuPage == "MainMenu" then 
-            if collision:CheckCollision(x, y, 1, 1, 62, 155, 177, 93) then
+            if collision:CheckCollision(x, y, 1, 1, 62, 96, 177, 93) then
                 self.MenuPage = "PlayMenu"
-            elseif collision:CheckCollision(x, y, 1, 1, 62, 267, 177, 93) then
+            elseif collision:CheckCollision(x, y, 1, 1, 62, 218, 177, 93) then
                 if editorLoaded == false then 
                     editor.load()
                 else
@@ -523,6 +542,8 @@ function love.mousepressed(x, y, button)
 
                 editorLoaded = true
                 self.InEditor = true
+            elseif collision:CheckCollision(x, y, 1, 1, 62, 340, 177, 93) then
+                self.MenuPage = "LevelsMenu"
             end
         elseif self.MenuPage == "PlayMenu" then
             if collision:CheckCollision(x, y, 1, 1, 62, 235, 117, 93) then 
