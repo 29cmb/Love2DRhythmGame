@@ -333,8 +333,11 @@ local buttons = {
         ["callback"] = function()
             if musicSelectorItems[musicSelectorPage + 1] ~= nil then 
                 musicSelectorPage = musicSelectorPage + 1
-                BeatMap.Data.Song = musicSelectorItems[musicSelectorPage].SongName
+            else
+                musicSelectorPage = 1
             end
+            
+            BeatMap.Data.Song = musicSelectorItems[musicSelectorPage].SongName
         end
     }
 }
