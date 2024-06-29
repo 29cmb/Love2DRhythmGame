@@ -181,7 +181,7 @@ function love.draw()
             levelPositions = {}
             love.filesystem.setIdentity("rhythm-game-levels")
             for _, v in ipairs(love.filesystem.getDirectoryItems("")) do
-                if v:match("^.+(%..+)$") == ".rhythm" or v:match("^.+(%..+)$") == ".lua" then -- a rhythm file is just a lua file in disguise
+                if v:match("^.+(%..+)$") == ".rhythm" then -- a rhythm file is just a lua file in disguise, it will parse any formatted file.
                     love.graphics.rectangle("fill", 2, (#levelPositions * 50) + 200, 400, 45)
                     love.graphics.setColor(0,0,0)
                     love.graphics.printf(v, 2, (#levelPositions * 50) + 200, 350)
