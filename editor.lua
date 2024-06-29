@@ -639,10 +639,11 @@ function editor.mousepressed(x,y,button)
                     for i2, beat in pairs(beats.Beats) do 
                         if beat == boundary then
                             table.remove(BeatMap[i].Beats, i2)
+
                             if #BeatMap[i].Beats == 0 then 
                                 table.remove(BeatMap, i)
                             end
-                            
+
                             break
                         end
                     end
@@ -705,6 +706,8 @@ function math.round(num, decimalPlaces)
 end
 
 function editor.fileLoaded(file)
+    if playtestMode == true then return end
+
     file:open("r")
     local data = load(file:read())()
     BeatMap = data
