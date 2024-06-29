@@ -609,8 +609,20 @@ function editor.mousepressed(x,y,button)
         elseif editorMode == "placeGoldenBeat" then
             local beatData = getBeatDataFromTime(math.round(time, 1))
             if beatData then 
-                if not table.find(beatData.Beats, boundary) and beatData.Powerup == "2xScore" then
-                    table.insert(beatData.Beats, boundary)
+                if beatData.Powerup == "2xScore" then 
+                    if not table.find(beatData.Beats, boundary)  then
+                        table.insert(beatData.Beats, boundary)
+                    end
+                else
+                    if not table.find(beatData.Beats, boundary)  then 
+                        table.insert(BeatMap, {
+                            ["Time"] = math.round(time, 1),
+                            ["Beats"] = {
+                                boundary
+                            },
+                            ["Powerup"] = "2xScore"
+                        })
+                    end
                 end
             else
                 table.insert(BeatMap, {
