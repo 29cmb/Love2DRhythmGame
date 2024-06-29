@@ -181,7 +181,7 @@ function love.draw()
             levelPositions = {}
             love.filesystem.setIdentity("rhythm-game-levels")
             for _, v in ipairs(love.filesystem.getDirectoryItems("")) do
-                if v:match("^.+(%..+)$") == ".rhythm" then
+                if v:match("^.+(%..+)$") == ".rhythm" or v:match("^.+(%..+)$") == ".lua" then -- a rhythm file is just a lua file in disguise
                     love.graphics.rectangle("fill", 2, (#levelPositions * 50) + 200, 400, 45)
                     love.graphics.setColor(0,0,0)
                     love.graphics.printf(v, 2, (#levelPositions * 50) + 200, 350)
@@ -554,7 +554,14 @@ function love.mousepressed(x, y, button)
             end
         elseif self.MenuPage == "PlayMenu" then
             if collision:CheckCollision(x, y, 1, 1, 62, 235, 117, 93) then 
-                startGame("On and On")
+                startGame("On and On", false)
+            end
+        elseif self.MenuPage == "LevelsMenu" then 
+            for _,btn in pairs(levelPositions) do 
+                if collision:CheckCollision(x, y, 1, 1, 2, btn.PosY, 400, 45) then 
+                    startGame(btn.FileName, true)
+                    return
+                end
             end
         end
     end
