@@ -322,6 +322,10 @@ local musicSelectorPage = 1
 
 function editor.draw()
     love.graphics.draw(Sprites.Background, 363, 0)
+    if getStartedHint then
+        love.graphics.setFont(Fonts.Score)
+        love.graphics.printf("Drag a file or place a beat to get started!", 700, 300, 200)
+    end
 
     if musicSelectorOpen == true then 
         love.graphics.rectangle("fill", 725, 300, 250, 130)
@@ -334,7 +338,13 @@ function editor.draw()
 
         love.graphics.setColor(0, 0, 0)
         love.graphics.setFont(Fonts.SmallScore)
-        love.graphics.printf(musicSelectorItems[musicSelectorPage].SongName, 740, 310, 100)
+        love.graphics.printf(musicSelectorItems[musicSelectorPage].SongName, 740, 310, 200)
+        love.graphics.push()
+        love.graphics.scale(0.8)
+        love.graphics.printf(musicSelectorItems[musicSelectorPage].Artist, 925, 410, 300)
+        love.graphics.pop()
+
+        love.graphics.setColor(1, 1, 1, 1)
     end
 
     for i = 1, 4 do 
@@ -517,10 +527,7 @@ function editor.draw()
     -- music selector
     love.graphics.draw(Sprites.Music, 675, 220)
 
-    if getStartedHint then
-        love.graphics.setFont(Fonts.Score)
-        love.graphics.printf("Drag a file or place a beat to get started!", 700, 300, 200)
-    end
+    
 
     if playtestMode == true then 
         for _,beatData in pairs(BeatMap.Beats) do
