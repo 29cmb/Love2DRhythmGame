@@ -68,7 +68,8 @@ local Powerups = {
 
 local BeatMap = {
     ["Data"] = {
-        ["Song"] = "On and On"
+        ["Song"] = "On and On",
+        ["BackgroundImage"] = "Images/Background.png" -- no variability yet
     },
     ["Beats"] = {}
 }

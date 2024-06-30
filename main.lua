@@ -218,7 +218,7 @@ function love.draw()
         love.graphics.draw(Sprites.PowerupBorder)
     end
 
-    local BeatMap = require(self.ActiveSong)
+    local BeatMap = self.ActiveSong
     for i = 1, 4 do
         local circleX = spacing * i + circleRadius * (2 * i - 1)
         for _,pSystem in pairs(ParticleSystems[i]) do 
@@ -417,11 +417,23 @@ function love.update(dt)
     end
 end
 
-function startGame(song, custom)
+function startGame(song, custom, customBeatMap)
     if custom == true then 
-        -- later
+        self.ActiveSong = customBeatMap.Beats
+        self.GameStarted = true
+
+        if self.ActiveAudio ~= nil then 
+            self.ActiveAudio:stop()
+        end
+
+        local audio = love.audio.newSource("Songs/" .. song .. "/Music.mp3", "stream")
+        audio:setVolume(0.6)
+        audio:play()
+
+        self.Background = love.graphics.newImage(customBeatMap.Data.BackgroundImage)
+        self.ActiveAudio = audio
     else
-        self.ActiveSong = "Songs." .. song .. ".beats"
+        self.ActiveSong = require("Songs." .. song .. ".beats")
         self.GameStarted = true
 
         if self.ActiveAudio ~= nil then 
@@ -559,7 +571,7 @@ function love.mousepressed(x, y, button)
         elseif self.MenuPage == "LevelsMenu" then 
             for _,btn in pairs(levelPositions) do 
                 if collision:CheckCollision(x, y, 1, 1, 2, btn.PosY, 400, 45) then 
-                    startGame(btn.FileName, true)
+                    --startGame(btn.FileName, true) -- TODO
                     return
                 end
             end
@@ -571,23 +583,30 @@ function love.filedropped(file)
     if self.GameStarted == false then
         filename = file:getFilename()
 	    ext = filename:match("%.%w+$")
-        if ext == ".lua" then 
-             if self.InEditor == false then 
-                if editorLoaded == false then 
-                    editor.load()
-                else
-                    love.window.setMode(1024, 500)
+        if ext == ".rhythm" then 
+            if self.MenuPage == "LevelsMenu" then 
+                file:open("r")
+                local data = load(file:read())()
+                startGame(data.Data.Song, true, data)
+            else 
+                if self.InEditor == false then 
+                    if editorLoaded == false then 
+                        editor.load()
+                        love.window.setMode(1024, 500)
+                    end
+
+                    editorLoaded = true
+                    self.InEditor = true
                 end
 
-                editorLoaded = true
-                self.InEditor = true
-            end
-
-            local confirm = love.window.showMessageBox("Confirm", "Would you like to load level '" .. file:getFilename() .. "'?", {"No", "Yes"}, "info", true)
-            if confirm == 2 then 
-                editor.fileLoaded(file)
+                local confirm = love.window.showMessageBox("Confirm", "Would you like to load level '" .. file:getFilename() .. "'?", {"No", "Yes"}, "info", true)
+                if confirm == 2 then 
+                    editor.fileLoaded(file)
+                end
             end
         end
+
+       
     end
 end
 
