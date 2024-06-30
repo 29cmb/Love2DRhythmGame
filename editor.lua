@@ -4,7 +4,6 @@ local spacing = (300 - (4 * circleRadius * 2)) / 5
 local circleY = 500 - circleRadius - 40
 
 local collision = require("collision")
-
 local Sprites = {
     ["Bomb"] = "Images/bomb.png",
     ["PowerupBorder"] = "Images/PowerupBorder.png",
@@ -259,6 +258,7 @@ local buttons = {
         end,
         ["callback"] = function()
             require("main").InEditor = false
+            require("main").endGame()
             love.window.setMode(300, 500)
         end
     },

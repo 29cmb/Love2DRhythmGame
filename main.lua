@@ -408,7 +408,7 @@ function love.update(dt)
 
     if gameStarted == false then 
         gameStarted = true
-        endGame()
+        self.endGame()
     end
 
     for i = 1, 4 do 
@@ -492,7 +492,7 @@ function unpause()
     end
 end
 
-function endGame()
+function self.endGame()
     self.GameStarted = false
     self.GamePaused = false
     self.GameFinished = false
@@ -525,6 +525,7 @@ function endGame()
     self.MenuPage = "MainMenu"
 
     self.ActiveAudio = love.audio.newSource("NonLevelMusic/MenuLoop.mp3", "stream")
+    self.ActiveAudio:setLooping(true)
     self.ActiveAudio:play()
 end
 
@@ -559,7 +560,7 @@ function love.mousepressed(x, y, button)
     if self.GameStarted == true then
         if self.GameFinished == true then
             if collision:CheckCollision(x, y, 1, 1, 24, 376, 254, 100) then 
-                endGame()
+                self.endGame()
             end
         else
             if collision:CheckCollision(x, y, 1, 1, 230, 10, 65, 65) then
@@ -573,7 +574,7 @@ function love.mousepressed(x, y, button)
 
         if self.GamePaused == true then 
             if collision:CheckCollision(x, y, 1, 1, 130, 85, 168, 67) then 
-                endGame()
+                self.endGame()
             end
         end
     else
