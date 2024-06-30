@@ -206,10 +206,15 @@ function love.draw()
     if self.GameFinished == true then 
         love.graphics.setFont(Fonts.Score)
         
-        
         if self.VisualScore < self.Score then 
+            print(self.VisualScore, self.Score)
             love.graphics.draw(Sprites.ExitEndGameOverlay)
-            self.VisualScore = math.clamp(self.VisualScore + math.floor((self.Score/300)), 0, self.Score)
+            if self.Score >= 300 then 
+                self.VisualScore = math.clamp(self.VisualScore + math.floor((self.Score/300)), 0, self.Score)
+            else
+                self.VisualScore = self.Score
+            end
+            
             SFX.Point:play()
         else
             love.graphics.draw(Sprites.FinishedOverlay)
@@ -405,9 +410,7 @@ function love.update(dt)
         gameStarted = true
         endGame()
     end
-    if love.keyboard.isDown("l") then 
-        self.GameFinished = true
-    end
+
     for i = 1, 4 do 
         for _,pSystem in pairs(ParticleSystems[i]) do
             pSystem:update(dt)
