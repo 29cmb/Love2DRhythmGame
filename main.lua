@@ -579,9 +579,9 @@ function love.mousepressed(x, y, button)
         end
     else
         if self.MenuPage == "MainMenu" then 
-            if collision:CheckCollision(x, y, 1, 1, 62, 96, 177, 93) then
+            if collision:CheckCollision(x, y, 1, 1, 62, 80, 177, 93) then
                 self.MenuPage = "PlayMenu"
-            elseif collision:CheckCollision(x, y, 1, 1, 62, 218, 177, 93) then
+            elseif collision:CheckCollision(x, y, 1, 1, 62, 202, 177, 93) then
                 if editorLoaded == false then 
                     editor.load()
                 else
@@ -591,7 +591,7 @@ function love.mousepressed(x, y, button)
                 editorLoaded = true
                 self.InEditor = true
                 self.ActiveAudio:stop()
-            elseif collision:CheckCollision(x, y, 1, 1, 62, 340, 177, 93) then
+            elseif collision:CheckCollision(x, y, 1, 1, 62, 325, 177, 93) then
                 self.MenuPage = "LevelsMenu"
             end
         elseif self.MenuPage == "PlayMenu" then
