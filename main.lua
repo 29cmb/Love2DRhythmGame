@@ -34,7 +34,8 @@ local Sprites = {
     ["LevelsMenu"] = "Images/LevelsMenu.png",
     ["ExitGame"] = "Images/ExitGame.png",
     ["FinishedOverlay"] = "Images/FinishedOverlay.png",
-    ["ExitEndGameOverlay"] = "Images/ExitGameEndGameOverlay.png"
+    ["ExitEndGameOverlay"] = "Images/ExitGameEndGameOverlay.png",
+    ["BackButton"] = "Images/BackButton.png"
 }
 
 local Fonts = {
@@ -171,6 +172,9 @@ function love.draw()
 
     if self.GameStarted == false then
         love.graphics.draw(Sprites[self.MenuPage])
+        if self.MenuPage ~= "MainMenu" then 
+            love.graphics.draw(Sprites.BackButton, 5, 5)
+        end
 
         if self.MenuPage == "LevelsMenu" then 
             levelPositions = {}
@@ -580,13 +584,19 @@ function love.mousepressed(x, y, button)
         elseif self.MenuPage == "PlayMenu" then
             if collision:CheckCollision(x, y, 1, 1, 62, 235, 117, 93) then 
                 startGame("On and On", false)
+            elseif collision:CheckCollision(x, y, 1, 1, 5, 5, 65, 65) then
+                self.MenuPage = "MainMenu"
             end
         elseif self.MenuPage == "LevelsMenu" then 
             for _,btn in pairs(levelPositions) do 
                 if collision:CheckCollision(x, y, 1, 1, 2, btn.PosY, 400, 45) then 
-                    startGame(btn.Song, true, btn.Data) -- TODO
+                    startGame(btn.Song, true, btn.Data)
                     return
                 end
+            end
+
+            if collision:CheckCollision(x, y, 1, 1, 5, 5, 65, 65) then
+                self.MenuPage = "MainMenu"
             end
         end
     end
