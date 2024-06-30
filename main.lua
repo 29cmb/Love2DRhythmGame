@@ -86,7 +86,7 @@ self.MenuPage = "MainMenu"
 
 self.Powerups = {
     ["2xScore"] = {
-        Duration = 5,
+        Duration = 7,
         Sprite = "Images/GoldenBeat.png",
         SpriteOffset = {x = 22, y = 30},
         Callback = function()
