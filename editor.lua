@@ -257,6 +257,25 @@ local buttons = {
             return playtestMode == false
         end,
         ["callback"] = function()
+            BeatMap = {
+                ["Data"] = {
+                    ["Song"] = "On and On",
+                    ["BackgroundImage"] = "Images/Background.png" -- no variability yet
+                },
+                ["Beats"] = {}
+            }
+
+            fileName = nil
+            holdingColumn = 0
+            holdingBeatPosX = 0
+            holdingBeatPosY = 0
+            musicSelectorItems = {}
+            musicSelectorPage = 1
+            musicSelectorOpen = false
+            page = 1
+
+            ActiveSong = nil
+
             local main = require('main')
 
             main.InEditor = false
