@@ -348,7 +348,7 @@ function love.draw()
                     table.insert(self.Beats[beatCircle], {
                         ["PosY"] = (460 - (circleRadius * 2)) - (168 * beatData.Time),
                         ["Hit"] = false,
-                        ["SpeedMod"] = 1,
+                        ["SpeedMod"] = beatData.SpeedMod or 1,
                         ["Bomb"] = beatData.Bomb or false,
                         ["Powerup"] = beatData.Powerup or "None",
                         ["Trail"] = {
@@ -369,7 +369,7 @@ function love.draw()
                         table.insert(self.Beats[beat], {
                             ["PosY"] = -5,
                             ["Hit"] = false,
-                            ["SpeedMod"] = 1,
+                            ["SpeedMod"] = beatData.SpeedMod or 1,
                             ["Bomb"] = beatData.Bomb or false,
                             ["Powerup"] = beatData.Powerup or "None",
                             ["Trail"] = {
