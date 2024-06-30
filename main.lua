@@ -3,7 +3,6 @@ local circleRadius = 20
 local spacing = (300 - (4 * circleRadius * 2)) / 5
 local circleY = 500 - circleRadius - 40
 
-local UI = require("Packages.UI")
 local collision = require("collision")
 local editor = require("editor")
 
@@ -24,10 +23,6 @@ self.KeyCodes = {
 }
 
 self.InEditor = false;
-
-self.SongKeyCodes = {
-    ["On and On"] = "1"
-}
 
 local Sprites = {
     ["Bomb"] = "Images/bomb.png",
@@ -55,8 +50,8 @@ local SFX = {
 local ParticleSystems = {
     ["HitBeat"] = {
         ["Image"] = "Images/Sparkle.png",
-        ["Size"] = 64,
-        ["LifeTime"] = {0.5,1},
+        ["Size"] = 32,
+        ["LifeTime"] = {0.25, 0.5},
         ["Speed"] = 0,
     }
 }
@@ -398,17 +393,11 @@ function love.draw()
         love.graphics.setColor(1,1,1,1)
     end
 end
-local gameStarted = false
 function love.update(dt)
 
     if self.InEditor == true then
         editor.update(dt)
         return
-    end
-
-    if gameStarted == false then 
-        gameStarted = true
-        self.endGame()
     end
 
     for i = 1, 4 do 
@@ -425,12 +414,6 @@ function love.update(dt)
                 self.Powerups[self.Powerup].Undo()
                 self.PowerupTimer = 0
                 self.Powerup = "None"
-            end
-        end
-    else
-        for song, key in pairs(self.SongKeyCodes) do 
-            if love.keyboard.isDown(key) then
-                startGame(song)
             end
         end
     end
