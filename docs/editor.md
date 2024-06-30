@@ -34,3 +34,29 @@ Not only can you place beats, you can also place powerups that give special abil
 "Ice Cube" - 75% speed for 5 seconds
 ### Hazards
 "Bomb" - Lose 2000 score
+
+## Editor Tools
+![Editor tools](images/EditorTools.png)
+
+Beats are great and all, but if you don't know how to control the actual editor itself, then you won't have the best time creating levels
+
+### Page Switchers
+The two top arrows are used for switching between pages, each page spans 2.5 seconds and moving between them will only show you beats from that time period. The page you are on is shown right next to the buttons, formatted as "Page {page}"
+
+![Page switcher](images/PageSwitcher.png)
+
+### Save
+The save button is how you can store the contents of your level in a file to access later. If you opened a file, the text next to the save button might say the name of the file it will save to, otherwise it will read "Unsaved"
+
+The name of the file is "Level {amount of files in save directory + 1}," but after you save it, you can change the file name youself.
+
+Editor files are always saved in `%appdata%/LOVE/rhythm-game-levels` as `.rhythm` files
+
+![Unsaved](images/Unsaved.png)
+
+### Music
+This is probably the most important editor button (aside from beat placer), I mean, it's called a rhythm game for a reason.
+
+The music selector allows you to select a song from the main levels (currently only one is available, I plan to add more soon. If you don't want to wait, open a pull request with your own `.rthythm` file!)
+
+![Music Selector](images/MusicSelector.png)
