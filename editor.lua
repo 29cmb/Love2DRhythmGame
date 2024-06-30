@@ -719,7 +719,7 @@ function editor.mousepressed(x,y,button)
             holding = true
             local beatData = getBeatDataFromTime(math.round(time, 1))
             if beatData then
-                if beatData.Bomb ~= true then
+                if beatData.Bomb ~= true and beatData.Powerup == nil then
                     if not table.find(beatData.Beats, boundary) then 
                         table.insert(beatData.Beats, boundary)
                     end
