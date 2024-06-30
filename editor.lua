@@ -254,11 +254,14 @@ local buttons = {
         ["scaleX"] = 168,
         ["scaleY"] = 67,
         ["condition"] = function()
-            return true
+            return playtestMode == false
         end,
         ["callback"] = function()
-            require("main").InEditor = false
-            require("main").endGame()
+            local main = require('main')
+
+            main.InEditor = false
+            main.endGame()
+
             love.window.setMode(300, 500)
         end
     },
@@ -435,6 +438,14 @@ function editor.draw()
             love.graphics.setColor(1, 1, 1)
         else
             love.graphics.circle("line", circleX, circleY, circleRadius)
+            for _,beat in pairs(beats[i]) do
+                if beat.Hit and beat.Trail and beat.Trail.Time then 
+                    if beat.Trail.Holding == true then 
+                        beat.Trail.Held = true
+                        beat.Trail.Holding = false
+                    end
+                end
+            end
         end
 
         if i ~= 4 then 
