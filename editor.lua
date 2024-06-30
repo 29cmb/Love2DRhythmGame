@@ -291,6 +291,28 @@ local buttons = {
                 fileName = "Level" .. (countFilesInDirectory("") - 3) .. ".rhythm" 
                 love.filesystem.newFile(fileName)
             end
+
+            local highestTime = 0
+            local foundEndCard = false
+
+            for _,beat in pairs(BeatMap.Beats) do
+                if beat.Time > highestTime then
+                    highestTime = beat.Time
+                end
+
+                if beat.End == true then 
+                    foundEndCard = true
+                    break
+                end
+            end
+
+            if foundEndCard == false then 
+                table.insert(BeatMap.Beats, {
+                    ["Time"] = highestTime + 4.5, -- 2.5 for the beat to reach the bottom of the screen and 2 for clarity
+                    ["Beats"] = {},
+                    ["End"] = true
+                })
+            end
             
             love.filesystem.write(fileName, "return " .. tableToString(BeatMap, ""))
             love.window.showMessageBox("Saved", "Save was successful!")

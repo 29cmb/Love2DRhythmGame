@@ -340,28 +340,48 @@ function love.draw()
     love.graphics.print("Score: " .. self.Score, 10, 10)
     love.graphics.pop()
 
-    for _, beat in pairs(BeatMap) do
-        if self.TimeSinceGameBegan >= beat.Time and not table.find(self.ActiveBeats, beat) then
-            if beat.End == true then 
-                self.GameFinished = true
-            else
-                table.insert(self.ActiveBeats, beat)
-                for _,v in pairs(beat.Beats) do
-                    table.insert(self.Beats[v], {
-                        ["PosY"] = -5,
+    for _, beatData in pairs(BeatMap) do
+        if not table.find(self.ActiveBeats, beatData) then 
+            if beatData.Time <= 2.5 then
+                table.insert(self.ActiveBeats, beatData)
+                for _,beatCircle in pairs(beatData.Beats) do
+                    table.insert(self.Beats[beatCircle], {
+                        ["PosY"] = (460 - (circleRadius * 2)) - (168 * beatData.Time),
                         ["Hit"] = false,
-                        ["SpeedMod"] = beat.SpeedMod,
-                        ["Bomb"] = beat.Bomb or false,
-                        ["Powerup"] = beat.Powerup or "None",
+                        ["SpeedMod"] = 1,
+                        ["Bomb"] = beatData.Bomb or false,
+                        ["Powerup"] = beatData.Powerup or "None",
                         ["Trail"] = {
-                            ["Time"] = beat.Trail or nil, 
+                            ["Time"] = beatData.Trail or nil, 
                             ["Held"] = false,
                             ["Holding"] = false
                         },
                     })
                 end
-            end
-        end
+            else
+                if beatData.Time <= self.TimeSinceGameBegan then 
+                    if beatData.End == true then 
+                        self.GameFinished = true
+                        break
+                    end
+                    table.insert(self.ActiveBeats, beatData)
+                    for _,beat in pairs(beatData.Beats) do
+                        table.insert(self.Beats[beat], {
+                            ["PosY"] = -5,
+                            ["Hit"] = false,
+                            ["SpeedMod"] = 1,
+                            ["Bomb"] = beatData.Bomb or false,
+                            ["Powerup"] = beatData.Powerup or "None",
+                            ["Trail"] = {
+                                ["Time"] = beatData.Trail or nil, 
+                                ["Held"] = false,
+                                ["Holding"] = false
+                            },
+                        })
+                    end
+                end
+            end 
+        end 
     end
     
     if self.GamePaused then

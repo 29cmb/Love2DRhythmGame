@@ -1,6 +1,6 @@
 return {
     {
-       ["Time"] = 0,
+       ["Time"] = 2.5,
        ["Beats"] = {
             1,
             3
@@ -285,6 +285,7 @@ return {
     },
     {
         ["Time"] = 57,
+        ["Beats"] = {},
         ["End"] = true
     }
 }
