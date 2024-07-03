@@ -1,6 +1,6 @@
 # JAGRG (Just another generic rhythm game)
-- Play through the only currently finished level or build your own!
-- Share your creations with others
+- Play through the 3 main levels or build your own!
+- Share your creations with others!
 - See who can get the highest score!
 
 Game developed and maintained by DevCmb

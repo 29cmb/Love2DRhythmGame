@@ -57,6 +57,17 @@ Editor files are always saved in `%appdata%/LOVE/rhythm-game-levels` as `.rhythm
 ### Music
 This is probably the most important editor button (aside from beat placer), I mean, it's called a rhythm game for a reason.
 
-The music selector allows you to select a song from the main levels (currently only one is available, I plan to add more soon. If you don't want to wait, open a pull request with your own `.rthythm` file!)
+The music selector allows you to select a song from the 3 main levels. Want more to choose from? Make your own level and submit it on the [repository](https://github.com/29cmb/Love2DRhythmGame).
 
 ![Music Selector](images/MusicSelector.png)
+
+### Record
+
+![Record](images/record.png)
+
+The record tool allows you to record your inputs and save them to the level data (to act out the level)
+
+
+This is the best way to make your levels, as you can hear the music while creating it. All other tools can be used to fine-tune your levels. When you are recoding, you will see this label
+
+![Recording label](images/RecordingLabel.png)
