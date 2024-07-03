@@ -148,6 +148,7 @@ function playtest(o)
             ActiveAudio:stop()
             ActiveAudio = nil
         end
+        recording = false
     end
 end
 
@@ -444,7 +445,9 @@ function editor.draw()
         love.graphics.printf("Drag a file or place a beat to get started!", 800, 360, 200)
     end
     musicSelectorItems = {}
-
+    if recording == true then 
+        love.graphics.print("Recording...", 430, 40)
+    end
     for _,song in pairs(love.filesystem.getDirectoryItems("/Songs")) do 
         local songData = require("Songs." .. tostring(song) .. ".data")
         table.insert(musicSelectorItems, songData)
@@ -478,8 +481,21 @@ function editor.draw()
             love.graphics.circle("line", circleX, circleY, circleRadius)
             love.graphics.setColor(1, 1, 1)
             if recording == true then 
-                if not table.find(holdingKeys, KeyCodes[i]) then 
-                    
+                if not table.find(holdingKeys, KeyCodes[i]) then
+                    table.insert(holdingKeys, KeyCodes[i])
+                    local fromTime = getBeatDataFromTime(timePassed)
+                    if not fromTime then 
+                        table.insert(BeatMap.Beats, {
+                            ["Time"] = timePassed - 2.5,
+                            ["Beats"] = {
+                                i
+                            }
+                        })
+                    else
+                        if not table.find(fromTime.Beats, i) then 
+                            table.insert(fromTime.Beats, i)
+                        end
+                    end
                 end
             end
         else
@@ -666,7 +682,7 @@ function editor.draw()
         love.graphics.draw(Sprites.Record, 675, 290)
     end    
 
-    if playtestMode == true then 
+    if playtestMode == true and recording == false then 
         for _,beatData in pairs(BeatMap.Beats) do
             if not table.find(activeBeats, beatData) then 
                 if beatData.Time <= 2.5 then
