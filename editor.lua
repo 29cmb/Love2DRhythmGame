@@ -68,7 +68,7 @@ local Powerups = {
 
 local BeatMap = {
     ["Data"] = {
-        ["Song"] = "On and On",
+        ["Song"] = "Fearless II",
         ["BackgroundImage"] = "Images/Background.png" -- no variability yet
     },
     ["Beats"] = {}
@@ -491,7 +491,7 @@ function editor.draw()
                 if found == false then
                     holdingKeys[KeyCodes[i]] = {0,timePassed}
                     local fromTime = getBeatDataFromTime(timePassed)
-                    if not fromTime then 
+                    if not fromTime then
                         table.insert(BeatMap.Beats, {
                             ["Time"] = timePassed - 2.5,
                             ["Beats"] = {
@@ -794,7 +794,7 @@ function editor.mousepressed(x,y,button)
     end
 
     if collided == false and editorMode ~= "none" and playtestMode == false then -- only do editor modes if the user did not press a button
-        local time = ((((460 - (circleRadius * 2)) - y)/(460 - (circleRadius * 2))) * 2.5) + ((page-1) * 2.5)
+        local time = ((((460 - (circleRadius * 2)) - y)/(460 - (circleRadius * 2))) * 2.5) --+ ((page-1) * 2.5)
         if time <= 0 then return end 
 
         local boundary = 0

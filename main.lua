@@ -142,8 +142,9 @@ function self.load()
                 if not ParticleSystems[i] then ParticleSystems[i] = {} end
                 ParticleSystems[i][name] = particleSystem
             end
-            
         end
+
+        
     else
         editor.load()
     end
@@ -154,9 +155,13 @@ love.load = self.load
 self.VisualScore = 0
 
 local levelPositions = {}
-
+local firstTick = true
 function love.draw()
-
+    if firstTick then 
+        firstTick = false
+        self.endGame()
+    end
+    
     if self.InEditor == true then
         editor.draw()
         return
@@ -584,8 +589,10 @@ function love.mousepressed(x, y, button)
                 self.MenuPage = "LevelsMenu"
             end
         elseif self.MenuPage == "PlayMenu" then
-            if collision:CheckCollision(x, y, 1, 1, 62, 235, 117, 93) then 
+            if collision:CheckCollision(x, y, 1, 1, 62, 150, 117, 93) then 
                 startGame("On and On", false)
+            elseif collision:CheckCollision(x, y, 1, 1, 62, 260, 117, 93) then
+                startGame("Fearless II", false)
             elseif collision:CheckCollision(x, y, 1, 1, 5, 5, 65, 65) then
                 self.MenuPage = "MainMenu"
             end
