@@ -353,17 +353,20 @@ local buttons = {
         end
     },
     ["LargeButtonLeft"] = {
-        ["x"] = 715,
-        ["y"] = 400,
+        ["x"] = 675,
+        ["y"] = 300,
         ["scaleX"] = 48,
         ["scaleY"] = 128,
         ["condition"] = function()
+            print("Condition")
             return musicSelectorOpen == true and playtestMode == false
         end,
         ["callback"] = function()
-            if musicSelectorPage > 1 then 
+            if musicSelectorPage > 1 then
                 musicSelectorPage = musicSelectorPage - 1
                 BeatMap.Data.Song = musicSelectorItems[musicSelectorPage].SongName
+            else
+                musicSelectorPage = #musicSelectorItems
             end
         end
     },
