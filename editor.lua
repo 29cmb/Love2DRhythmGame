@@ -596,9 +596,9 @@ function editor.draw()
                     end
                     
                     
-                    if beat.Hit == false then
-                        beat.PosY = beat.PosY + 3
-                    end
+                    -- if beat.Hit == false then
+                    --     beat.PosY = beat.PosY + 3
+                    -- end
 
                     if love.keyboard.isDown(KeyCodes[i]) then 
                         local distance = math.abs(beat.PosY - circleY)
@@ -755,7 +755,10 @@ function editor.update(dt)
         timePassed = timePassed + dt
 
         for i = 1, 4 do 
-            for _,beat in pairs(beats[i]) do 
+            for _,beat in pairs(beats[i]) do
+                if beat.Hit == false then 
+                    beat.PosY = beat.PosY + (60 * dt * 3)
+                end
                 if beat.Trail and beat.Trail.Time then
                     if beat.Trail.Holding == true then
                         beat.Trail.Time = beat.Trail.Time - dt
