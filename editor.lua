@@ -322,7 +322,13 @@ local buttons = {
             local highestTime = 0
             local foundEndCard = false
 
-            for _,beat in pairs(BeatMap.Beats) do
+            for i,beat in pairs(BeatMap.Beats) do
+                if beat.Time > 2.5 then 
+                    print("higher", beat.Time)
+                    BeatMap.Beats[i].Time = BeatMap.Beats[i].Time - 2.5
+                    print(BeatMap.Beats[i].Time)
+                end
+
                 if beat.Time > highestTime then
                     highestTime = beat.Time
                 end
@@ -492,6 +498,7 @@ function editor.draw()
                     holdingKeys[KeyCodes[i]] = {0,timePassed}
                     local fromTime = getBeatDataFromTime(timePassed)
                     if not fromTime then
+                        print(timePassed)
                         table.insert(BeatMap.Beats, {
                             ["Time"] = timePassed - 2.5,
                             ["Beats"] = {
@@ -700,7 +707,8 @@ function editor.draw()
     end    
 
     if playtestMode == true and recording == false then 
-        for _,beatData in pairs(BeatMap.Beats) do
+        for i,beatData in pairs(BeatMap.Beats) do
+            print(i, beatData.Time)
             if not table.find(activeBeats, beatData) then 
                 if beatData.Time <= 2.5 then
                     table.insert(activeBeats, beatData)
@@ -794,7 +802,7 @@ function editor.mousepressed(x,y,button)
     end
 
     if collided == false and editorMode ~= "none" and playtestMode == false then -- only do editor modes if the user did not press a button
-        local time = ((((460 - (circleRadius * 2)) - y)/(460 - (circleRadius * 2))) * 2.5) --+ ((page-1) * 2.5)
+        local time = ((((460 - (circleRadius * 2)) - y)/(460 - (circleRadius * 2))) * 2.5) + ((page-1) * 2.5)
         if time <= 0 then return end 
 
         local boundary = 0

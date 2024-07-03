@@ -368,7 +368,7 @@ function love.draw()
                     })
                 end
             else
-                if beatData.Time <= self.TimeSinceGameBegan then 
+                if beatData.Time <= (self.TimeSinceGameBegan + 2.5) then 
                     if beatData.End == true then 
                         self.GameFinished = true
                         break
