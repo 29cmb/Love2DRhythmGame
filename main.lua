@@ -211,7 +211,6 @@ function love.draw()
         love.graphics.setFont(Fonts.Score)
         
         if self.VisualScore < self.Score then 
-            print(self.VisualScore, self.Score)
             love.graphics.draw(Sprites.ExitEndGameOverlay)
             if self.Score >= 300 then 
                 self.VisualScore = math.clamp(self.VisualScore + math.floor((self.Score/300)), 0, self.Score)
@@ -269,7 +268,7 @@ function love.draw()
                 
                 
                 if self.GamePaused == false and beat.Hit == false then
-                    beat.PosY = beat.PosY + (self.Speed * (beat.SpeedMod or 1))
+                    --beat.PosY = beat.PosY + (self.Speed * (beat.SpeedMod or 1))
                 end
             else
                 self.Beats[i][beat] = nil
@@ -348,50 +347,6 @@ function love.draw()
     love.graphics.setFont(Fonts.Score)
     love.graphics.print("Score: " .. self.Score, 10, 10)
     love.graphics.pop()
-
-    for _, beatData in pairs(BeatMap) do
-        if not table.find(self.ActiveBeats, beatData) then 
-            if beatData.Time <= 2.5 then
-                table.insert(self.ActiveBeats, beatData)
-                for _,beatCircle in pairs(beatData.Beats) do
-                    table.insert(self.Beats[beatCircle], {
-                        ["PosY"] = (460 - (circleRadius * 2)) - (168 * beatData.Time),
-                        ["Hit"] = false,
-                        ["SpeedMod"] = beatData.SpeedMod or 1,
-                        ["Bomb"] = beatData.Bomb or false,
-                        ["Powerup"] = beatData.Powerup or "None",
-                        ["Trail"] = {
-                            ["Time"] = beatData.Trail or nil, 
-                            ["Held"] = false,
-                            ["Holding"] = false
-                        },
-                    })
-                end
-            else
-                if beatData.Time <= (self.TimeSinceGameBegan + 2.5) then 
-                    if beatData.End == true then 
-                        self.GameFinished = true
-                        break
-                    end
-                    table.insert(self.ActiveBeats, beatData)
-                    for _,beat in pairs(beatData.Beats) do
-                        table.insert(self.Beats[beat], {
-                            ["PosY"] = -5,
-                            ["Hit"] = false,
-                            ["SpeedMod"] = beatData.SpeedMod or 1,
-                            ["Bomb"] = beatData.Bomb or false,
-                            ["Powerup"] = beatData.Powerup or "None",
-                            ["Trail"] = {
-                                ["Time"] = beatData.Trail or nil, 
-                                ["Held"] = false,
-                                ["Holding"] = false
-                            },
-                        })
-                    end
-                end
-            end 
-        end 
-    end
     
     if self.GamePaused then
         love.graphics.draw(Sprites.Resume, 230, 10)
@@ -402,6 +357,7 @@ function love.draw()
         love.graphics.setColor(1,1,1,1)
     end
 end
+
 function love.update(dt)
 
     if self.InEditor == true then
@@ -418,6 +374,61 @@ function love.update(dt)
     if self.GameStarted then
         if self.GamePaused == false then 
             self.TimeSinceGameBegan = self.TimeSinceGameBegan + ((dt/3)*self.Speed)
+            if self.ActiveSong == nil then print("no") return end
+            for _, beatData in pairs(self.ActiveSong) do
+                if not table.find(self.ActiveBeats, beatData) then 
+                    if beatData.Time <= 2.5 then
+                        table.insert(self.ActiveBeats, beatData)
+                        for _,beatCircle in pairs(beatData.Beats) do
+                            table.insert(self.Beats[beatCircle], {
+                                ["PosY"] = (460 - (circleRadius * 2)) - (168 * beatData.Time),
+                                ["Hit"] = false,
+                                ["SpeedMod"] = beatData.SpeedMod or 1,
+                                ["Bomb"] = beatData.Bomb or false,
+                                ["Powerup"] = beatData.Powerup or "None",
+                                ["Trail"] = {
+                                    ["Time"] = beatData.Trail or nil, 
+                                    ["Held"] = false,
+                                    ["Holding"] = false
+                                },
+                            })
+                        end
+                    else
+                        if beatData.Time <= (self.TimeSinceGameBegan + 2.5) then 
+                            if beatData.End == true then 
+                                self.GameFinished = true
+                                break
+                            end
+                            table.insert(self.ActiveBeats, beatData)
+                            for _,beat in pairs(beatData.Beats) do
+                                table.insert(self.Beats[beat], {
+                                    ["PosY"] = -5,
+                                    ["Hit"] = false,
+                                    ["SpeedMod"] = beatData.SpeedMod or 1,
+                                    ["Bomb"] = beatData.Bomb or false,
+                                    ["Powerup"] = beatData.Powerup or "None",
+                                    ["Trail"] = {
+                                        ["Time"] = beatData.Trail or nil, 
+                                        ["Held"] = false,
+                                        ["Holding"] = false
+                                    },
+                                })
+                            end
+                        end
+                    end 
+                end 
+            end
+
+            for i = 1, 4 do 
+                for _,beat in pairs(self.Beats[i]) do 
+                    if self.GamePaused == false and beat.Hit == false then
+                        beat.PosY = beat.PosY + math.abs(60 * dt * (self.Speed * (beat.SpeedMod or 1)))
+                        -- make it go crazy
+                        -- beat.PosY = 60 * dt * (beat.PosY + self.Speed * (beat.SpeedMod or 1))
+                    end
+                end
+            end
+            
             self.PowerupTimer = self.PowerupTimer - dt
             if self.PowerupTimer <= 0 and self.Powerup ~= "None" then 
                 self.Powerups[self.Powerup].Undo()
@@ -426,6 +437,7 @@ function love.update(dt)
             end
         end
     end
+    
 
     for i = 1, 4 do 
         for _,beat in pairs(self.Beats[i]) do 
