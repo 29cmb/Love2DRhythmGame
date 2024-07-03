@@ -601,15 +601,17 @@ function love.mousepressed(x, y, button)
                 self.MenuPage = "LevelsMenu"
             end
         elseif self.MenuPage == "PlayMenu" then
-            if collision:CheckCollision(x, y, 1, 1, 62, 150, 117, 93) then 
+            if collision:CheckCollision(x, y, 1, 1, 62, 90, 117, 93) then 
                 startGame("On and On", false)
-            elseif collision:CheckCollision(x, y, 1, 1, 62, 260, 117, 93) then
+            elseif collision:CheckCollision(x, y, 1, 1, 62, 204, 117, 93) then
                 startGame("Fearless II", false)
+            elseif collision:CheckCollision(x, y, 1, 1, 62, 319, 117, 93) then
+                startGame("My Heart", false)
             elseif collision:CheckCollision(x, y, 1, 1, 5, 5, 65, 65) then
                 self.MenuPage = "MainMenu"
             end
         elseif self.MenuPage == "LevelsMenu" then 
-            for _,btn in pairs(levelPositions) do 
+            for _,btn in pairs(levelPositions) do
                 if collision:CheckCollision(x, y, 1, 1, 2, btn.PosY, 400, 45) then 
                     startGame(btn.Song, true, btn.Data)
                     return
