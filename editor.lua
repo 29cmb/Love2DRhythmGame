@@ -23,7 +23,8 @@ local Sprites = {
     ["Save"] = "Images/Save.png",
     ["Music"] = "Images/MusicSelector.png",
     ["LeftLargeButton"] = "Images/LeftLargeButton.png",
-    ["RightLargeButton"] = "Images/RightLargeButton.png"
+    ["RightLargeButton"] = "Images/RightLargeButton.png",
+    ["Record"] = "Images/Record.png"
 }
 
 local Fonts = {
@@ -387,6 +388,19 @@ local buttons = {
             
             BeatMap.Data.Song = musicSelectorItems[musicSelectorPage].SongName
         end
+    },
+    ["Record"] = {
+        ["x"] = 675,
+        ["y"] = 290,
+        ["scaleX"] = 65,
+        ["scaleY"] = 65,
+        ["condition"] = function()
+            return musicSelectorOpen == false and playtestMode == false
+        end,
+        ["callback"] = function()
+            -- later
+            print("start da recording")
+        end
     }
 }
 
@@ -422,7 +436,7 @@ function editor.draw()
     love.graphics.draw(Sprites.Background, 363, 0)
     if getStartedHint then
         love.graphics.setFont(Fonts.Score)
-        love.graphics.printf("Drag a file or place a beat to get started!", 700, 300, 200)
+        love.graphics.printf("Drag a file or place a beat to get started!", 800, 360, 200)
     end
     musicSelectorItems = {}
 
@@ -637,7 +651,10 @@ function editor.draw()
     -- music selector
     love.graphics.draw(Sprites.Music, 675, 220)
 
-    
+    -- record
+    if not musicSelectorOpen then 
+        love.graphics.draw(Sprites.Record, 675, 290)
+    end    
 
     if playtestMode == true then 
         for _,beatData in pairs(BeatMap.Beats) do
