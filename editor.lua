@@ -480,9 +480,16 @@ function editor.draw()
             love.graphics.setColor(0,0,0)
             love.graphics.circle("line", circleX, circleY, circleRadius)
             love.graphics.setColor(1, 1, 1)
-            if recording == true then 
-                if not table.find(holdingKeys, KeyCodes[i]) then
-                    table.insert(holdingKeys, KeyCodes[i])
+            if recording == true then
+                local found = false
+                for key, time in pairs(holdingKeys) do 
+                    if key == KeyCodes[i] and time ~= nil then 
+                        found = true
+                    end
+                end
+
+                if found == false then
+                    holdingKeys[KeyCodes[i]] = 0
                     local fromTime = getBeatDataFromTime(timePassed)
                     if not fromTime then 
                         table.insert(BeatMap.Beats, {
@@ -741,12 +748,18 @@ function editor.update(dt)
 
         if recording == true then 
             for _,keycode in pairs(KeyCodes) do 
-                if not love.keyboard.isDown(keycode) and table.find(holdingKeys, keycode) then 
-                    for index,key in pairs(holdingKeys) do 
-                        if key == keycode then 
-                            table.remove(holdingKeys, index)
-                        end
-                    end
+                local found = false
+                local k = nil
+
+                for key, time in pairs(holdingKeys) do 
+                    if key == keycode then found = true k = key break end
+                end
+
+                if not love.keyboard.isDown(keycode) and found and holdingKeys[k] ~= nil then 
+                    holdingKeys[k] = nil
+                elseif love.keyboard.isDown(keycode) and holdingKeys[keycode] ~= nil then 
+                    holdingKeys[keycode] = holdingKeys[keycode] + dt
+                    print(holdingKeys[keycode])
                 end
             end
         else
