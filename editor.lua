@@ -489,7 +489,7 @@ function editor.draw()
                 end
 
                 if found == false then
-                    holdingKeys[KeyCodes[i]] = 0
+                    holdingKeys[KeyCodes[i]] = {0,timePassed}
                     local fromTime = getBeatDataFromTime(timePassed)
                     if not fromTime then 
                         table.insert(BeatMap.Beats, {
@@ -503,6 +503,16 @@ function editor.draw()
                             table.insert(fromTime.Beats, i)
                         end
                     end
+                elseif holdingKeys[KeyCodes[i]][1] > 0.6 then
+                    for _,v in pairs(BeatMap.Beats) do 
+                        if v.Time == (holdingKeys[KeyCodes[i]][2] - 2.5) then 
+                            v.Trail = timePassed - holdingKeys[KeyCodes[i]][2]
+                        else
+                            print(v.Time, holdingKeys[KeyCodes[i]][2])
+                        end
+                    end
+                else
+                    print(holdingKeys[KeyCodes[i]][1])
                 end
             end
         else
@@ -749,17 +759,15 @@ function editor.update(dt)
         if recording == true then 
             for _,keycode in pairs(KeyCodes) do 
                 local found = false
-                local k = nil
 
                 for key, time in pairs(holdingKeys) do 
-                    if key == keycode then found = true k = key break end
+                    if key == keycode then found = true break end
                 end
 
-                if not love.keyboard.isDown(keycode) and found and holdingKeys[k] ~= nil then 
-                    holdingKeys[k] = nil
-                elseif love.keyboard.isDown(keycode) and holdingKeys[keycode] ~= nil then 
-                    holdingKeys[keycode] = holdingKeys[keycode] + dt
-                    print(holdingKeys[keycode])
+                if not love.keyboard.isDown(keycode) then 
+                    holdingKeys[keycode] = nil
+                elseif love.keyboard.isDown(keycode) and found and holdingKeys[keycode] ~= nil then 
+                    holdingKeys[keycode][1] = holdingKeys[keycode][1] + dt
                 end
             end
         else
