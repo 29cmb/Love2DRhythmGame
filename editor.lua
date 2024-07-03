@@ -408,6 +408,7 @@ local buttons = {
     }
 }
 
+local holdingKeys = {}
 
 function getBeatDataFromTime(time)
     for _,data in pairs(BeatMap.Beats) do 
@@ -476,6 +477,11 @@ function editor.draw()
             love.graphics.setColor(0,0,0)
             love.graphics.circle("line", circleX, circleY, circleRadius)
             love.graphics.setColor(1, 1, 1)
+            if recording == true then 
+                if not table.find(holdingKeys, KeyCodes[i]) then 
+                    
+                end
+            end
         else
             love.graphics.circle("line", circleX, circleY, circleRadius)
             for _,beat in pairs(beats[i]) do
@@ -715,6 +721,20 @@ function editor.update(dt)
                     end
                 end
             end
+        end
+
+        if recording == true then 
+            for _,keycode in pairs(KeyCodes) do 
+                if not love.keyboard.isDown(keycode) and table.find(holdingKeys, keycode) then 
+                    for index,key in pairs(holdingKeys) do 
+                        if key == keycode then 
+                            table.remove(holdingKeys, index)
+                        end
+                    end
+                end
+            end
+        else
+            holdingKeys = {}
         end
     end
 end
