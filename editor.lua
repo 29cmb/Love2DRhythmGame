@@ -85,6 +85,7 @@ local Colors = {
     [4] = {5/255, 255/255, 0}
 }
 local playtestMode = false
+local recording = false
 local page = 1
 local editorMode = "none"
 
@@ -130,6 +131,26 @@ local musicSelectorOpen = false
 
 local ActiveSong = nil
 
+function playtest(o)
+    playtestMode = o or not playtestMode
+    beats = {[1] = {}, [2] = {}, [3] = {}, [4] = {}}
+    activeBeats = {}
+    timePassed = 2.5
+
+    if playtestMode == true then 
+        local audio = love.audio.newSource("Songs/" .. musicSelectorItems[musicSelectorPage].SongName .. "/Music.mp3", "stream")
+        audio:setVolume(1) 
+        audio:play()
+
+        ActiveAudio = audio
+    else
+        if ActiveAudio then 
+            ActiveAudio:stop()
+            ActiveAudio = nil
+        end
+    end
+end
+
 local buttons = {
     ['Playtest'] = {
         ["x"] = 285,
@@ -139,25 +160,7 @@ local buttons = {
         ["condition"] = function()
             return true
         end,
-        ["callback"] = function()
-            playtestMode = not playtestMode
-            beats = {[1] = {}, [2] = {}, [3] = {}, [4] = {}}
-            activeBeats = {}
-            timePassed = 2.5
-
-            if playtestMode == true then 
-                local audio = love.audio.newSource("Songs/" .. musicSelectorItems[musicSelectorPage].SongName .. "/Music.mp3", "stream")
-                audio:setVolume(1) 
-                audio:play()
-
-                ActiveAudio = audio
-            else
-                if ActiveAudio then 
-                    ActiveAudio:stop()
-                    ActiveAudio = nil
-                end
-            end
-        end
+        ["callback"] = playtest
     },
     ["PlaceBeat"] = {
         ["x"] = 285,
@@ -399,7 +402,8 @@ local buttons = {
         end,
         ["callback"] = function()
             -- later
-            print("start da recording")
+            playtest(true)
+            recording = true
         end
     }
 }
