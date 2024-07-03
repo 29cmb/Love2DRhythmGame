@@ -374,7 +374,7 @@ function love.update(dt)
     if self.GameStarted then
         if self.GamePaused == false then 
             self.TimeSinceGameBegan = self.TimeSinceGameBegan + ((dt/3)*self.Speed)
-            if self.ActiveSong == nil then print("no") return end
+            if self.ActiveSong == nil then return end
             for _, beatData in pairs(self.ActiveSong) do
                 if not table.find(self.ActiveBeats, beatData) then 
                     if beatData.Time <= 2.5 then

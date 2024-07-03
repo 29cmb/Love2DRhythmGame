@@ -324,9 +324,7 @@ local buttons = {
 
             for i,beat in pairs(BeatMap.Beats) do
                 if beat.Time > 2.5 then 
-                    print("higher", beat.Time)
                     BeatMap.Beats[i].Time = BeatMap.Beats[i].Time - 2.5
-                    print(BeatMap.Beats[i].Time)
                 end
 
                 if beat.Time > highestTime then
@@ -369,7 +367,6 @@ local buttons = {
         ["scaleX"] = 48,
         ["scaleY"] = 128,
         ["condition"] = function()
-            print("Condition")
             return musicSelectorOpen == true and playtestMode == false
         end,
         ["callback"] = function()
@@ -498,7 +495,6 @@ function editor.draw()
                     holdingKeys[KeyCodes[i]] = {0,timePassed}
                     local fromTime = getBeatDataFromTime(timePassed)
                     if not fromTime then
-                        print(timePassed)
                         table.insert(BeatMap.Beats, {
                             ["Time"] = timePassed - 2.5,
                             ["Beats"] = {
@@ -514,12 +510,8 @@ function editor.draw()
                     for _,v in pairs(BeatMap.Beats) do 
                         if v.Time == (holdingKeys[KeyCodes[i]][2] - 2.5) then 
                             v.Trail = timePassed - holdingKeys[KeyCodes[i]][2]
-                        else
-                            print(v.Time, holdingKeys[KeyCodes[i]][2])
                         end
                     end
-                else
-                    print(holdingKeys[KeyCodes[i]][1])
                 end
             end
         else
@@ -708,7 +700,6 @@ function editor.draw()
 
     if playtestMode == true and recording == false then 
         for i,beatData in pairs(BeatMap.Beats) do
-            print(i, beatData.Time)
             if not table.find(activeBeats, beatData) then 
                 if beatData.Time <= 2.5 then
                     table.insert(activeBeats, beatData)
@@ -978,15 +969,9 @@ end
 function editor.mousereleased(x, y, button)
     holding = false
     if holdingColumn ~= 0 and holdingBeatPosY ~= 0 and holdingBeatPosX ~= 0 and playtestMode == false then 
-        if y + 80 < holdingBeatPosY then 
-            print("Higher")
-        end
-
         holdingColumn = 0
         holdingBeatPosY = 0
         holdingBeatPosX = 0
-    else
-        print(holdingColumn, holdingBeatPosX, holdingBeatPosY, playtestMode)
     end
 end
 
