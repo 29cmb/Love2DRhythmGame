@@ -192,21 +192,25 @@ function love.draw()
             love.filesystem.setIdentity("rhythm-game-levels")
             local rhythmIndex = 1
             for _, v in ipairs(love.filesystem.getDirectoryItems("")) do
-                if v:match("^.+(%..+)$") == ".rhythm" and (rhythmIndex >= ((levelPage - 1) * 6) and rhythmIndex <= (levelPage * 6)) then -- a rhythm file is just a lua file in disguise, it will parse any formatted file as long as it is a lua table.
-                    love.graphics.rectangle("fill", 75, (#levelPositions * 50) + 200, 150, 40)
-                    love.graphics.setColor(0,0,0)
-                    love.graphics.setFont(Fonts.LevelText)
-                    love.graphics.printf(v, -24.5, (#levelPositions * 50) + 207.5, 350, "center")
-                    love.graphics.setColor(1,1,1)
-
-                    local data = load(love.filesystem.read(v))()
-
-                    table.insert(levelPositions, {
-                        ["Song"] = data.Data.Song,
-                        ["PosY"] = ((#levelPositions) * 50) + 200,
-                        ["Data"] = data
-                    })
+                if v:match("^.+(%..+)$") == ".rhythm" then -- a rhythm file is just a lua file in disguise, it will parse any formatted file as long as it is a lua table.
                     rhythmIndex = rhythmIndex + 1
+                    if (rhythmIndex > ((levelPage - 1) * 6) and rhythmIndex <= (levelPage * 6)) then 
+                        love.graphics.rectangle("fill", 75, (#levelPositions * 45) + 200, 150, 40)
+                        love.graphics.setColor(0,0,0)
+                        love.graphics.setFont(Fonts.LevelText)
+                        love.graphics.printf(v, -24.5, (#levelPositions * 45) + 207.5, 350, "center")
+                        love.graphics.setColor(1,1,1)
+
+                        local data = load(love.filesystem.read(v))()
+
+                        table.insert(levelPositions, {
+                            ["Song"] = data.Data.Song,
+                            ["PosY"] = ((#levelPositions) * 45) + 200,
+                            ["Data"] = data
+                        })
+                    else
+                        print(rhythmIndex, levelPage, (levelPage - 1) * 6, ((levelPage) * 6))
+                    end
                 end
             end
 
@@ -630,12 +634,20 @@ function love.mousepressed(x, y, button)
 
             if collision:CheckCollision(x, y, 1, 1, 5, 5, 65, 65) then
                 self.MenuPage = "MainMenu"
+                levelPage = 1
             elseif collision:CheckCollision(x, y, 1, 1, 0, 275, 48, 128) then 
-                if levelPage ~= 1 and #levelPositions ~= 0 then 
+                if levelPage ~= 1 then 
                     levelPage = levelPage - 1
                 end
-            elseif collision:CheckCollision(x, y, 1, 1, 260, 275, 48, 128) then
-                if #levelPositions >= ((levelPage + 1) * 6) then 
+            elseif collision:CheckCollision(x, y, 1, 1, 260, 275, 48, 128) then 
+                local levels = 0
+                for _,v in pairs(love.filesystem.getDirectoryItems("")) do 
+                    if v:match("^.+(%..+)$") == ".rhythm" then
+                        levels = levels + 1
+                    end
+                end
+
+                if levels >= ((levelPage) * 6) then 
                     levelPage = levelPage + 1
                 end
             end
