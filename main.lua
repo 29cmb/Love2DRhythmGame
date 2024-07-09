@@ -40,7 +40,8 @@ local Sprites = {
 
 local Fonts = {
     ["Headers"] = {"Fonts/SF Archery Black.ttf", 40},
-    ["Score"] = {"Fonts/good times rg.otf", 25}
+    ["Score"] = {"Fonts/good times rg.otf", 25},
+    ["LevelText"] = {"Fonts/Roboto-Regular.ttf", 20}
 }
 
 local SFX = {
@@ -188,10 +189,10 @@ function love.draw()
             local rhythmIndex = 1
             for _, v in ipairs(love.filesystem.getDirectoryItems("")) do
                 if v:match("^.+(%..+)$") == ".rhythm" and (rhythmIndex >= ((levelPage - 1) * 6) and rhythmIndex <= (levelPage * 6)) then -- a rhythm file is just a lua file in disguise, it will parse any formatted file as long as it is a lua table.
-                    love.graphics.rectangle("fill", 2, (#levelPositions * 50) + 200, 400, 45)
+                    love.graphics.rectangle("fill", 75, (#levelPositions * 50) + 200, 150, 40)
                     love.graphics.setColor(0,0,0)
-                    love.graphics.setFont(Fonts.Score)
-                    love.graphics.printf(v, 2, (#levelPositions * 50) + 200, 350)
+                    love.graphics.setFont(Fonts.LevelText)
+                    love.graphics.printf(v, -24.5, (#levelPositions * 50) + 207.5, 350, "center")
                     love.graphics.setColor(1,1,1)
 
                     local data = load(love.filesystem.read(v))()
