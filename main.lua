@@ -155,6 +155,7 @@ love.load = self.load
 self.VisualScore = 0
 
 local levelPositions = {}
+local levelPage = 1
 local firstTick = true
 function love.draw()
     if firstTick then 
@@ -184,9 +185,9 @@ function love.draw()
         if self.MenuPage == "LevelsMenu" then 
             levelPositions = {}
             love.filesystem.setIdentity("rhythm-game-levels")
-
+            local rhythmIndex = 1
             for _, v in ipairs(love.filesystem.getDirectoryItems("")) do
-                if v:match("^.+(%..+)$") == ".rhythm" then -- a rhythm file is just a lua file in disguise, it will parse any formatted file as long as it is a lua table.
+                if v:match("^.+(%..+)$") == ".rhythm" and (rhythmIndex >= ((levelPage - 1) * 6) and rhythmIndex <= (levelPage * 6)) then -- a rhythm file is just a lua file in disguise, it will parse any formatted file as long as it is a lua table.
                     love.graphics.rectangle("fill", 2, (#levelPositions * 50) + 200, 400, 45)
                     love.graphics.setColor(0,0,0)
                     love.graphics.setFont(Fonts.Score)
@@ -200,6 +201,7 @@ function love.draw()
                         ["PosY"] = ((#levelPositions) * 50) + 200,
                         ["Data"] = data
                     })
+                    rhythmIndex = rhythmIndex + 1
                 end
             end
         end
