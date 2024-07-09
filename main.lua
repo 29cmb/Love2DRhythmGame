@@ -35,7 +35,9 @@ local Sprites = {
     ["ExitGame"] = "Images/ExitGame.png",
     ["FinishedOverlay"] = "Images/FinishedOverlay.png",
     ["ExitEndGameOverlay"] = "Images/ExitGameEndGameOverlay.png",
-    ["BackButton"] = "Images/BackButton.png"
+    ["BackButton"] = "Images/BackButton.png",
+    ["LargeButtonRight"] = "Images/RightLargeButton.png",
+    ["LargeButtonLeft"] = "Images/LeftLargeButton.png"
 }
 
 local Fonts = {
@@ -126,9 +128,11 @@ function self.load()
         for name,sfx in pairs(SFX) do
             SFX[name] = love.audio.newSource(sfx, "stream")
         end
+
         for _, data in pairs(self.Powerups) do 
             data.Sprite = love.graphics.newImage(data.Sprite)
         end
+
         for name,data in pairs(ParticleSystems) do
             for i = 1, 4 do
                 if not data.Image then return end
@@ -205,6 +209,9 @@ function love.draw()
                     rhythmIndex = rhythmIndex + 1
                 end
             end
+
+            love.graphics.draw(Sprites.LargeButtonLeft, 0, 275)
+            love.graphics.draw(Sprites.LargeButtonRight, 260, 275)
         end
 
         return
@@ -615,7 +622,7 @@ function love.mousepressed(x, y, button)
             end
         elseif self.MenuPage == "LevelsMenu" then 
             for _,btn in pairs(levelPositions) do
-                if collision:CheckCollision(x, y, 1, 1, 2, btn.PosY, 400, 45) then 
+                if collision:CheckCollision(x, y, 1, 1, 75, btn.PosY, 150, 40) then 
                     startGame(btn.Song, true, btn.Data)
                     return
                 end
@@ -623,6 +630,14 @@ function love.mousepressed(x, y, button)
 
             if collision:CheckCollision(x, y, 1, 1, 5, 5, 65, 65) then
                 self.MenuPage = "MainMenu"
+            elseif collision:CheckCollision(x, y, 1, 1, 0, 275, 48, 128) then 
+                if levelPage ~= 1 and #levelPositions ~= 0 then 
+                    levelPage = levelPage - 1
+                end
+            elseif collision:CheckCollision(x, y, 1, 1, 260, 275, 48, 128) then
+                if #levelPositions >= ((levelPage + 1) * 6) then 
+                    levelPage = levelPage + 1
+                end
             end
         end
     end
