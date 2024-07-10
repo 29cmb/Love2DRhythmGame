@@ -16,11 +16,6 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Set up Node.js (for zip utility)
-      uses: actions/setup-node@v2
-      with:
-        node-version: '14'
-
     - name: Install zip utility
       run: sudo apt-get install zip -y
 
