@@ -1,4 +1,4 @@
-name: Build to .love file
+name: Create .love file and build to .exe
 
 on:
   push:
@@ -30,3 +30,38 @@ jobs:
         name: love-file
         path: |
           *.love
+
+  convert-love:
+    runs-on: ubuntu-latest
+    needs: create-love
+
+    steps:
+    - name: Download .love file from previous job
+      uses: actions/download-artifact@v2
+      with:
+        name: love-file
+        path: .
+
+    - name: Install zip utility
+      run: sudo apt-get install zip -y
+
+    - name: Download LOVE.exe
+      run: |
+        mkdir love
+        cd love
+        curl -L -o love-win.zip https://github.com/love2d/love/releases/download/11.4/love-11.4-win64.zip
+        unzip love-win.zip
+        cd ..
+
+    - name: Create .exe file
+      run: |
+        cp love/love.exe game.exe
+        cat love/love.exe ${GITHUB_REPOSITORY#*/}-*.love > game.exe
+        zip -r game.exe love/love.dll love/lua51.dll love/SDL2.dll love/mpg123.dll
+
+    - name: Upload .exe file as artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: Game
+        path: |
+          game.exe
