@@ -56,16 +56,14 @@ jobs:
 
     - name: Create .exe file
       run: |
-        cd love
-        ls
-        cd ..
         cp love/love.exe game.exe
-        cat love/love.exe ${GITHUB_REPOSITORY#*/}-*.love > game.exe
-        zip -r game.exe love/love.dll love/lua51.dll love/SDL2.dll love/mpg123.dll
+        cat ${GITHUB_REPOSITORY#*/}-*.love >> game.exe
+        cp love/*.dll .
 
     - name: Upload .exe file as artifact
       uses: actions/upload-artifact@v2
       with:
-        name: Game
+        name: exe-file
         path: |
           game.exe
+          *.dll
