@@ -57,9 +57,9 @@ jobs:
     - name: Create .exe file
       run: |
         ls
-        cp love-11.5-win64/love.exe game.exe
-        cat love-11.5-win64/love.exe ${GITHUB_REPOSITORY#*/}-*.love > game.exe
-        zip -r game.exe love-11.5-win64/love.dll love-11.5-win64/lua51.dll love-11.5-win64/SDL2.dll love-11.5-win64/mpg123.dll
+        cp love/love.exe game.exe
+        cat love/love.exe ${GITHUB_REPOSITORY#*/}-*.love > game.exe
+        zip -r game.exe love/love.dll love/lua51.dll love/SDL2.dll love/mpg123.dll
 
     - name: Upload .exe file as artifact
       uses: actions/upload-artifact@v2
