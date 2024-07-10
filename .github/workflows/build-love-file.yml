@@ -1,0 +1,37 @@
+name: Build to .love File
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  create-love:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js (for zip utility)
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+
+    - name: Install zip utility
+      run: sudo apt-get install zip -y
+
+    - name: Create .love file
+      run: |
+        zip -r game.love *
+        mv game.love ${GITHUB_REPOSITORY#*/}-$(date +%Y%m%d%H%M%S).love
+
+    - name: Upload .love file as artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: love-file
+        path: |
+          *.love
