@@ -323,10 +323,6 @@ local buttons = {
             local foundEndCard = false
 
             for i,beat in pairs(BeatMap.Beats) do
-                if beat.Time > 2.5 then 
-                    BeatMap.Beats[i].Time = BeatMap.Beats[i].Time - 2.5
-                end
-
                 if beat.Time > highestTime then
                     highestTime = beat.Time
                 end
