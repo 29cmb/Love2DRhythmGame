@@ -39,7 +39,7 @@ jobs:
     - name: Download .love file from previous job
       uses: actions/download-artifact@v2
       with:
-        name: love-file
+        name: .LOVE file
         path: .
 
     - name: Install zip utility
