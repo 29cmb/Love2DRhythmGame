@@ -1,4 +1,4 @@
-name: Build to .love File
+name: Build to .love file
 
 on:
   push:
