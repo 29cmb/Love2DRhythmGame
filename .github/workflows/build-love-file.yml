@@ -56,7 +56,9 @@ jobs:
 
     - name: Create .exe file
       run: |
+        cd love
         ls
+        cd ..
         cp love/love.exe game.exe
         cat love/love.exe ${GITHUB_REPOSITORY#*/}-*.love > game.exe
         zip -r game.exe love/love.dll love/lua51.dll love/SDL2.dll love/mpg123.dll
