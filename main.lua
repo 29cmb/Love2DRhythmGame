@@ -3,48 +3,19 @@ local circleRadius = 20
 local spacing = (300 - (4 * circleRadius * 2)) / 5
 local circleY = 500 - circleRadius - 40
 
-local utils = require("modules.utils")
-local editor = require("editor")
-
-self.Score = 0
-self.Colors = {
-    [1] = {255/255, 0, 0},
-    [2] = {255/255, 150/255, 0},
-    [3] = {255/255, 217/255, 0},
-    [4] = {5/255, 255/255, 0}
-}
-
-
-self.KeyCodes = {
-    [1] = "a",
-    [2] = "s",
-    [3] = "d",
-    [4] = "f"
-}
-
-self.InEditor = false;
-
 local Sprites = require("modules.sprites")
 local Fonts = require("modules.fonts")
+local SFX = require("modules.sfx")
+local utils = require("modules.utils")
+local editor = require("editor")
+local misc = require("modules.misc")
+local ParticleSystems = require("modules.particles")
 
-local SFX = {
-    ["Powerup"] = "SFX/Powerup.wav",
-    ["Point"] = "SFX/Point.wav"
-}
-
-local ParticleSystems = {
-    ["HitBeat"] = {
-        ["Image"] = "Images/Sparkle.png",
-        ["Size"] = 32,
-        ["LifeTime"] = {0.25, 0.5},
-        ["Speed"] = 0,
-    }
-}
+self.Score = 0
+self.InEditor = false
 
 self.Speed = 3
 self.Powerup = "None"
--- Clock: Slow down the game
--- Golden beat: 2x points
 self.PowerupTimer = 0
 
 self.ActiveSong = nil
@@ -95,37 +66,17 @@ self.Powerups = {
 function self.load()
     if Sprites.IsLoaded == false then Sprites:Load() end
     if Fonts.IsLoaded == false then Fonts:Load() end
+    if SFX.IsLoaded == false then SFX:Load() end
+    if ParticleSystems.IsLoaded == false then ParticleSystems:Load() end
 
     if self.InEditor == false then
         love.window.setMode(300, 500)
         love.window.setTitle("Rhythm Game")
         background = love.graphics.newImage("Images/Background.png")
 
-        for name,sfx in pairs(SFX) do
-            SFX[name] = love.audio.newSource(sfx, "stream")
-        end
-
         for _, data in pairs(self.Powerups) do 
             data.Sprite = love.graphics.newImage(data.Sprite)
         end
-
-        for name,data in pairs(ParticleSystems) do
-            for i = 1, 4 do
-                if not data.Image then return end
-                local img = love.graphics.newImage(data.Image)
-                local particleSystem = love.graphics.newParticleSystem(img, 128)
-                particleSystem:setParticleLifetime(data.LifeTime[1], data.LifeTime[2])
-                particleSystem:setSpeed(data.Speed)
-                particleSystem:setLinearAcceleration(-2500, -2500, 2500, 2500)
-                particleSystem:setSpread(10 * math.pi)
-                
-
-                if not ParticleSystems[i] then ParticleSystems[i] = {} end
-                ParticleSystems[i][name] = particleSystem
-            end
-        end
-
-        
     else
         editor.load()
     end
@@ -234,7 +185,7 @@ function love.draw()
                 if beat.Trail and beat.Trail.Time then
                     if beat.Hit == true then beat.PosY = circleY end
                     if beat.Trail.Time > 0 then
-                        love.graphics.setColor(self.Colors[i], 0.7)
+                        love.graphics.setColor(misc.Colors[i], 0.7)
                         love.graphics.rectangle("fill", circleX - 10, beat.PosY - circleRadius, circleRadius, -(beat.Trail.Time * 60 * self.Speed)) -- negative I guess?
                         love.graphics.circle("fill", circleX, beat.PosY - circleRadius - (beat.Trail.Time * 60 * self.Speed), circleRadius/2) -- curved corners
                         love.graphics.setColor(1, 1, 1)
@@ -246,7 +197,7 @@ function love.draw()
                         local powerup = self.Powerups[beat.Powerup]
                         love.graphics.draw(powerup.Sprite, circleX, beat.PosY, 0, 1, 1, powerup.SpriteOffset.x, powerup.SpriteOffset.y)
                     elseif beat.Bomb == false then
-                        love.graphics.setColor(self.Colors[i])
+                        love.graphics.setColor(misc.Colors[i])
                         love.graphics.circle("fill", circleX, beat.PosY, circleRadius)
                         love.graphics.setColor(0,0,0)
                         love.graphics.circle("line", circleX, beat.PosY, circleRadius)
@@ -265,7 +216,7 @@ function love.draw()
             end
         end
 
-        if not love.keyboard.isDown(self.KeyCodes[i]) or self.GamePaused then
+        if not love.keyboard.isDown(misc.KeyCodes[i]) or self.GamePaused then
             love.graphics.circle("line", circleX, circleY, circleRadius)
             for _,beat in pairs(self.Beats[i]) do
                 if beat.Hit and beat.Trail and beat.Trail.Time then 
@@ -288,7 +239,7 @@ function love.draw()
                 end
             end
         else
-            love.graphics.setColor(self.Colors[i])
+            love.graphics.setColor(misc.Colors[i])
             love.graphics.circle("fill", circleX, circleY, circleRadius)
             love.graphics.setColor(0,0,0)
             love.graphics.circle("line", circleX, circleY, circleRadius)
@@ -299,7 +250,7 @@ function love.draw()
                 local distance = math.abs(beat.PosY - circleY)
                 if distance <= (circleRadius * 2) and (beat.Hit == false or (beat.Trail and beat.Trail.Time)) then
                     if beat.Hit == false then
-                        ParticleSystems[i].HitBeat:setColors(self.Colors[i])
+                        ParticleSystems[i].HitBeat:setColors(misc.Colors[i])
                         ParticleSystems[i].HitBeat:emit(10)
                         if beat.Powerup ~= "None" then 
                             self.Powerups[beat.Powerup].Callback()

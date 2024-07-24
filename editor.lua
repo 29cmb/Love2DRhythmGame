@@ -6,13 +6,7 @@ local circleY = 500 - circleRadius - 40
 local utils = require("modules.utils")
 local Sprites = require("modules.sprites")
 local Fonts = require("modules.fonts")
-
-local KeyCodes = {
-    [1] = "a",
-    [2] = "s",
-    [3] = "d",
-    [4] = "f"
-}
+local misc = require("modules.misc")
 
 local Powerups = {
     ["2xScore"] = {
@@ -47,17 +41,11 @@ local BeatMap = {
     },
     ["Beats"] = {}
 }
+
 local beats = {[1] = {}, [2] = {}, [3] = {}, [4] = {}}
 local activeBeats = {}
 local timePassed = 2.5
 local getStartedHint = true
-
-local Colors = {
-    [1] = {255/255, 0, 0},
-    [2] = {255/255, 150/255, 0},
-    [3] = {255/255, 217/255, 0},
-    [4] = {5/255, 255/255, 0}
-}
 local playtestMode = false
 local recording = false
 local page = 1
@@ -440,8 +428,8 @@ function editor.draw()
     for i = 1, 4 do 
         local circleX = spacing * i + circleRadius * (2 * i - 1) + 362.5
         
-        if love.keyboard.isDown(KeyCodes[i]) and playtestMode == true then 
-            love.graphics.setColor(Colors[i])
+        if love.keyboard.isDown(misc.KeyCodes[i]) and playtestMode == true then 
+            love.graphics.setColor(misc.Colors[i])
             love.graphics.circle("fill", circleX, circleY, circleRadius)
             love.graphics.setColor(0,0,0)
             love.graphics.circle("line", circleX, circleY, circleRadius)
@@ -449,13 +437,13 @@ function editor.draw()
             if recording == true then
                 local found = false
                 for key, time in pairs(holdingKeys) do 
-                    if key == KeyCodes[i] and time ~= nil then 
+                    if key == misc.KeyCodes[i] and time ~= nil then 
                         found = true
                     end
                 end
 
                 if found == false then
-                    holdingKeys[KeyCodes[i]] = {0,timePassed}
+                    holdingKeys[misc.KeyCodes[i]] = {0,timePassed}
                     local fromTime = getBeatDataFromTime(timePassed)
                     if not fromTime then
                         table.insert(BeatMap.Beats, {
@@ -469,10 +457,10 @@ function editor.draw()
                             table.insert(fromTime.Beats, i)
                         end
                     end
-                elseif holdingKeys[KeyCodes[i]][1] > 0.6 then
+                elseif holdingKeys[misc.KeyCodes[i]][1] > 0.6 then
                     for _,v in pairs(BeatMap.Beats) do 
-                        if v.Time == (holdingKeys[KeyCodes[i]][2] - 2.5) then 
-                            v.Trail = timePassed - holdingKeys[KeyCodes[i]][2]
+                        if v.Time == (holdingKeys[misc.KeyCodes[i]][2] - 2.5) then 
+                            v.Trail = timePassed - holdingKeys[misc.KeyCodes[i]][2]
                         end
                     end
                 end
@@ -501,7 +489,7 @@ function editor.draw()
                     if beat.Trail then
                         if beat.Hit == true then beat.PosY = circleY end
                         if beat.Trail > 0 then
-                            love.graphics.setColor(Colors[i], 0.7)
+                            love.graphics.setColor(misc.Colors[i], 0.7)
                             love.graphics.rectangle("fill", circleX - 10, posY - circleRadius, circleRadius, -(beat.Trail * 60 * 3)) -- negative I guess?
                             love.graphics.circle("fill", circleX, posY - circleRadius - (beat.Trail * 60 * 3), circleRadius/2) -- curved corners
                             love.graphics.setColor(1, 1, 1)
@@ -514,7 +502,7 @@ function editor.draw()
                         local powerup = Powerups[beat.Powerup]
                         love.graphics.draw(powerup.Sprite, circleX, posY, 0, 1, 1, powerup.SpriteOffset.x, powerup.SpriteOffset.y)
                     else
-                        love.graphics.setColor(Colors[i])
+                        love.graphics.setColor(misc.Colors[i])
                         love.graphics.circle("fill", circleX, posY, circleRadius)
                         love.graphics.setColor(0,0,0)
                         love.graphics.circle("line", circleX, posY, circleRadius)
@@ -528,7 +516,7 @@ function editor.draw()
                     if beat.Trail and beat.Trail.Time then
                         if beat.Hit == true then beat.PosY = circleY end
                         if beat.Trail.Time > 0 then
-                            love.graphics.setColor(Colors[i], 0.7)
+                            love.graphics.setColor(misc.Colors[i], 0.7)
                             love.graphics.rectangle("fill", circleX - 10, beat.PosY - circleRadius, circleRadius, -(beat.Trail.Time * 60 * 3)) -- negative I guess?
                             love.graphics.circle("fill", circleX, beat.PosY - circleRadius - (beat.Trail.Time * 60 * 3), circleRadius/2) -- curved corners
                             love.graphics.setColor(1, 1, 1)
@@ -540,7 +528,7 @@ function editor.draw()
                             local powerup = Powerups[beat.Powerup]
                             love.graphics.draw(powerup.Sprite, circleX, beat.PosY, 0, 1, 1, powerup.SpriteOffset.x, powerup.SpriteOffset.y)
                         elseif beat.Bomb == false then
-                            love.graphics.setColor(Colors[i])
+                            love.graphics.setColor(misc.Colors[i])
                             love.graphics.circle("fill", circleX, beat.PosY, circleRadius)
                             love.graphics.setColor(0,0,0)
                             love.graphics.circle("line", circleX, beat.PosY, circleRadius)
@@ -555,7 +543,7 @@ function editor.draw()
                     --     beat.PosY = beat.PosY + 3
                     -- end
 
-                    if love.keyboard.isDown(KeyCodes[i]) then 
+                    if love.keyboard.isDown(misc.KeyCodes[i]) then 
                         local distance = math.abs(beat.PosY - circleY)
                         if distance <= (circleRadius * 2) and (beat.Hit == false or (beat.Trail and beat.Trail.Time)) then
                             beat.Hit = true
@@ -587,7 +575,7 @@ function editor.draw()
         love.graphics.setColor(0.8,0.8,0.8,0.5)
     end
     love.graphics.draw(Sprites.Outline, 285, 80)
-    love.graphics.setColor(Colors[2])
+    love.graphics.setColor(misc.Colors[2])
     love.graphics.circle("fill", 318, 113, 15)
     love.graphics.setColor(1,1,1)
 
@@ -722,7 +710,7 @@ function editor.update(dt)
         end
 
         if recording == true then 
-            for _,keycode in pairs(KeyCodes) do 
+            for _,keycode in pairs(misc.KeyCodes) do 
                 local found = false
 
                 for key, time in pairs(holdingKeys) do 
