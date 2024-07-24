@@ -24,27 +24,8 @@ self.KeyCodes = {
 
 self.InEditor = false;
 
-local Sprites = {
-    ["Bomb"] = "Images/bomb.png",
-    ["PowerupBorder"] = "Images/PowerupBorder.png",
-    ["Pause"] = "Images/Pause.png",
-    ["Resume"] = "Images/Resume.png",
-    ["MainMenu"] = "Images/MenuBg.png",
-    ["PlayMenu"] = "Images/PlayMenu.png",
-    ["LevelsMenu"] = "Images/LevelsMenu.png",
-    ["ExitGame"] = "Images/ExitGame.png",
-    ["FinishedOverlay"] = "Images/FinishedOverlay.png",
-    ["ExitEndGameOverlay"] = "Images/ExitGameEndGameOverlay.png",
-    ["BackButton"] = "Images/BackButton.png",
-    ["LargeButtonRight"] = "Images/RightLargeButton.png",
-    ["LargeButtonLeft"] = "Images/LeftLargeButton.png"
-}
-
-local Fonts = {
-    ["Headers"] = {"Fonts/SF Archery Black.ttf", 40},
-    ["Score"] = {"Fonts/good times rg.otf", 25},
-    ["LevelText"] = {"Fonts/Roboto-Regular.ttf", 20}
-}
+local Sprites = require("modules.sprites")
+local Fonts = require("modules.fonts")
 
 local SFX = {
     ["Powerup"] = "SFX/Powerup.wav",
@@ -112,18 +93,13 @@ self.Powerups = {
 
 
 function self.load()
+    if Sprites.IsLoaded == false then Sprites:Load() end
+    if Fonts.IsLoaded == false then Fonts:Load() end
+    
     if self.InEditor == false then
         love.window.setMode(300, 500)
         love.window.setTitle("Rhythm Game")
         background = love.graphics.newImage("Images/Background.png")
-
-        for name,spr in pairs(Sprites) do
-            Sprites[name] = love.graphics.newImage(spr)
-        end
-
-        for name,font in pairs(Fonts) do 
-            Fonts[name] = love.graphics.newFont(font[1], font[2])
-        end
 
         for name,sfx in pairs(SFX) do
             SFX[name] = love.audio.newSource(sfx, "stream")

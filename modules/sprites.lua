@@ -11,15 +11,30 @@ local Sprites = {
     ["ExitEndGameOverlay"] = "Images/ExitGameEndGameOverlay.png",
     ["BackButton"] = "Images/BackButton.png",
     ["LargeButtonRight"] = "Images/RightLargeButton.png",
-    ["LargeButtonLeft"] = "Images/LeftLargeButton.png"
+    ["LargeButtonLeft"] = "Images/LeftLargeButton.png",
+    ["GoldenBeat"] = "Images/GoldenBeat.png",
+    ["Slowness"] = "Images/Slowness.png",
+    ["Background"] = "Images/Background.png",
+    ["Outline"] = "Images/ButtonOutline.png",
+    ["DeleteBeat"] = "Images/DeleteBeat.png",
+    ["PageUp"] = "Images/PageUp.png",
+    ["PageDown"] = "Images/PageDown.png",
+    ["Reset"] = "Images/ResetLevel.png",
+    ["Save"] = "Images/Save.png",
+    ["Music"] = "Images/MusicSelector.png",
+    ["Record"] = "Images/Record.png"
 }
+
+Sprites.IsLoaded = false
 
 function Sprites:Load()
     for index,spr in pairs(self) do 
-        if typeof(spr) == "string" then 
+        if type(spr) == "string" then 
             self[index] = love.graphics.newImage(spr)
         end
     end
+
+    self.IsLoaded = true
 end
 
 return Sprites

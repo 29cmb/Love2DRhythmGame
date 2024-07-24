@@ -4,34 +4,8 @@ local spacing = (300 - (4 * circleRadius * 2)) / 5
 local circleY = 500 - circleRadius - 40
 
 local collision = require("collision")
-local Sprites = {
-    ["Bomb"] = "Images/bomb.png",
-    ["PowerupBorder"] = "Images/PowerupBorder.png",
-    ["GoldenBeat"] = "Images/GoldenBeat.png",
-    ["Slowness"] = "Images/Slowness.png",
-    ["Pause"] = "Images/Pause.png",
-    ["Resume"] = "Images/Resume.png",
-    ["ExitGame"] = "Images/ExitGame.png",
-    ["FinishedOverlay"] = "Images/FinishedOverlay.png",
-    ["ExitEndGameOverlay"] = "Images/ExitGameEndGameOverlay.png",
-    ["Background"] = "Images/Background.png",
-    ["Outline"] = "Images/ButtonOutline.png",
-    ["DeleteBeat"] = "Images/DeleteBeat.png",
-    ["PageUp"] = "Images/PageUp.png",
-    ["PageDown"] = "Images/PageDown.png",
-    ["Reset"] = "Images/ResetLevel.png",
-    ["Save"] = "Images/Save.png",
-    ["Music"] = "Images/MusicSelector.png",
-    ["LeftLargeButton"] = "Images/LeftLargeButton.png",
-    ["RightLargeButton"] = "Images/RightLargeButton.png",
-    ["Record"] = "Images/Record.png"
-}
-
-local Fonts = {
-    ["Headers"] = {"Fonts/SF Archery Black.ttf", 40},
-    ["Score"] = {"Fonts/good times rg.otf", 25},
-    ["SmallScore"] = {"Fonts/good times rg.otf", 15}
-}
+local Sprites = require("modules.sprites")
+local Fonts = require("modules.fonts")
 
 local KeyCodes = {
     [1] = "a",
@@ -422,14 +396,7 @@ end
 
 function editor.load()
     love.window.setMode(1024, 500)
-    for name, spr in pairs(Sprites) do 
-        Sprites[name] = love.graphics.newImage(spr)
-    end
-
-    for name,font in pairs(Fonts) do 
-        Fonts[name] = love.graphics.newFont(font[1], font[2])
-    end
-
+    
     for _, data in pairs(Powerups) do 
         data.Sprite = love.graphics.newImage(data.Sprite)
     end
