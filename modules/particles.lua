@@ -10,19 +10,21 @@ particles.IsLoaded = false
 
 function particles:Load()
     for index, pSystem in pairs(self) do
-        for i = 1, 4 do
-            if not pSystem.Image then return end
-            local img = love.graphics.newImage(pSystem.Image)
-            local particleSystem = love.graphics.newParticleSystem(img, 128)
-            particleSystem:setParticleLifetime(pSystem.LifeTime[1], pSystem.LifeTime[2])
-            particleSystem:setSpeed(pSystem.Speed)
-            particleSystem:setLinearAcceleration(-2500, -2500, 2500, 2500)
-            particleSystem:setSpread(10 * math.pi)
-            
+        if type(pSystem) == "table" and pSystem.Image then 
+            for i = 1, 4 do
+                local img = love.graphics.newImage(pSystem.Image)
+                local particleSystem = love.graphics.newParticleSystem(img, 128)
+                particleSystem:setParticleLifetime(pSystem.LifeTime[1], pSystem.LifeTime[2])
+                particleSystem:setSpeed(pSystem.Speed)
+                particleSystem:setLinearAcceleration(-2500, -2500, 2500, 2500)
+                particleSystem:setSpread(10 * math.pi)
+                
 
-            if not self[i] then self[i] = {} end
-            self[i][index] = particleSystem
+                if not self[i] then self[i] = {} end
+                self[i][index] = particleSystem
+            end
         end
+        
     end
 end
 

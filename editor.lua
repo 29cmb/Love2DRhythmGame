@@ -95,20 +95,14 @@ end
 
 local buttons = {
     {
-        ["x"] = 285,
-        ["y"] = 10,
-        ["scaleX"] = 65,
-        ["scaleY"] = 65,
+        ["transform"] = {285, 10, 65, 65},
         ["condition"] = function()
             return true
         end,
         ["callback"] = playtest
     },
     {
-        ["x"] = 285,
-        ["y"] = 80,
-        ["scaleX"] = 65,
-        ["scaleY"] = 65,
+        ["transform"] = {285, 80, 65, 65},
         ["condition"] = function()
             return playtestMode == false
         end,
@@ -118,10 +112,7 @@ local buttons = {
         end
     },
     {
-        ["x"] = 285,
-        ["y"] = 150,
-        ["scaleX"] = 65,
-        ["scaleY"] = 65,
+        ["transform"] = {285, 150, 65, 65},
         ["condition"] = function()
             return playtestMode == false
         end,
@@ -131,10 +122,7 @@ local buttons = {
         end
     },
     {
-        ["x"] = 285,
-        ["y"] = 220,
-        ["scaleX"] = 65,
-        ["scaleY"] = 65,
+        ["transform"] = {285, 220, 65, 65},
         ["condition"] = function()
             return playtestMode == false
         end,
@@ -144,10 +132,7 @@ local buttons = {
         end
     },
     {
-        ["x"] = 285,
-        ["y"] = 290,
-        ["scaleX"] = 65,
-        ["scaleY"] = 65,
+        ["transform"] = {285, 290, 65, 65},
         ["condition"] = function() 
             return playtestMode == false 
         end,
@@ -157,10 +142,7 @@ local buttons = {
         end
     },
     {
-        ["x"] = 285,
-        ["y"] = 350,
-        ["scaleX"] = 65,
-        ["scaleY"] = 65,
+        ["transform"] = {285, 350, 65, 65},
         ["condition"] = function()
             return playtestMode == false
         end,
@@ -170,10 +152,7 @@ local buttons = {
         end
     },
     {
-        ["x"] = 675,
-        ["y"] = 10,
-        ["scaleX"] = 65,
-        ["scaleY"] = 65,
+        ["transform"] = {675, 10, 65, 65},
         ["condition"] = function()
             return playtestMode == false
         end,
@@ -182,10 +161,7 @@ local buttons = {
         end
     },
     {
-        ["x"] = 675,
-        ["y"] = 80,
-        ["scaleX"] = 65,
-        ["scaleY"] = 65,
+        ["transform"] = {675, 80, 65, 65},
         ["condition"] = function()
             return playtestMode == false
         end,
@@ -195,10 +171,7 @@ local buttons = {
         end
     },
     {
-        ["x"] = 10,
-        ["y"] = 10,
-        ["scaleX"] = 168,
-        ["scaleY"] = 67,
+        ["transform"] = {10, 10, 128, 67},
         ["condition"] = function()
             return playtestMode == false
         end,
@@ -231,10 +204,7 @@ local buttons = {
         end
     },
     {
-        ["x"] = 285,
-        ["y"] = 430,
-        ["scaleX"] = 65,
-        ["scaleY"] = 65,
+        ["transform"] = {285, 430, 65, 65},
         ["condition"] = function()
             return playtestMode == false
         end,
@@ -246,10 +216,7 @@ local buttons = {
         end
     },
     {
-        ["x"] = 675,
-        ["y"] = 150,
-        ["scaleX"] = 65,
-        ["scaleY"] = 65,
+        ["transform"] = {675, 150, 65, 65},
         ["condition"] = function()
             return playtestMode == false
         end,
@@ -287,10 +254,7 @@ local buttons = {
         end
     },
     {
-        ["x"] = 675,
-        ["y"] = 220,
-        ["scaleX"] = 65,
-        ["scaleY"] = 65,
+        ["transform"] = {675, 220, 65, 65},
         ["condition"] = function()
             return playtestMode == false
         end,
@@ -299,10 +263,7 @@ local buttons = {
         end
     },
     {
-        ["x"] = 675,
-        ["y"] = 300,
-        ["scaleX"] = 48,
-        ["scaleY"] = 128,
+        ["transform"] = {675, 300, 48, 128},
         ["condition"] = function()
             return musicSelectorOpen == true and playtestMode == false
         end,
@@ -316,10 +277,7 @@ local buttons = {
         end
     },
     {
-        ["x"] = 972.5,
-        ["y"] = 300,
-        ["scaleX"] = 48,
-        ["scaleY"] = 128,
+        ["transform"] = {972.5, 300, 48, 128},
         ["condition"] = function()
             return musicSelectorOpen == true and playtestMode == false
         end,
@@ -334,15 +292,11 @@ local buttons = {
         end
     },
     {
-        ["x"] = 675,
-        ["y"] = 290,
-        ["scaleX"] = 65,
-        ["scaleY"] = 65,
+        ["transform"] = {675, 290, 65, 65},
         ["condition"] = function()
             return musicSelectorOpen == false and playtestMode == false
         end,
         ["callback"] = function()
-            -- later
             playtest(true)
             recording = true
         end
@@ -716,7 +670,7 @@ local placementSpacing = {
 function editor.mousepressed(x,y,button)
     local collided = false
     for _,button in pairs(buttons) do 
-        if utils:CheckCollision(x, y, 1, 1, button.x, button.y, button.scaleX, button.scaleY) and button.condition() == true then 
+        if utils:CheckCollision(x, y, 1, 1, button.transform[1], button.transform[2], button.transform[3], button.transform[4]) and button.condition() == true then 
             getStartedHint = false
             button.callback()
             collided = true
