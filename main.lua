@@ -3,7 +3,7 @@ local circleRadius = 20
 local spacing = (300 - (4 * circleRadius * 2)) / 5
 local circleY = 500 - circleRadius - 40
 
-local collision = require("collision")
+local utils = require("modules.utils")
 local editor = require("editor")
 
 self.Score = 0
@@ -95,7 +95,7 @@ self.Powerups = {
 function self.load()
     if Sprites.IsLoaded == false then Sprites:Load() end
     if Fonts.IsLoaded == false then Fonts:Load() end
-    
+
     if self.InEditor == false then
         love.window.setMode(300, 500)
         love.window.setTitle("Rhythm Game")
@@ -203,7 +203,7 @@ function love.draw()
         if self.VisualScore < self.Score then 
             love.graphics.draw(Sprites.ExitEndGameOverlay)
             if self.Score >= 300 then 
-                self.VisualScore = math.clamp(self.VisualScore + math.floor((self.Score/300)), 0, self.Score)
+                self.VisualScore = utils.clamp(self.VisualScore + math.floor((self.Score/300)), 0, self.Score)
             else
                 self.VisualScore = self.Score
             end
@@ -309,7 +309,7 @@ function love.draw()
                             self.Powerup = beat.Powerup
                             self.PowerupTimer = self.Powerups[beat.Powerup].Duration
                         elseif beat.Bomb == true then 
-                            self.Score = math.clamp(self.Score - 2000)
+                            self.Score = utils.clamp(self.Score - 2000)
                         elseif distance <= 2 then
                             self.Score = self.Score + (500 * self.ScoreMultiplier)
                         elseif distance <= 5 then
@@ -366,7 +366,7 @@ function love.update(dt)
             self.TimeSinceGameBegan = self.TimeSinceGameBegan + ((dt/3)*self.Speed)
             if self.ActiveSong == nil then return end
             for _, beatData in pairs(self.ActiveSong) do
-                if not table.find(self.ActiveBeats, beatData) then 
+                if not utils.find(self.ActiveBeats, beatData) then 
                     if beatData.Time <= 2.5 then
                         table.insert(self.ActiveBeats, beatData)
                         for _,beatCircle in pairs(beatData.Beats) do
@@ -523,26 +523,6 @@ function self.endGame()
     self.ActiveAudio:play()
 end
 
-function table.find(table, value)
-    for _, v in pairs(table) do
-        if v == value then
-            return true
-        end
-    end
-    return false
-end
-
-function math.clamp(val, lower, upper)
-    if not lower then lower = 0 end
-    if not upper then upper = math.huge end
-
-    assert(val, "Value not provided")
-
-    if lower > upper then lower, upper = upper, lower end -- swap if boundaries supplied the wrong way
-    return math.max(lower, math.min(upper, val))
-end
-
-
 -- UI shennanigans
 local editorLoaded = false
 function love.mousepressed(x, y, button)
@@ -553,11 +533,11 @@ function love.mousepressed(x, y, button)
 
     if self.GameStarted == true then
         if self.GameFinished == true then
-            if collision:CheckCollision(x, y, 1, 1, 24, 376, 254, 100) then 
+            if utils:CheckCollision(x, y, 1, 1, 24, 376, 254, 100) then 
                 self.endGame()
             end
         else
-            if collision:CheckCollision(x, y, 1, 1, 230, 10, 65, 65) then
+            if utils:CheckCollision(x, y, 1, 1, 230, 10, 65, 65) then
                 if self.GamePaused == true then
                     unpause()
                 else
@@ -567,15 +547,15 @@ function love.mousepressed(x, y, button)
         end
 
         if self.GamePaused == true then 
-            if collision:CheckCollision(x, y, 1, 1, 130, 85, 168, 67) then 
+            if utils:CheckCollision(x, y, 1, 1, 130, 85, 168, 67) then 
                 self.endGame()
             end
         end
     else
         if self.MenuPage == "MainMenu" then 
-            if collision:CheckCollision(x, y, 1, 1, 62, 80, 177, 93) then
+            if utils:CheckCollision(x, y, 1, 1, 62, 80, 177, 93) then
                 self.MenuPage = "PlayMenu"
-            elseif collision:CheckCollision(x, y, 1, 1, 62, 202, 177, 93) then
+            elseif utils:CheckCollision(x, y, 1, 1, 62, 202, 177, 93) then
                 if editorLoaded == false then 
                     editor.load()
                 else
@@ -587,35 +567,35 @@ function love.mousepressed(x, y, button)
                 if self.ActiveAudio then 
                     self.ActiveAudio:stop()
                 end
-            elseif collision:CheckCollision(x, y, 1, 1, 62, 325, 177, 93) then
+            elseif utils:CheckCollision(x, y, 1, 1, 62, 325, 177, 93) then
                 self.MenuPage = "LevelsMenu"
             end
         elseif self.MenuPage == "PlayMenu" then
-            if collision:CheckCollision(x, y, 1, 1, 62, 90, 117, 93) then 
+            if utils:CheckCollision(x, y, 1, 1, 62, 90, 117, 93) then 
                 startGame("On and On", false)
-            elseif collision:CheckCollision(x, y, 1, 1, 62, 204, 117, 93) then
+            elseif utils:CheckCollision(x, y, 1, 1, 62, 204, 117, 93) then
                 startGame("Fearless II", false)
-            elseif collision:CheckCollision(x, y, 1, 1, 62, 319, 117, 93) then
+            elseif utils:CheckCollision(x, y, 1, 1, 62, 319, 117, 93) then
                 startGame("My Heart", false)
-            elseif collision:CheckCollision(x, y, 1, 1, 5, 5, 65, 65) then
+            elseif utils:CheckCollision(x, y, 1, 1, 5, 5, 65, 65) then
                 self.MenuPage = "MainMenu"
             end
         elseif self.MenuPage == "LevelsMenu" then 
             for _,btn in pairs(levelPositions) do
-                if collision:CheckCollision(x, y, 1, 1, 75, btn.PosY, 150, 40) then 
+                if utils:CheckCollision(x, y, 1, 1, 75, btn.PosY, 150, 40) then 
                     startGame(btn.Song, true, btn.Data)
                     return
                 end
             end
 
-            if collision:CheckCollision(x, y, 1, 1, 5, 5, 65, 65) then
+            if utils:CheckCollision(x, y, 1, 1, 5, 5, 65, 65) then
                 self.MenuPage = "MainMenu"
                 levelPage = 1
-            elseif collision:CheckCollision(x, y, 1, 1, 0, 275, 48, 128) then 
+            elseif utils:CheckCollision(x, y, 1, 1, 0, 275, 48, 128) then 
                 if levelPage ~= 1 then 
                     levelPage = levelPage - 1
                 end
-            elseif collision:CheckCollision(x, y, 1, 1, 260, 275, 48, 128) then 
+            elseif utils:CheckCollision(x, y, 1, 1, 260, 275, 48, 128) then 
                 local levels = 0
                 for _,v in pairs(love.filesystem.getDirectoryItems("")) do 
                     if v:match("^.+(%..+)$") == ".rhythm" then

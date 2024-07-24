@@ -3,7 +3,7 @@ local circleRadius = 20
 local spacing = (300 - (4 * circleRadius * 2)) / 5
 local circleY = 500 - circleRadius - 40
 
-local collision = require("collision")
+local utils = require("modules.utils")
 local Sprites = require("modules.sprites")
 local Fonts = require("modules.fonts")
 
@@ -396,7 +396,7 @@ end
 
 function editor.load()
     love.window.setMode(1024, 500)
-    
+
     for _, data in pairs(Powerups) do 
         data.Sprite = love.graphics.newImage(data.Sprite)
     end
@@ -465,7 +465,7 @@ function editor.draw()
                             }
                         })
                     else
-                        if not table.find(fromTime.Beats, i) then 
+                        if not utils.find(fromTime.Beats, i) then 
                             table.insert(fromTime.Beats, i)
                         end
                     end
@@ -495,7 +495,7 @@ function editor.draw()
 
         if playtestMode == false then 
             for _,beat in pairs(BeatMap.Beats) do 
-                if beat.Time >= ((page - 1) * 2.5) and beat.Time <= ((page) * 2.5) and table.find(beat.Beats, i) then
+                if beat.Time >= ((page - 1) * 2.5) and beat.Time <= ((page) * 2.5) and utils.find(beat.Beats, i) then
                     local posY = (460 - (circleRadius * 2)) - (168 * (beat.Time - ((page-1) * 2.5)))
 
                     if beat.Trail then
@@ -663,7 +663,7 @@ function editor.draw()
 
     if playtestMode == true and recording == false then 
         for i,beatData in pairs(BeatMap.Beats) do
-            if not table.find(activeBeats, beatData) then 
+            if not utils.find(activeBeats, beatData) then 
                 if beatData.Time <= 2.5 then
                     table.insert(activeBeats, beatData)
                     for _,beat in pairs(beatData.Beats) do
@@ -751,7 +751,7 @@ local placementSpacing = {
 function editor.mousepressed(x,y,button)
     local collided = false
     for _,button in pairs(buttons) do 
-        if collision:CheckCollision(x, y, 1, 1, button.x, button.y, button.scaleX, button.scaleY) and button.condition() == true then 
+        if utils:CheckCollision(x, y, 1, 1, button.x, button.y, button.scaleX, button.scaleY) and button.condition() == true then 
             getStartedHint = false
             button.callback()
             collided = true
@@ -782,16 +782,16 @@ function editor.mousepressed(x,y,button)
 
         if editorMode == "placing" then
             holding = true
-            local beatData = getBeatDataFromTime(math.round(time, 1))
+            local beatData = getBeatDataFromTime(utils.round(time, 1))
             if beatData then
                 if beatData.Bomb ~= true and beatData.Powerup == nil then
-                    if not table.find(beatData.Beats, boundary) then 
+                    if not utils.find(beatData.Beats, boundary) then 
                         table.insert(beatData.Beats, boundary)
                     end
                 else
-                    if not table.find(beatData.Beats, boundary) then 
+                    if not utils.find(beatData.Beats, boundary) then 
                         table.insert(BeatMap.Beats, {
-                            ["Time"] = math.round(time, 1),
+                            ["Time"] = utils.round(time, 1),
                             ["Beats"] = {
                                 boundary
                             }
@@ -800,21 +800,21 @@ function editor.mousepressed(x,y,button)
                 end
             else
                 table.insert(BeatMap.Beats, {
-                    ["Time"] = math.round(time, 1),
+                    ["Time"] = utils.round(time, 1),
                     ["Beats"] = {
                         boundary
                     }
                 })
             end
         elseif editorMode == "placeBomb" then -- JAAAAAANK
-            local beatData = getBeatDataFromTime(math.round(time, 1))
+            local beatData = getBeatDataFromTime(utils.round(time, 1))
             if beatData then 
-                if beatData.Bomb == true and not table.find(beatData.Beats, boundary) then 
+                if beatData.Bomb == true and not utils.find(beatData.Beats, boundary) then 
                     table.insert(beatData.Beats, boundary)
                 else
-                    if not table.find(beatData.Beats, boundary) then 
+                    if not utils.find(beatData.Beats, boundary) then 
                         table.insert(BeatMap.Beats, {
-                            ["Time"] = math.round(time, 1),
+                            ["Time"] = utils.round(time, 1),
                             ["Beats"] = {
                                 boundary
                             },
@@ -824,7 +824,7 @@ function editor.mousepressed(x,y,button)
                 end
             else
                 table.insert(BeatMap.Beats, {
-                    ["Time"] = math.round(time, 1),
+                    ["Time"] = utils.round(time, 1),
                     ["Beats"] = {
                         boundary
                     },
@@ -833,16 +833,16 @@ function editor.mousepressed(x,y,button)
             end
             
         elseif editorMode == "placeGoldenBeat" then
-            local beatData = getBeatDataFromTime(math.round(time, 1))
+            local beatData = getBeatDataFromTime(utils.round(time, 1))
             if beatData then 
                 if beatData.Powerup == "2xScore" then 
-                    if not table.find(beatData.Beats, boundary)  then
+                    if not utils.find(beatData.Beats, boundary)  then
                         table.insert(beatData.Beats, boundary)
                     end
                 else
-                    if not table.find(beatData.Beats, boundary)  then 
+                    if not utils.find(beatData.Beats, boundary)  then 
                         table.insert(BeatMap.Beats, {
-                            ["Time"] = math.round(time, 1),
+                            ["Time"] = utils.round(time, 1),
                             ["Beats"] = {
                                 boundary
                             },
@@ -852,7 +852,7 @@ function editor.mousepressed(x,y,button)
                 end
             else
                 table.insert(BeatMap.Beats, {
-                    ["Time"] = math.round(time, 1),
+                    ["Time"] = utils.round(time, 1),
                     ["Beats"] = {
                         boundary
                     },
@@ -860,16 +860,16 @@ function editor.mousepressed(x,y,button)
                 })
             end
         elseif editorMode == "placeIce" then
-            local beatData = getBeatDataFromTime(math.round(time, 1))
+            local beatData = getBeatDataFromTime(utils.round(time, 1))
             if beatData then 
                 if beatData.Powerup == "Slow" then 
-                    if not table.find(beatData.Beats, boundary)  then
+                    if not utils.find(beatData.Beats, boundary)  then
                         table.insert(beatData.Beats, boundary)
                     end
                 else
-                    if not table.find(beatData.Beats, boundary)  then 
+                    if not utils.find(beatData.Beats, boundary)  then 
                         table.insert(BeatMap.Beats, {
-                            ["Time"] = math.round(time, 1),
+                            ["Time"] = utils.round(time, 1),
                             ["Beats"] = {
                                 boundary
                             },
@@ -879,7 +879,7 @@ function editor.mousepressed(x,y,button)
                 end
             else
                 table.insert(BeatMap.Beats, {
-                    ["Time"] = math.round(time, 1),
+                    ["Time"] = utils.round(time, 1),
                     ["Beats"] = {
                         boundary
                     },
@@ -908,11 +908,11 @@ end
 
 function editor.mousemoved(x, y)
     if playtestMode == false and holdingColumn ~= 0 and holdingBeatPosY ~= 0 and holdingBeatPosX ~= 0 and holding == true then
-        local time = math.round(((((460 - (circleRadius * 2)) - holdingBeatPosY)/(460 - (circleRadius * 2))) * 2.5) + ((page-1) * 2.5), 1)
+        local time = utils.round(((((460 - (circleRadius * 2)) - holdingBeatPosY)/(460 - (circleRadius * 2))) * 2.5) + ((page-1) * 2.5), 1)
         if y + 80 < holdingBeatPosY then 
             for index, data in pairs(BeatMap.Beats) do
-                if data.Time == time and table.find(data.Beats, holdingColumn) then
-                    local trailTime = math.round(((((460 - (circleRadius * 2)) - y)/(460 - (circleRadius * 2))) * 2.5) + ((page-1) * 2.5), 1)
+                if data.Time == time and utils.find(data.Beats, holdingColumn) then
+                    local trailTime = utils.round(((((460 - (circleRadius * 2)) - y)/(460 - (circleRadius * 2))) * 2.5) + ((page-1) * 2.5), 1)
                     BeatMap.Beats[index].Trail = (trailTime - 0.15) - time
 
                     return
@@ -920,7 +920,7 @@ function editor.mousemoved(x, y)
             end
         else
             for index, data in pairs(BeatMap.Beats) do
-                if data.Time == time and table.find(data.Beats, holdingColumn) then 
+                if data.Time == time and utils.find(data.Beats, holdingColumn) then 
                     BeatMap.Beats[index].Trail = nil
                     return
                 end
@@ -936,20 +936,6 @@ function editor.mousereleased(x, y, button)
         holdingBeatPosY = 0
         holdingBeatPosX = 0
     end
-end
-
-function table.find(table, value)
-    for _, v in pairs(table) do
-        if v == value then
-            return true
-        end
-    end
-    return false
-end
-
-function math.round(num, decimalPlaces)
-    local mult = 10^decimalPlaces
-    return math.floor(num * mult + 0.5) / mult
 end
 
 function editor.fileLoaded(file)
