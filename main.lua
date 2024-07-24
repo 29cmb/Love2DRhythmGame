@@ -226,7 +226,7 @@ function love.draw()
 
                         local time = math.abs(beat.Trail.Time)
 
-                        if time < 0.1 then 
+                        if time < 0.1 then
                             self.Score = self.Score + 500
                         elseif time < 0.25 then
                             self.Score = self.Score + 250
@@ -588,8 +588,6 @@ function love.filedropped(file)
                 end
             end
         end
-
-       
     end
 end
 

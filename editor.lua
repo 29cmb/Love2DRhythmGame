@@ -9,30 +9,9 @@ local Fonts = require("modules.fonts")
 local misc = require("modules.misc")
 
 local Powerups = {
-    ["2xScore"] = {
-        Duration = 5,
-        Sprite = "Images/GoldenBeat.png",
-        SpriteOffset = {x = 22, y = 30},
-        Callback = function()
-           
-        end,
-        Undo = function()
-            
-        end
-    },
-    ["Slow"] = {
-        Duration = 5,
-        Sprite = "Images/Slowness.png",
-        SpriteOffset = {x = 22, y = 30},
-        Callback = function()
-            
-        end,
-        Undo = function()
-            
-        end
-    }
+    ["2xScore"] = "Images/GoldenBeat.png",
+    ["Slow"] = "Images/Slowness.png",
 }
-
 
 local BeatMap = {
     ["Data"] = {
@@ -115,7 +94,7 @@ function playtest(o)
 end
 
 local buttons = {
-    ['Playtest'] = {
+    {
         ["x"] = 285,
         ["y"] = 10,
         ["scaleX"] = 65,
@@ -125,7 +104,7 @@ local buttons = {
         end,
         ["callback"] = playtest
     },
-    ["PlaceBeat"] = {
+    {
         ["x"] = 285,
         ["y"] = 80,
         ["scaleX"] = 65,
@@ -138,7 +117,7 @@ local buttons = {
             editorMode = "placing"
         end
     },
-    ["PlaceBomb"] = {
+    {
         ["x"] = 285,
         ["y"] = 150,
         ["scaleX"] = 65,
@@ -151,7 +130,7 @@ local buttons = {
             editorMode = "placeBomb"
         end
     },
-    ["PlaceGoldenBeat"] = {
+    {
         ["x"] = 285,
         ["y"] = 220,
         ["scaleX"] = 65,
@@ -164,7 +143,7 @@ local buttons = {
             editorMode = "placeGoldenBeat"
         end
     },
-    ["PlaceIce"] = {
+    {
         ["x"] = 285,
         ["y"] = 290,
         ["scaleX"] = 65,
@@ -177,7 +156,7 @@ local buttons = {
             editorMode = "placeIce"
         end
     },
-    ["DeleteBeat"] = {
+    {
         ["x"] = 285,
         ["y"] = 350,
         ["scaleX"] = 65,
@@ -190,7 +169,7 @@ local buttons = {
             editorMode = "delete"
         end
     },
-    ["PageUp"] = {
+    {
         ["x"] = 675,
         ["y"] = 10,
         ["scaleX"] = 65,
@@ -202,7 +181,7 @@ local buttons = {
             page = page + 1
         end
     },
-    ["PageDown"] = {
+    {
         ["x"] = 675,
         ["y"] = 80,
         ["scaleX"] = 65,
@@ -215,7 +194,7 @@ local buttons = {
             page = page - 1
         end
     },
-    ["Exit"] = {
+    {
         ["x"] = 10,
         ["y"] = 10,
         ["scaleX"] = 168,
@@ -226,7 +205,7 @@ local buttons = {
         ["callback"] = function()
             BeatMap = {
                 ["Data"] = {
-                    ["Song"] = "On and On",
+                    ["Song"] = "DELTA",
                     ["BackgroundImage"] = "Images/Background.png" -- no variability yet
                 },
                 ["Beats"] = {}
@@ -251,7 +230,7 @@ local buttons = {
             love.window.setMode(300, 500)
         end
     },
-    ["ResetLevel"] = {
+    {
         ["x"] = 285,
         ["y"] = 430,
         ["scaleX"] = 65,
@@ -266,7 +245,7 @@ local buttons = {
             end
         end
     },
-    ["Save"] = {
+    {
         ["x"] = 675,
         ["y"] = 150,
         ["scaleX"] = 65,
@@ -307,7 +286,7 @@ local buttons = {
             love.window.showMessageBox("Saved", "Save was successful!")
         end
     },
-    ["MusicSelector"] = {
+    {
         ["x"] = 675,
         ["y"] = 220,
         ["scaleX"] = 65,
@@ -319,7 +298,7 @@ local buttons = {
             musicSelectorOpen = not musicSelectorOpen
         end
     },
-    ["LargeButtonLeft"] = {
+    {
         ["x"] = 675,
         ["y"] = 300,
         ["scaleX"] = 48,
@@ -336,7 +315,7 @@ local buttons = {
             end
         end
     },
-    ["LargeButtonRight"] = {
+    {
         ["x"] = 972.5,
         ["y"] = 300,
         ["scaleX"] = 48,
@@ -354,7 +333,7 @@ local buttons = {
             BeatMap.Data.Song = musicSelectorItems[musicSelectorPage].SongName
         end
     },
-    ["Record"] = {
+    {
         ["x"] = 675,
         ["y"] = 290,
         ["scaleX"] = 65,
@@ -385,8 +364,8 @@ end
 function editor.load()
     love.window.setMode(1024, 500)
 
-    for _, data in pairs(Powerups) do 
-        data.Sprite = love.graphics.newImage(data.Sprite)
+    for index, data in pairs(Powerups) do
+        Powerups[index] = love.graphics.newImage(data)
     end
 end
 
@@ -499,8 +478,7 @@ function editor.draw()
                     if beat.Bomb and beat.Bomb == true then 
                         love.graphics.draw(Sprites.Bomb, circleX, posY, 0, 1, 1, 22, 30) -- why is the sprite off-center? No idea.
                     elseif beat.Powerup then
-                        local powerup = Powerups[beat.Powerup]
-                        love.graphics.draw(powerup.Sprite, circleX, posY, 0, 1, 1, powerup.SpriteOffset.x, powerup.SpriteOffset.y)
+                        love.graphics.draw(Powerups[beat.Powerup], circleX, posY, 0, 1, 1, powerup.SpriteOffset.x, powerup.SpriteOffset.y)
                     else
                         love.graphics.setColor(misc.Colors[i])
                         love.graphics.circle("fill", circleX, posY, circleRadius)
@@ -525,8 +503,7 @@ function editor.draw()
     
                     if beat.Hit == false then 
                         if beat.Powerup ~= "None" then
-                            local powerup = Powerups[beat.Powerup]
-                            love.graphics.draw(powerup.Sprite, circleX, beat.PosY, 0, 1, 1, powerup.SpriteOffset.x, powerup.SpriteOffset.y)
+                            love.graphics.draw(Powerups[beat.Powerup], circleX, beat.PosY, 0, 1, 1, powerup.SpriteOffset.x, powerup.SpriteOffset.y)
                         elseif beat.Bomb == false then
                             love.graphics.setColor(misc.Colors[i])
                             love.graphics.circle("fill", circleX, beat.PosY, circleRadius)
