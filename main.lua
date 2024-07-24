@@ -10,6 +10,7 @@ local utils = require("modules.utils")
 local editor = require("editor")
 local misc = require("modules.misc")
 local ParticleSystems = require("modules.particles")
+local Powerups = require("modules.powerups")
 
 self.Score = 0
 self.InEditor = false
@@ -35,32 +36,6 @@ self.ScoreMultiplier = 1
 
 self.MenuPage = "MainMenu"
 
-self.Powerups = {
-    ["2xScore"] = {
-        Duration = 7,
-        Sprite = "Images/GoldenBeat.png",
-        SpriteOffset = {x = 22, y = 30},
-        Callback = function()
-            self.ScoreMultiplier = 2
-        end,
-        Undo = function()
-            self.ScoreMultiplier = 1
-        end
-    },
-    ["Slow"] = {
-        Duration = 5,
-        Sprite = "Images/Slowness.png",
-        SpriteOffset = {x = 22, y = 30},
-        Callback = function()
-            self.Speed = self.Speed * 0.75
-            self.ActiveAudio:setPitch(.75)
-        end,
-        Undo = function()
-            self.Speed = self.Speed * 1.25
-            self.ActiveAudio:setPitch(1)
-        end
-    }
-}
 
 
 function self.load()
@@ -68,15 +43,12 @@ function self.load()
     if Fonts.IsLoaded == false then Fonts:Load() end
     if SFX.IsLoaded == false then SFX:Load() end
     if ParticleSystems.IsLoaded == false then ParticleSystems:Load() end
+    if Powerups.IsLoaded == false then Powerups:Load() end
 
     if self.InEditor == false then
         love.window.setMode(300, 500)
         love.window.setTitle("Rhythm Game")
         background = love.graphics.newImage("Images/Background.png")
-
-        for _, data in pairs(self.Powerups) do 
-            data.Sprite = love.graphics.newImage(data.Sprite)
-        end
     else
         editor.load()
     end
@@ -194,7 +166,7 @@ function love.draw()
 
                 if beat.Hit == false then 
                     if beat.Powerup ~= "None" then
-                        local powerup = self.Powerups[beat.Powerup]
+                        local powerup = Powerups[beat.Powerup]
                         love.graphics.draw(powerup.Sprite, circleX, beat.PosY, 0, 1, 1, powerup.SpriteOffset.x, powerup.SpriteOffset.y)
                     elseif beat.Bomb == false then
                         love.graphics.setColor(misc.Colors[i])
@@ -253,12 +225,12 @@ function love.draw()
                         ParticleSystems[i].HitBeat:setColors(misc.Colors[i])
                         ParticleSystems[i].HitBeat:emit(10)
                         if beat.Powerup ~= "None" then 
-                            self.Powerups[beat.Powerup].Callback()
+                            Powerups[beat.Powerup].Callback()
                             SFX.Powerup:play()
 
                             print("Powerup " .. beat.Powerup .. " activated")
                             self.Powerup = beat.Powerup
-                            self.PowerupTimer = self.Powerups[beat.Powerup].Duration
+                            self.PowerupTimer = Powerups[beat.Powerup].Duration
                         elseif beat.Bomb == true then 
                             self.Score = utils.clamp(self.Score - 2000)
                         elseif distance <= 2 then
@@ -372,7 +344,7 @@ function love.update(dt)
             
             self.PowerupTimer = self.PowerupTimer - dt
             if self.PowerupTimer <= 0 and self.Powerup ~= "None" then 
-                self.Powerups[self.Powerup].Undo()
+                Powerups[self.Powerup].Undo()
                 self.PowerupTimer = 0
                 self.Powerup = "None"
             end
